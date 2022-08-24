@@ -10,5 +10,5 @@ java -jar target/matches-organizer-0.0.1-SNAPSHOT.jar
 Para probar la aplicación se puede ejecutar un curl por ejemplo a:
 
 ```shell
-curl --location --request GET 'http://localhost:8081/matches-organizer/matches'
+curl --location --request GET 'http://localhost:8081/matches'
 ```
