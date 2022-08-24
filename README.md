@@ -1,9 +1,14 @@
 # organize-matches
 
 Run backend - MacOS/Linux:
+```shell
+cd backend
+mvn clean install
+java -jar target/matches-organizer-0.0.1-SNAPSHOT.jar
+```
 
-`./backend/mvnw spring-boot:run`
+Para probar la aplicación se puede ejecutar un curl por ejemplo a:
 
-**Nota**: Actualmente se implementó el codigo proporcionado por https://spring.io/quickstart .
-
-Actualizar este README.md a medida que se vaya actualizando el código.
+```shell
+curl --location --request GET 'http://localhost:8081/matches'
+```
