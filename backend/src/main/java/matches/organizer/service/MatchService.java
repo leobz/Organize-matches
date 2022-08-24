@@ -1,7 +1,7 @@
-package frba.utn.tacs.matches.organizer.service;
+package matches.organizer.service;
 
-import frba.utn.tacs.matches.organizer.domain.Match;
-import frba.utn.tacs.matches.organizer.domain.Player;
+import matches.organizer.domain.Match;
+import matches.organizer.domain.Player;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

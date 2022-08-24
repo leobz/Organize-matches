@@ -1,4 +1,4 @@
-package frba.utn.tacs.matches.organizer;
+package matches.organizer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

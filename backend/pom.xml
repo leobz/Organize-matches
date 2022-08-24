@@ -45,7 +45,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<!-- here we specify that we want to use the main method within the App class -->
-							<mainClass>frba.utn.tacs.matches.organizer.MatchesOrganizerApp</mainClass>
+							<mainClass>matches.organizer.MatchesOrganizerApp</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

@@ -1,4 +1,4 @@
-package frba.utn.tacs.matches.organizer.domain;
+package matches.organizer.domain;
 
 public class Player {
 

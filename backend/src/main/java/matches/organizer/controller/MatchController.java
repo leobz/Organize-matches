@@ -1,7 +1,7 @@
-package frba.utn.tacs.matches.organizer.controller;
+package matches.organizer.controller;
 
-import frba.utn.tacs.matches.organizer.domain.Match;
-import frba.utn.tacs.matches.organizer.service.MatchService;
+import matches.organizer.domain.Match;
+import matches.organizer.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

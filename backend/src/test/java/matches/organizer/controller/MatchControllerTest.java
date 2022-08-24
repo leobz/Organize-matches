@@ -1,7 +1,6 @@
-package frba.utn.tacs.matches.controller;
+package matches.organizer.controller;
 
-import frba.utn.tacs.matches.organizer.controller.MatchController;
-import frba.utn.tacs.matches.organizer.service.MatchService;
+import matches.organizer.service.MatchService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
