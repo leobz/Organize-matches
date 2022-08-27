@@ -15,10 +15,9 @@ dev: ## Compila y ejecuta localmente el backend
 build: ## Crea imagen docker del backend
 # TODO: Migrar a llamada de docker-compose cuando se cuenten con otros servicios
 	cd backend; \
-	mvn clean install; \
 	docker build -t $(BE_DOCKER_TAG) .
 
 .PHONY: prod
 prod: ## Ejecuta imagen docker del backend
 # TODO: Migrar a llamada de docker-compose cuando se cuenten con otros servicios
-	docker run -p 8081:8081 $(BE_DOCKER_TAG)
+	docker run -p 8081:8080 $(BE_DOCKER_TAG)
