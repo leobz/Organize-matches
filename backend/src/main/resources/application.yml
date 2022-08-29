@@ -3,4 +3,4 @@ spring:
     banner-mode: 'off'
 
 server:
-  port: 8081
+  port: 8080
