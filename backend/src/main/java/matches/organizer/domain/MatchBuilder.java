@@ -40,17 +40,17 @@ public class MatchBuilder {
         return this;
     }
 
-    public Match build() throws Exception {
+    public Match build() {
         if(name == null)
-            throw new Exception("MatchBuilder: name is missing");
+            throw new RuntimeException("MatchBuilder: name is missing");
         if(user_id == null)
-            throw new Exception("MatchBuilder: user id is missing");
+            throw new RuntimeException("MatchBuilder: user id is missing");
         if(date == null)
-            throw new Exception("MatchBuilder: date is missing");
+            throw new RuntimeException("MatchBuilder: date is missing");
         if(hour == null)
-            throw new Exception("MatchBuilder: hour is missing");
+            throw new RuntimeException("MatchBuilder: hour is missing");
         if(location == null)
-            throw new Exception("MatchBuilder: location is missing");
+            throw new RuntimeException("MatchBuilder: location is missing");
         UUID id = UUID.randomUUID();
         LocalDateTime creationDate = LocalDateTime.now();
         List<Player> players = new ArrayList<Player>();

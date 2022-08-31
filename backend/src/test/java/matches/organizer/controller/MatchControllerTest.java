@@ -1,6 +1,7 @@
 package matches.organizer.controller;
 
 import matches.organizer.service.MatchService;
+import matches.organizer.storage.InMemoryMatchRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,7 +12,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes={MatchService.class,MatchController.class})
+@SpringBootTest(classes={MatchService.class,MatchController.class, InMemoryMatchRepository.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 

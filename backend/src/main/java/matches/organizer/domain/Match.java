@@ -5,6 +5,7 @@ import matches.organizer.dto.MatchDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -69,10 +70,18 @@ public class Match {
         return players.stream().skip(10).limit(3).collect(Collectors.toList());
     }
 
-    public void addPlayer(Player player) throws Exception {
+    public void removeAllPlayers() {
+        players = new ArrayList<Player>();
+    }
+
+    public void addPlayer(Player player) {
         if(players.size() >= 13)
-            throw new Exception("Match: Cannot add player. The team is complete.");
+            throw new RuntimeException("Match: Cannot add player. The team is complete.");
         players.add(player);
+    }
+
+    public void addPlayers(List<Player> players) {
+        players.stream().forEach(player -> this.addPlayer(player));
     }
 
     public MatchDTO getDto() {
