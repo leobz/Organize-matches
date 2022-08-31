@@ -3,22 +3,28 @@ package matches.organizer.storage;
 import matches.organizer.domain.Match;
 import matches.organizer.domain.Player;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.TestInstance;
 
 import java.util.List;
 
-@SpringBootTest(classes=InMemoryMatchRepository.class)
+import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+
+@TestInstance(PER_CLASS)
 class InMemoryMatchRepositoryTest {
 
-    @Autowired
     private MatchRepository matchRepository;
     private final Player player1 = new Player("1");
     private final Player player2 = new Player("2");
     private final Player player3 = new Player("3");
     private final Player player4 = new Player("4");
     private final Player player5 = new Player("5");
+
+    @BeforeEach
+    void setUp() {
+        matchRepository = new InMemoryMatchRepository();
+    }
 
     @Test
     void addAndGetMatch() {

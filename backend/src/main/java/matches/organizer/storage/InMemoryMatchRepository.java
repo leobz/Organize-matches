@@ -19,6 +19,11 @@ public class InMemoryMatchRepository implements MatchRepository {
     }
 
     @Override
+    public List<Match> getAll() {
+        return matches;
+    }
+
+    @Override
     public void add(Match match) {
         matches.add(match);
     }
