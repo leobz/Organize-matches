@@ -18,6 +18,9 @@ build: ## Crea imagen docker del backend
 	docker build -t $(BE_DOCKER_TAG) .
 
 .PHONY: prod
-prod: ## Ejecuta imagen docker del backend
-# TODO: Migrar a llamada de docker-compose cuando se cuenten con otros servicios
-	docker run -p 8081:8080 $(BE_DOCKER_TAG)
+prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.
+	docker compose up -d
+
+.PHONY: stop
+stop: ## Finaliza la ejecución de los componentes del proyecto
+	docker compose down

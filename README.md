@@ -12,7 +12,12 @@ make build # Crea imagen docker del backend
 
 Run backend image - MacOS/Linux:
 ```
-make prod # Ejecuta imagen docker del backend 
+make prod # Levanta componentes del proyecto
+```
+
+Run backend image - MacOS/Linux:
+```
+make stop # Finaliza la ejecución de los componentes del proyecto
 ```
 
 ---
