@@ -14,7 +14,7 @@ public class InMemoryMatchRepository implements MatchRepository {
     @Override
     public Match get(String id) {
         return matches.stream()
-                .filter(match -> id.equals(match.getId()))
+                .filter(match -> hasSameId(id, match))
                 .findFirst().orElse(null);
     }
 
@@ -25,11 +25,17 @@ public class InMemoryMatchRepository implements MatchRepository {
 
     @Override
     public void update(Match match) {
-
+        if (matches.removeIf(anyMatch -> hasSameId(anyMatch.getId(), match))) {
+            add(match);
+        }
     }
 
     @Override
     public void remove(Match match) {
+        matches.removeIf(anyMatch -> hasSameId(anyMatch.getId(), match));
+    }
 
+    private static boolean hasSameId(String anyMatchId, Match match) {
+        return anyMatchId.equals(match.getId());
     }
 }
