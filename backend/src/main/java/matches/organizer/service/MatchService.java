@@ -28,7 +28,7 @@ public class MatchService {
             Match anyMatch = new MatchBuilder()
                     .setName("Nuestro partido")
                     .setUserId(UUID.randomUUID())
-                    .setDate(LocalDate.now())
+                    .setDate(LocalDate.now().plusDays(1))
                     .setHour(LocalTime.now())
                     .setLocation("La Bombonera")
                     .build();

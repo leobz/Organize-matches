@@ -51,6 +51,8 @@ public class MatchBuilder {
             throw new RuntimeException("MatchBuilder: hour is missing");
         if(location == null)
             throw new RuntimeException("MatchBuilder: location is missing");
+        if(!LocalDateTime.now().isBefore(LocalDateTime.of(date, hour)))
+            throw new RuntimeException("MatchBuilder: date and hour is in the past");
         UUID id = UUID.randomUUID();
         LocalDateTime creationDate = LocalDateTime.now();
         List<Player> players = new ArrayList<Player>();
