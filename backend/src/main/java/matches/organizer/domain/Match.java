@@ -76,11 +76,13 @@ public class Match {
 
     public void addPlayer(Player player) {
         if(players.size() >= 13)
-            throw new RuntimeException("Match: Cannot add player. The team is complete.");
+            throw new AddPlayerException("Match: Cannot add player. The team is complete.");
         players.add(player);
     }
 
     public void addPlayers(List<Player> players) {
+        if(players.size() + this.players.size() > 13)
+            throw new AddPlayerException("Match: Cannot add players. Team max number of players is 13.");
         players.stream().forEach(player -> this.addPlayer(player));
     }
 

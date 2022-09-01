@@ -23,21 +23,16 @@ public class MatchService {
         this.matchRepository = matchRepository;
     }
     public List<Match> getMatches() {
-        try {
-            Player anyPlayer = new Player("Arthur Friedenreich");
-            Match anyMatch = new MatchBuilder()
-                    .setName("Nuestro partido")
-                    .setUserId(UUID.randomUUID())
-                    .setDate(LocalDate.now().plusDays(1))
-                    .setHour(LocalTime.now())
-                    .setLocation("La Bombonera")
-                    .build();
-            anyMatch.addPlayer(anyPlayer);
-            matchRepository.add(anyMatch);
-            return matchRepository.getAll();
-        }
-        catch (RuntimeException e) {
-            return null;
-        }
+        Player anyPlayer = new Player("Arthur Friedenreich");
+        Match anyMatch = new MatchBuilder()
+                .setName("Nuestro partido")
+                .setUserId(UUID.randomUUID())
+                .setDate(LocalDate.now().plusDays(1))
+                .setHour(LocalTime.now())
+                .setLocation("La Bombonera")
+                .build();
+        anyMatch.addPlayer(anyPlayer);
+        matchRepository.add(anyMatch);
+        return matchRepository.getAll();
     }
 }

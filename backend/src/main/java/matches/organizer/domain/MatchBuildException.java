@@ -1,0 +1,21 @@
+package matches.organizer.domain;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+public class MatchBuildException extends RuntimeException {
+
+    public MatchBuildException() {
+        super();
+    }
+    public MatchBuildException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    public MatchBuildException(String message) {
+        super(message);
+    }
+    public MatchBuildException(Throwable cause) {
+        super(cause);
+    }
+}

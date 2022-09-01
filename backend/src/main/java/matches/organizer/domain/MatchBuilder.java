@@ -42,17 +42,17 @@ public class MatchBuilder {
 
     public Match build() {
         if(name == null)
-            throw new RuntimeException("MatchBuilder: name is missing");
+            throw new MatchBuildException("MatchBuilder: name is missing");
         if(user_id == null)
-            throw new RuntimeException("MatchBuilder: user id is missing");
+            throw new MatchBuildException("MatchBuilder: user id is missing");
         if(date == null)
-            throw new RuntimeException("MatchBuilder: date is missing");
+            throw new MatchBuildException("MatchBuilder: date is missing");
         if(hour == null)
-            throw new RuntimeException("MatchBuilder: hour is missing");
+            throw new MatchBuildException("MatchBuilder: hour is missing");
         if(location == null)
-            throw new RuntimeException("MatchBuilder: location is missing");
+            throw new MatchBuildException("MatchBuilder: location is missing");
         if(!LocalDateTime.now().isBefore(LocalDateTime.of(date, hour)))
-            throw new RuntimeException("MatchBuilder: date and hour is in the past");
+            throw new MatchBuildException("MatchBuilder: date and hour is in the past");
         UUID id = UUID.randomUUID();
         LocalDateTime creationDate = LocalDateTime.now();
         List<Player> players = new ArrayList<Player>();

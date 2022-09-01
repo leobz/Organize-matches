@@ -31,9 +31,6 @@ public class MatchController {
 
     @GetMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<MatchDTO> getAllMatches() {
-        List<MatchDTO> matches = matchService.getMatches().stream().map(match -> match.getDto()).collect(Collectors.toList());
-        if(matches == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        return matches;
+        return matchService.getMatches().stream().map(match -> match.getDto()).collect(Collectors.toList());
     }
 }
