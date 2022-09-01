@@ -5,17 +5,17 @@ Run backend locally- MacOS/Linux:
 make dev # Compila y ejecuta localmente el backend
 ```
 
-Build backend image - MacOS/Linux:
+Build docker image - MacOS/Linux:
 ```
 make build # Crea imagen docker del backend
 ```
 
-Run backend image - MacOS/Linux:
+Run docker project - MacOS/Linux:
 ```
-make prod # Levanta componentes del proyecto
+make prod # Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente. Ver status con ´docker ps´
 ```
 
-Run backend image - MacOS/Linux:
+Stop docker project - MacOS/Linux:
 ```
 make stop # Finaliza la ejecución de los componentes del proyecto
 ```
