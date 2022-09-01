@@ -5,14 +5,19 @@ Run backend locally- MacOS/Linux:
 make dev # Compila con maven y ejecuta localmente el backend con java
 ```
 
-Build backend image - MacOS/Linux:
+Build docker image - MacOS/Linux:
 ```
 make build # Crea imagen docker del backend
 ```
 
-Run backend image - MacOS/Linux:
+Run docker project - MacOS/Linux:
 ```
-make prod # Ejecuta imagen docker del backend 
+make prod # Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente. Ver status con ´docker ps´
+```
+
+Stop docker project - MacOS/Linux:
+```
+make stop # Finaliza la ejecución de los componentes del proyecto
 ```
 
 ---

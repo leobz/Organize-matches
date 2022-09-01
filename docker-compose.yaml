@@ -1,0 +1,10 @@
+version: "3"
+services: 
+  backend:
+    build: ./backend
+    image: be-organize-matches:latest
+    pull_policy: if_not_present
+    restart: always
+    container_name: be-organize-matches
+    ports:
+      - "8081:8080"
