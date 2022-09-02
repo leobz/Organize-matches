@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class InMemoryMatchRepository implements MatchRepository {
@@ -12,7 +13,7 @@ public class InMemoryMatchRepository implements MatchRepository {
     private final List<Match> matches = new ArrayList<>();
 
     @Override
-    public Match get(String id) {
+    public Match get(UUID id) {
         return matches.stream()
                 .filter(match -> hasSameId(id, match))
                 .findFirst().orElse(null);
@@ -40,7 +41,7 @@ public class InMemoryMatchRepository implements MatchRepository {
         matches.removeIf(anyMatch -> hasSameId(anyMatch.getId(), match));
     }
 
-    private static boolean hasSameId(String anyMatchId, Match match) {
-        return anyMatchId.equals(match.getId());
+    private static boolean hasSameId(UUID anyMatchId, Match match) {
+        return anyMatchId.toString().equals(match.getId().toString());
     }
 }

@@ -1,13 +1,17 @@
 package matches.organizer.storage;
 
 import matches.organizer.domain.Match;
-import matches.organizer.domain.Player;
+import matches.organizer.domain.MatchBuilder;
+import matches.organizer.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
@@ -15,45 +19,54 @@ import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 class InMemoryMatchRepositoryTest {
 
     private MatchRepository matchRepository;
-    private final Player player1 = new Player("1");
-    private final Player player2 = new Player("2");
-    private final Player player3 = new Player("3");
-    private final Player player4 = new Player("4");
-    private final Player player5 = new Player("5");
+    private Match anyMatch;
+    private Match anotherMatch;
+    private final User user1 = new User("1", "User 1", "1111");
+    private final User user2 = new User("2", "User 2", "2222");
+    private final User user3 = new User("3", "User 3", "3333");
+    private final User user4 = new User("4", "User 4", "4444");
+    private final User user5 = new User("5", "User 5", "5555");
+
 
     @BeforeEach
     void setUp() {
         matchRepository = new InMemoryMatchRepository();
+        anyMatch = buildAMatch();
+        anotherMatch = buildAnotherMatch();
     }
 
     @Test
     void addAndGetMatch() {
-        matchRepository.add(buildAMatch());
-        matchRepository.add(buildAnotherMatch());
-        Assertions.assertEquals("1",matchRepository.get("1").getId());
-        Assertions.assertEquals("2",matchRepository.get("2").getId());
+        matchRepository.add(anyMatch);
+        matchRepository.add(anotherMatch);
+        Assertions.assertEquals(anyMatch.getId(),matchRepository.get(anyMatch.getId()).getId());
+        Assertions.assertEquals(anotherMatch.getId(),matchRepository.get(anotherMatch.getId()).getId());
     }
 
     @Test
     void addAndRemoveMatch() {
-        Match anyMatch = buildAMatch();
         matchRepository.add(anyMatch);
-        matchRepository.add(buildAnotherMatch());
+        matchRepository.add(anotherMatch);
         matchRepository.remove(anyMatch);
-        Assertions.assertNull(matchRepository.get("1"));
-        Assertions.assertEquals("2",matchRepository.get("2").getId());
+        Assertions.assertNull(matchRepository.get(anyMatch.getId()));
+        Assertions.assertEquals(anotherMatch.getId(),matchRepository.get(anotherMatch.getId()).getId());
     }
 
     @Test
     void addAndUpdateMatch() {
-        Match anyMatch = buildAMatch();
         matchRepository.add(anyMatch);
-        Assertions.assertTrue(matchRepository.get("1").getPlayers().contains(player3));
-        anyMatch.setPlayers( List.of(player4, player5) );
-        final var modifiedPlayers = matchRepository.get("1").getPlayers();
-        Assertions.assertFalse(modifiedPlayers.contains(player3));
-        Assertions.assertTrue(modifiedPlayers.contains(player5));
-        matchRepository.update(anyMatch);
+        Assertions.assertEquals("Any Match",matchRepository.get(anyMatch.getId()).getName());
+        Match modifiedMatch = new Match(
+                anyMatch.getId(),
+                "Modified Match",
+                anyMatch.getUserId(),
+                LocalDate.now().plusDays(1),
+                LocalTime.now(),
+                "Defensores del Chaco",
+                LocalDateTime.now());
+        matchRepository.update(modifiedMatch);
+        Assertions.assertNotEquals("Any Match",matchRepository.get(modifiedMatch.getId()).getName());
+        Assertions.assertEquals("Modified Match",matchRepository.get(modifiedMatch.getId()).getName());
     }
 
     @Test
@@ -61,25 +74,34 @@ class InMemoryMatchRepositoryTest {
         Match anyMatch = buildAMatch();
         matchRepository.add(anyMatch);
         matchRepository.update(buildAnotherMatch());
-        Assertions.assertNull(matchRepository.get("2"));
-        Assertions.assertEquals("1",matchRepository.get("1").getId());
+        Assertions.assertNull(matchRepository.get(anotherMatch.getId()));
+        Assertions.assertEquals(anyMatch.getId(),matchRepository.get(anyMatch.getId()).getId());
     }
 
     private Match buildAMatch() {
-        var anyMatch = new Match();
-        anyMatch.setId("1");
-        anyMatch.getPlayers().add(player1);
-        anyMatch.getPlayers().add(player2);
-        anyMatch.getPlayers().add(player3);
+        Match anyMatch = new MatchBuilder()
+                .setName("Any Match")
+                .setUserId(UUID.randomUUID())
+                .setDate(LocalDate.now().plusDays(1))
+                .setHour(LocalTime.now())
+                .setLocation("La Bombonera")
+                .build();
+        anyMatch.addPlayer(user1, "1111-1111", "player1@gmail.com");
+        anyMatch.addPlayer(user2, "2222-2222", "player2@gmail.com");
+        anyMatch.addPlayer(user3, "3333-3333", "player3@gmail.com");
         return anyMatch;
     }
 
     private Match buildAnotherMatch() {
-        Match anotherMatch = new Match();
-        anotherMatch.setId("2");
-        anotherMatch.getPlayers().add(player4);
-        anotherMatch.getPlayers().add(player5);
+        Match anotherMatch = new MatchBuilder()
+                .setName("Another Match")
+                .setUserId(UUID.randomUUID())
+                .setDate(LocalDate.now().plusDays(1))
+                .setHour(LocalTime.now())
+                .setLocation("La Bombonera")
+                .build();
+        anotherMatch.addPlayer(user4, "4444-4444", "player4@gmail.com");
+        anotherMatch.addPlayer(user5, "5555-5555", "player5@gmail.com");
         return anotherMatch;
     }
-
 }
