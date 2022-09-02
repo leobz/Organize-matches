@@ -74,16 +74,19 @@ public class Match {
         players = new ArrayList<Player>();
     }
 
-    public void addPlayer(Player player) {
+    public void addPlayer(User user, String phone, String email) {
+        System.out.println(user);
+        System.out.println(phone);
+        System.out.println(email);
         if(players.size() >= 13)
             throw new AddPlayerException("Match: Cannot add player. The team is complete.");
-        players.add(player);
-    }
-
-    public void addPlayers(List<Player> players) {
-        if(players.size() + this.players.size() > 13)
-            throw new AddPlayerException("Match: Cannot add players. Team max number of players is 13.");
-        players.stream().forEach(player -> this.addPlayer(player));
+        if(phone == null)
+            throw new AddPlayerException("Match: Cannot add player. Phone cannot be null.");
+        if(email == null)
+            throw new AddPlayerException("Match: Cannot add player. Email cannot be null.");
+        user.setPhone(phone);
+        user.setEmail(email);
+        players.add(new Player(user.getId()));
     }
 
     public MatchDTO getDto() {

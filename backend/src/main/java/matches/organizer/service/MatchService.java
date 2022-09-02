@@ -3,6 +3,7 @@ package matches.organizer.service;
 import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.Player;
+import matches.organizer.domain.User;
 import matches.organizer.storage.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class MatchService {
         this.matchRepository = matchRepository;
     }
     public List<Match> getMatches() {
-        Player anyPlayer = new Player("Arthur Friedenreich");
+        User anyUser = new User("Arthur", "Arthur Friedenreich", "Mi contraseña secreta");
         Match anyMatch = new MatchBuilder()
                 .setName("Nuestro partido")
                 .setUserId(UUID.randomUUID())
@@ -31,7 +32,7 @@ public class MatchService {
                 .setHour(LocalTime.now())
                 .setLocation("La Bombonera")
                 .build();
-        anyMatch.addPlayer(anyPlayer);
+        anyMatch.addPlayer(anyUser, "1234-5678", "afriedenreich@gmail.com");
         matchRepository.add(anyMatch);
         return matchRepository.getAll();
     }

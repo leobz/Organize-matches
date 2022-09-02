@@ -2,22 +2,18 @@ package matches.organizer.dto;
 
 import matches.organizer.domain.Player;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class PlayerDTO {
-    private UUID id;
-    private String name;
+    private UUID userId;
+    private LocalDateTime confirmationDate;
 
     public PlayerDTO(Player player) {
-        this.id = player.getId();
-        this.name = player.getName();
+        this.userId = player.getUserId();
+        this.confirmationDate = player.getConfirmationDate();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public UUID getId() {
-        return id;
-    }
+    public UUID getUserId() { return userId; }
+    public LocalDateTime getConfirmationDate() { return confirmationDate; }
 }

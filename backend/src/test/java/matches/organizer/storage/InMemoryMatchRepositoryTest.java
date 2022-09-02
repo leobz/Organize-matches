@@ -3,6 +3,7 @@ package matches.organizer.storage;
 import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.Player;
+import matches.organizer.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,11 +22,11 @@ class InMemoryMatchRepositoryTest {
     private MatchRepository matchRepository;
     private Match anyMatch;
     private Match anotherMatch;
-    private final Player player1 = new Player("1");
-    private final Player player2 = new Player("2");
-    private final Player player3 = new Player("3");
-    private final Player player4 = new Player("4");
-    private final Player player5 = new Player("5");
+    private final User user1 = new User("1", "User 1", "1111");
+    private final User user2 = new User("2", "User 2", "2222");
+    private final User user3 = new User("3", "User 3", "3333");
+    private final User user4 = new User("4", "User 4", "4444");
+    private final User user5 = new User("5", "User 5", "5555");
 
 
     @BeforeEach
@@ -55,13 +56,16 @@ class InMemoryMatchRepositoryTest {
     @Test
     void addAndUpdateMatch() {
         matchRepository.add(anyMatch);
-        Assertions.assertTrue(matchRepository.get(anyMatch.getId()).getPlayers().contains(player3));
+        Assertions.assertTrue(matchRepository.get(anyMatch.getId()).getPlayers().contains(user3));
         anyMatch.removeAllPlayers();
-        anyMatch.addPlayer(player4);
-        anyMatch.addPlayer(player5);
+        anyMatch.addPlayer(user4, user4.getPhone(), user4.getEmail());
+        anyMatch.addPlayer(user5, user5.getPhone(), user5.getEmail());
         final var modifiedPlayers = matchRepository.get(anyMatch.getId()).getPlayers();
-        Assertions.assertFalse(modifiedPlayers.contains(player3));
-        Assertions.assertTrue(modifiedPlayers.contains(player5));
+        Assertions.assertFalse(modifiedPlayers.contains(user3));
+
+        // TODO: Obtener de un repositorio de players un player por user ID
+        Assertions.assertTrue(modifiedPlayers.contains(user5));
+
         matchRepository.update(anyMatch);
     }
 
@@ -82,9 +86,9 @@ class InMemoryMatchRepositoryTest {
                 .setHour(LocalTime.now())
                 .setLocation("La Bombonera")
                 .build();
-        anyMatch.getPlayers().add(player1);
-        anyMatch.getPlayers().add(player2);
-        anyMatch.getPlayers().add(player3);
+        anyMatch.addPlayer(user1, "1111-1111", "player1@gmail.com");
+        anyMatch.addPlayer(user2, "2222-2222", "player2@gmail.com");
+        anyMatch.addPlayer(user3, "3333-3333", "player3@gmail.com");
         return anyMatch;
     }
 
@@ -96,8 +100,8 @@ class InMemoryMatchRepositoryTest {
                 .setHour(LocalTime.now())
                 .setLocation("La Bombonera")
                 .build();
-        anotherMatch.getPlayers().add(player4);
-        anotherMatch.getPlayers().add(player5);
+        anotherMatch.addPlayer(user4, "4444-4444", "player4@gmail.com");
+        anotherMatch.addPlayer(user5, "5555-5555", "player5@gmail.com");
         return anotherMatch;
     }
 }
