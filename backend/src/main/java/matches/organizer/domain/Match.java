@@ -1,6 +1,7 @@
 package matches.organizer.domain;
 
 import matches.organizer.dto.MatchDTO;
+import matches.organizer.exception.AddPlayerException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,22 +15,22 @@ public class Match {
 
     private UUID id;
     private String name;
-    private UUID user_id;
+    private UUID userId;
     private LocalDate date;
     private LocalTime hour;
     private String location;
     private LocalDateTime creationDate;
     private List<Player> players;
 
-    public Match(UUID id, String name, UUID user_id, LocalDate date, LocalTime hour, String location, LocalDateTime creationDate, List<Player> players){
+    public Match(UUID id, String name, UUID userId, LocalDate date, LocalTime hour, String location, LocalDateTime creationDate){
        this.id = id;
        this.name = name;
-       this.user_id = user_id;
+       this.userId = userId;
        this.date = date;
        this.hour = hour;
        this.location = location;
        this.creationDate = creationDate;
-       this.players = players;
+       this.players = new ArrayList<>();
     }
 
     public UUID getId() {
@@ -41,7 +42,7 @@ public class Match {
     }
 
     public UUID getUserId() {
-        return user_id;
+        return userId;
     }
 
     public LocalDate getDate() {
@@ -71,13 +72,10 @@ public class Match {
     }
 
     public void removeAllPlayers() {
-        players = new ArrayList<Player>();
+        players = new ArrayList<>();
     }
 
     public void addPlayer(User user, String phone, String email) {
-        System.out.println(user);
-        System.out.println(phone);
-        System.out.println(email);
         if(players.size() >= 13)
             throw new AddPlayerException("Match: Cannot add player. The team is complete.");
         if(phone == null)

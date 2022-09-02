@@ -1,16 +1,16 @@
 package matches.organizer.domain;
 
+import matches.organizer.exception.MatchBuildException;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class MatchBuilder {
 
     private String name;
-    private UUID user_id;
+    private UUID userId;
     private LocalDate date;
     private LocalTime hour;
     private String location;
@@ -20,8 +20,8 @@ public class MatchBuilder {
         return this;
     }
 
-    public MatchBuilder setUserId(UUID user_id) {
-        this.user_id = user_id;
+    public MatchBuilder setUserId(UUID userId) {
+        this.userId = userId;
         return this;
     }
 
@@ -43,7 +43,7 @@ public class MatchBuilder {
     public Match build() {
         if(name == null)
             throw new MatchBuildException("MatchBuilder: name is missing");
-        if(user_id == null)
+        if(userId == null)
             throw new MatchBuildException("MatchBuilder: user id is missing");
         if(date == null)
             throw new MatchBuildException("MatchBuilder: date is missing");
@@ -55,8 +55,7 @@ public class MatchBuilder {
             throw new MatchBuildException("MatchBuilder: date and hour is in the past");
         UUID id = UUID.randomUUID();
         LocalDateTime creationDate = LocalDateTime.now();
-        List<Player> players = new ArrayList<Player>();
 
-        return new Match(id, name, user_id, date, hour, location, creationDate, players);
+        return new Match(id, name, userId, date, hour, location, creationDate);
     }
 }

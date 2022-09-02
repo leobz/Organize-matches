@@ -2,7 +2,6 @@ package matches.organizer.storage;
 
 import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
-import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -56,17 +55,18 @@ class InMemoryMatchRepositoryTest {
     @Test
     void addAndUpdateMatch() {
         matchRepository.add(anyMatch);
-        Assertions.assertTrue(matchRepository.get(anyMatch.getId()).getPlayers().contains(user3));
-        anyMatch.removeAllPlayers();
-        anyMatch.addPlayer(user4, user4.getPhone(), user4.getEmail());
-        anyMatch.addPlayer(user5, user5.getPhone(), user5.getEmail());
-        final var modifiedPlayers = matchRepository.get(anyMatch.getId()).getPlayers();
-        Assertions.assertFalse(modifiedPlayers.contains(user3));
-
-        // TODO: Obtener de un repositorio de players un player por user ID
-        Assertions.assertTrue(modifiedPlayers.contains(user5));
-
-        matchRepository.update(anyMatch);
+        Assertions.assertEquals("Any Match",matchRepository.get(anyMatch.getId()).getName());
+        Match modifiedMatch = new Match(
+                anyMatch.getId(),
+                "Modified Match",
+                anyMatch.getUserId(),
+                LocalDate.now().plusDays(1),
+                LocalTime.now(),
+                "Defensores del Chaco",
+                LocalDateTime.now());
+        matchRepository.update(modifiedMatch);
+        Assertions.assertNotEquals("Any Match",matchRepository.get(modifiedMatch.getId()).getName());
+        Assertions.assertEquals("Modified Match",matchRepository.get(modifiedMatch.getId()).getName());
     }
 
     @Test

@@ -14,7 +14,7 @@ public class MatchDTO {
 
     private UUID id;
     private String name;
-    private UUID user_id;
+    private UUID userId;
     private LocalDate date;
     private LocalTime hour;
     private String location;
@@ -25,13 +25,13 @@ public class MatchDTO {
     public MatchDTO(Match match){
         this.id = match.getId();
         this.name = match.getName();
-        this.user_id = match.getUserId();
+        this.userId = match.getUserId();
         this.date = match.getDate();
         this.hour = match.getHour();
         this.location = match.getLocation();
         this.creationDate = match.getCreationDate();
-        this.startingPlayers = match.getStartingPlayers().stream().map(p -> p.getDto()).collect(Collectors.toList());
-        this.substitutePlayers = match.getSubstitutePlayers().stream().map(p -> p.getDto()).collect(Collectors.toList());
+        this.startingPlayers = match.getStartingPlayers().stream().map(Player::getDto).collect(Collectors.toList());
+        this.substitutePlayers = match.getSubstitutePlayers().stream().map(Player::getDto).collect(Collectors.toList());
     }
 
     public UUID getId() {
@@ -43,23 +43,23 @@ public class MatchDTO {
     }
 
     public UUID getUserId() {
-        return user_id;
+        return userId;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public String getDate() {
+        return date.toString();
     }
 
-    public LocalTime getHour() {
-        return hour;
+    public String getHour() {
+        return hour.toString();
     }
 
     public String getLocation() {
         return location;
     }
 
-    public LocalDateTime getCreationDate() {
-        return creationDate;
+    public String getCreationDate() {
+        return creationDate.toString();
     }
 
     public List<PlayerDTO> getStartingPlayers() {

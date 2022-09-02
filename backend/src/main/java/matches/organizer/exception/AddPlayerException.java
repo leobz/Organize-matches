@@ -1,4 +1,4 @@
-package matches.organizer.domain;
+package matches.organizer.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

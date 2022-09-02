@@ -15,5 +15,5 @@ public class PlayerDTO {
     }
 
     public UUID getUserId() { return userId; }
-    public LocalDateTime getConfirmationDate() { return confirmationDate; }
+    public String getConfirmationDate() { return confirmationDate.toString(); }
 }
