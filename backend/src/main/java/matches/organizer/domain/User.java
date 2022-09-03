@@ -24,10 +24,12 @@ public class User {
     public String getAlias() {
         return alias;
     }
+    public void setAlias(String alias) { this.alias = alias; }
 
     public String getFullName() {
         return fullName;
     }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
     public String getPhone() {
         return phone;

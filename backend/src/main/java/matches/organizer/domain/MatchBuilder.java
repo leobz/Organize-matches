@@ -56,6 +56,8 @@ public class MatchBuilder {
         UUID id = UUID.randomUUID();
         LocalDateTime creationDate = LocalDateTime.now();
 
-        return new Match(id, name, userId, date, hour, location, creationDate);
+        Match match = new Match(id, name, userId, date, hour, location, creationDate);
+
+        return match;
     }
 }

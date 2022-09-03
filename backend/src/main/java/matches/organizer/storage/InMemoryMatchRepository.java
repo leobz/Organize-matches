@@ -42,6 +42,6 @@ public class InMemoryMatchRepository implements MatchRepository {
     }
 
     private static boolean hasSameId(UUID anyMatchId, Match match) {
-        return anyMatchId.toString().equals(match.getId().toString());
+        return anyMatchId.equals(match.getId());
     }
 }
