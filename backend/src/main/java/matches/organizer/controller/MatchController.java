@@ -33,4 +33,11 @@ public class MatchController {
     public @ResponseBody List<MatchDTO> getAllMatches() {
         return matchService.getMatches().stream().map(match -> match.getDto()).collect(Collectors.toList());
     }
+
+    @RequestMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public String createMatch(@RequestBody Match oneMatch){
+        return "Partido creado con ID:" + oneMatch.getId();
+    }
+
+
 }
