@@ -34,21 +34,11 @@ public class MatchController {
 
     @RequestMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public String createMatch(@RequestBody POSTMatchDTO oneMatch){
-        return "Partido creado: " + matchService.createMatchFromPost(oneMatch.getName(),oneMatch.getLocation(),oneMatch.getDate(),oneMatch.getHour());
+        return "Partido creado con ID: " + matchService.createMatchFromPost(oneMatch.getName(),oneMatch.getLocation(),oneMatch.getDate(),oneMatch.getHour());
     }
 
 
 
 
-    /* eliminar antes de mergear, BODY de prueba
-
-{
-   "name": "mi Partido",
-   "location": "El monumental",
-   "date": "2022-09-04",
-   "hour": "17:00:01"
-}
-
-     */
 
 }

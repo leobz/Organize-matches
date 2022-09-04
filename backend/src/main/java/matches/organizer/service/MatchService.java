@@ -50,6 +50,6 @@ public class MatchService {
         matchRepository.add(anyMatch);
 
 
-        return anyMatch.getLocation();
+        return anyMatch.getId().toString();
     }
 }

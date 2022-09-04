@@ -1,5 +1,7 @@
 package matches.organizer.dto;
 
+import org.springframework.cglib.core.Local;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -11,7 +13,7 @@ public class POSTMatchDTO {
     private String name;
     private String location;
     private LocalDate date;
-    private LocalTime hour;
+    private LocalTime  hour;
 
 
     public String getName() {
