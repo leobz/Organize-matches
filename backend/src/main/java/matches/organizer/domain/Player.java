@@ -7,18 +7,26 @@ import java.util.UUID;
 
 public class Player {
 
-    private UUID userId;
+    private final UUID userId;
 
-    private LocalDateTime confirmationDate;
+    private LocalDateTime confirmedAt;
 
     public Player(UUID userId) {
         this.userId = userId;
-        this.confirmationDate = LocalDateTime.now();
+        this.confirmedAt = LocalDateTime.now();
     }
 
-    public UUID getUserId() { return userId; }
+    public UUID getUserId() {
+        return userId;
+    }
 
-    public LocalDateTime getConfirmationDate() { return confirmationDate; }
+    public LocalDateTime getConfirmedAt() {
+        return confirmedAt;
+    }
+
+    public void setConfirmedAt(LocalDateTime confirmedAt) {
+        this.confirmedAt = confirmedAt;
+    }
 
     public PlayerDTO getDto() {
         return new PlayerDTO(this);

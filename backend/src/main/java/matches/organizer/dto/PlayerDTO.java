@@ -7,13 +7,13 @@ import java.util.UUID;
 
 public class PlayerDTO {
     private UUID userId;
-    private LocalDateTime confirmationDate;
+    private LocalDateTime confirmedAt;
 
     public PlayerDTO(Player player) {
         this.userId = player.getUserId();
-        this.confirmationDate = player.getConfirmationDate();
+        this.confirmedAt = player.getConfirmedAt();
     }
 
     public UUID getUserId() { return userId; }
-    public String getConfirmationDate() { return confirmationDate.toString(); }
+    public String getConfirmedAt() { return confirmedAt.toString(); }
 }
