@@ -1,12 +1,13 @@
 package matches.organizer.domain;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 
 public class User {
-
     private UUID id = UUID.randomUUID();
     private String alias;
     private String fullName;
@@ -52,5 +53,11 @@ public class User {
 
     public void setPassword(String password) {
         this.password = new BCryptPasswordEncoder().encode(password);
+    }
+
+    public String getPassword() { return password; }
+
+    public boolean authenticate(String password) {
+        return new BCryptPasswordEncoder().matches(password, this.getPassword());
     }
 }
