@@ -18,7 +18,7 @@ public class MatchDTO {
     private LocalDate date;
     private LocalTime hour;
     private String location;
-    private LocalDateTime creationDate;
+    private LocalDateTime createdAt;
     private List<PlayerDTO> startingPlayers;
     private List<PlayerDTO> substitutePlayers;
 
@@ -29,7 +29,7 @@ public class MatchDTO {
         this.date = match.getDate();
         this.hour = match.getHour();
         this.location = match.getLocation();
-        this.creationDate = match.getCreationDate();
+        this.createdAt = match.getCreatedAt();
         this.startingPlayers = match.getStartingPlayers().stream().map(Player::getDto).collect(Collectors.toList());
         this.substitutePlayers = match.getSubstitutePlayers().stream().map(Player::getDto).collect(Collectors.toList());
     }
@@ -58,8 +58,8 @@ public class MatchDTO {
         return location;
     }
 
-    public String getCreationDate() {
-        return creationDate.toString();
+    public String getCreatedAt() {
+        return createdAt.toString();
     }
 
     public List<PlayerDTO> getStartingPlayers() {
