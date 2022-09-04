@@ -5,6 +5,7 @@ import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
 import matches.organizer.service.MatchService;
 import matches.organizer.storage.InMemoryMatchRepository;
+import matches.organizer.storage.InMemoryUserRepository;
 import matches.organizer.storage.MatchRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {MatchService.class, MatchController.class, InMemoryMatchRepository.class})
+@SpringBootTest(classes = {MatchService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 
@@ -49,9 +50,8 @@ class MatchControllerTest {
         ///////////////////////////////////////////////////////////////////////////
         sanitize();
 
-        result = this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE));
-        result = result.andExpect(status().isOk());
-        result = result.andExpect(content().json("{'matches': 0, 'players': 0}"));
+        this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk()).andExpect(content().json("{\"matches\": 0, \"players\": 0}"));
 
 
         ///////							Test Counter						///////
@@ -59,8 +59,8 @@ class MatchControllerTest {
 
         // Valid matches: 1, Valid Players: 2
         Match m1 = createMatch();
-        m1.addPlayer(createUser(), "", "");
-        m1.addPlayer(createUser(), "", "");
+        m1.addPlayer(UUID.randomUUID());
+        m1.addPlayer(UUID.randomUUID());
 
         // Invalid matches and players (older than 2 hours)
         LocalDateTime oderDT = LocalDateTime.now().minusHours(2).minusMinutes(1);
@@ -68,16 +68,16 @@ class MatchControllerTest {
         Match m2 = createMatch();
         m2.setCreatedAt(oderDT);
 
-        m1.addPlayer(createUser(), "", "");
+        m1.addPlayer(UUID.randomUUID());
         m1.getPlayers().get(0).setConfirmedAt(oderDT);
 
         // Test
         matchRepository.add(m1);
         matchRepository.add(m2);
 
-        result = this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE));
-        result = result.andExpect(status().isOk());
-        result = result.andExpect(content().json("{'matches': 1, 'players': 2}"));
+        this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"matches\": 1, \"players\": 2}"));
     }
 
     void sanitize() {

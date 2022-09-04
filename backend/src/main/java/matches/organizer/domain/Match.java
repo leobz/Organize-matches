@@ -1,7 +1,6 @@
 package matches.organizer.domain;
 
 import matches.organizer.dto.MatchDTO;
-import matches.organizer.exception.AddPlayerException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -80,16 +79,8 @@ public class Match {
         players = new ArrayList<>();
     }
 
-    public void addPlayer(User user, String phone, String email) {
-        if(players.size() >= 13)
-            throw new AddPlayerException("Match: Cannot add player. The team is complete.");
-        if(phone == null)
-            throw new AddPlayerException("Match: Cannot add player. Phone cannot be null.");
-        if(email == null)
-            throw new AddPlayerException("Match: Cannot add player. Email cannot be null.");
-        user.setPhone(phone);
-        user.setEmail(email);
-        players.add(new Player(user.getId()));
+    public void addPlayer(UUID userId) {
+        players.add(new Player(userId));
     }
 
     public MatchDTO getDto() {
