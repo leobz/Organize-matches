@@ -2,11 +2,6 @@ package matches.organizer.domain;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;

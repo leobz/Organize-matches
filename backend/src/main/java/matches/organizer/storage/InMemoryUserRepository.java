@@ -1,6 +1,5 @@
 package matches.organizer.storage;
 
-import matches.organizer.domain.Match;
 import matches.organizer.domain.User;
 import org.springframework.stereotype.Component;
 
