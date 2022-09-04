@@ -2,16 +2,13 @@ package matches.organizer.service;
 
 import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
-import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
 import matches.organizer.storage.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,5 +32,24 @@ public class MatchService {
         anyMatch.addPlayer(anyUser, "1234-5678", "afriedenreich@gmail.com");
         matchRepository.add(anyMatch);
         return matchRepository.getAll();
+    }
+
+
+    public String createMatchFromPost(String matchName, String matchLocation, LocalDate matchDate, LocalTime matchHour){
+
+
+
+        Match anyMatch = new MatchBuilder()
+                .setName(matchName)
+                .setUserId(UUID.randomUUID())
+                .setDate(matchDate)
+                .setHour(matchHour)
+                .setLocation(matchLocation)
+                .build();
+
+        matchRepository.add(anyMatch);
+
+
+        return anyMatch.getLocation();
     }
 }
