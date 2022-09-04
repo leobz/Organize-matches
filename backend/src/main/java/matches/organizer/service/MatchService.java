@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +39,22 @@ public class MatchService {
         anyMatch.addPlayer(anyUser, "1234-5678", "afriedenreich@gmail.com");
         matchRepository.add(anyMatch);
         return matchRepository.getAll();
+    }
+
+    public List<Player> registerNewPlayer(UUID id, User user, String phone, String email) {
+        var newMatch = matchRepository.get(id);
+
+        if(newMatch != null) {
+            newMatch.addPlayer(user, phone, email);
+            matchRepository.update(newMatch);
+            System.out.println("Se agrega un player al match" + id
+            + "\ncon el alias: " + user.getAlias()
+            + "\ncon el telefono: " + phone
+            + "\ncon el email " + email);
+            return newMatch.getPlayers();
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     /**

@@ -1,5 +1,8 @@
 package matches.organizer.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.UUID;
 
 public class User {
@@ -10,7 +13,12 @@ public class User {
     private String email;
     private String password;
 
-    public User(String alias, String fullName, String password) {
+    @JsonCreator
+    public User(@JsonProperty("alias") String alias) {
+        this.alias = alias;
+    }
+
+    public User(@JsonProperty("alias") String alias, String fullName, String password) {
         this.alias = alias;
         this.fullName = fullName;
         // TODO: Hashear password
