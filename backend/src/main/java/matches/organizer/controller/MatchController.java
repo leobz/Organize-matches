@@ -1,5 +1,6 @@
 package matches.organizer.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.dto.MatchDTO;
 import matches.organizer.service.MatchService;
@@ -29,9 +30,7 @@ public class MatchController {
         return matchService.getMatches().stream().map(match -> match.getDto()).collect(Collectors.toList());
     }
 
-    /**
-     * Retorna un contador con la cantidad de partidos creados y jugadores anotados en las últimas 2 horas.
-     */
+    @Operation(summary = "Retorna un contador con la cantidad de partidos creados y jugadores anotados en las últimas 2 horas.")
     @GetMapping(value = "/matches/counter", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody CounterDTO getMatchAndPlayerCounter() {
         LocalDateTime from = LocalDateTime.now().minusHours(2);
