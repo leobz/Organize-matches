@@ -5,7 +5,9 @@ import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
+import matches.organizer.exception.AddPlayerException;
 import matches.organizer.storage.MatchRepository;
+import matches.organizer.storage.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,12 @@ import java.util.UUID;
 public class MatchService {
 
     private final MatchRepository matchRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public MatchService(MatchRepository matchRepository) {
+    public MatchService(MatchRepository matchRepository, UserRepository userRepository) {
         this.matchRepository = matchRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Match> getMatches() {
@@ -34,8 +38,7 @@ public class MatchService {
                 .setHour(LocalTime.now())
                 .setLocation("La Bombonera")
                 .build();
-
-        anyMatch.addPlayer(anyUser, "1234-5678", "afriedenreich@gmail.com");
+        addPlayerToMatch(anyMatch, anyUser, "1234-5678", "afriedenreich@gmail.com");
         matchRepository.add(anyMatch);
         return matchRepository.getAll();
     }
@@ -51,5 +54,24 @@ public class MatchService {
         List<Player> players = matchRepository.getAllPlayersConfirmedFrom(from);
 
         return new CounterDTO(matches.size(), players.size());
+    }
+
+    public void addPlayerToMatch(Match match, User user, String phone, String email) {
+        if(phone == null)
+            throw new AddPlayerException("Match: Cannot add player. Phone cannot be null.");
+        if(email == null)
+            throw new AddPlayerException("Match: Cannot add player. Email cannot be null.");
+        match.addPlayer(user.getId());
+        updateUser(user, phone, email);
+    }
+
+    private void updateUser(User user, String phone, String email) {
+        user.setPhone(phone);
+        user.setEmail(email);
+        if (userRepository.get(user.getId()) != null) {
+            userRepository.update(user);
+        } else {
+            userRepository.add(user);
+        }
     }
 }

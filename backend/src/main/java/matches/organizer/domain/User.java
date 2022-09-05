@@ -1,5 +1,6 @@
 package matches.organizer.domain;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.UUID;
 
 public class User {
@@ -11,10 +12,9 @@ public class User {
     private String password;
 
     public User(String alias, String fullName, String password) {
-        this.alias = alias;
-        this.fullName = fullName;
-        // TODO: Hashear password
-        this.password = password;
+        setAlias(alias);
+        setFullName(fullName);
+        setPassword(password);
     }
 
     public UUID getId() {
@@ -24,10 +24,12 @@ public class User {
     public String getAlias() {
         return alias;
     }
+    public void setAlias(String alias) { this.alias = alias; }
 
     public String getFullName() {
         return fullName;
     }
+    public void setFullName(String fullName) { this.fullName = fullName; }
 
     public String getPhone() {
         return phone;
@@ -43,5 +45,15 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = new BCryptPasswordEncoder().encode(password);
+    }
+
+    public String getPassword() { return password; }
+
+    public boolean authenticate(String password) {
+        return new BCryptPasswordEncoder().matches(password, this.getPassword());
     }
 }
