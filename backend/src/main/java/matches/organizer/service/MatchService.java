@@ -48,7 +48,7 @@ public class MatchService {
         var newMatch = matchRepository.get(id);
 
         if(newMatch != null) {
-            newMatch.addPlayer(user, phone, email);
+            addPlayerToMatch(newMatch, user, phone, email);
             matchRepository.update(newMatch);
             System.out.println("Se agrega un player al match" + id
             + "\ncon el alias: " + user.getAlias()
