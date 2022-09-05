@@ -25,4 +25,26 @@ class MatchControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test
+	void matchesPostMethodOK() throws Exception {
+
+		this.mvc.perform(MockMvcRequestBuilders.post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+				"   \"name\": \"un Partido de prueba\",\n" +
+				"   \"location\": \"GRUN FC\",\n" +
+				"   \"date\": \"2023-09-04\",\n" +
+				"   \"hour\": \"17:00:00\"\n" +
+				"}")).andExpect(status().isOk());
+
+	}
+	@Test
+	void matchesPostMethodIncomplete() throws Exception {
+	//TODO Configurar como BAD_REQUEST
+		this.mvc.perform(MockMvcRequestBuilders.post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+				"   \"name\": \"un Partido de prueba\",\n" +
+				"   \"date\": \"2023-09-04\",\n" +
+				"   \"hour\": \"17:00:00\"\n" +
+				"}")).andExpect(status().isInternalServerError());
+
+	}
+
 }

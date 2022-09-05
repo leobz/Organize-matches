@@ -32,7 +32,7 @@ public class MatchController {
         return matchService.getMatches().stream().map(match -> match.getDto()).collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    @PostMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public String createMatch(@RequestBody POSTMatchDTO oneMatch){
         return "Partido creado con ID: " + matchService.createMatchFromPost(oneMatch.getName(),oneMatch.getLocation(),oneMatch.getDate(),oneMatch.getHour());
     }
