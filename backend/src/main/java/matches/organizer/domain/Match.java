@@ -1,6 +1,7 @@
 package matches.organizer.domain;
 
 import matches.organizer.dto.MatchDTO;
+import matches.organizer.exception.AddPlayerException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -80,6 +81,8 @@ public class Match {
     }
 
     public void addPlayer(UUID userId) {
+        if(getPlayers().size() >= 13)
+            throw new AddPlayerException("Match: Cannot add player. The team is complete.");
         players.add(new Player(userId));
     }
 

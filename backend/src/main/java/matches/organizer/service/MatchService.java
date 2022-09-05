@@ -57,12 +57,15 @@ public class MatchService {
     }
 
     public void addPlayerToMatch(Match match, User user, String phone, String email) {
-        if(match.getPlayers().size() >= 13)
-            throw new AddPlayerException("Match: Cannot add player. The team is complete.");
         if(phone == null)
             throw new AddPlayerException("Match: Cannot add player. Phone cannot be null.");
         if(email == null)
             throw new AddPlayerException("Match: Cannot add player. Email cannot be null.");
+        match.addPlayer(user.getId());
+        updateUser(user, phone, email);
+    }
+
+    private void updateUser(User user, String phone, String email) {
         user.setPhone(phone);
         user.setEmail(email);
         if (userRepository.get(user.getId()) != null) {
@@ -70,6 +73,5 @@ public class MatchService {
         } else {
             userRepository.add(user);
         }
-        match.addPlayer(user.getId());
     }
 }
