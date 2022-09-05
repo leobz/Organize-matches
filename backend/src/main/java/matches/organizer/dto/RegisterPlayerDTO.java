@@ -1,4 +1,4 @@
-package matches.organizer.controller;
+package matches.organizer.dto;
 
 import matches.organizer.domain.User;
 

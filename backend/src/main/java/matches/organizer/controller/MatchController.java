@@ -2,9 +2,9 @@ package matches.organizer.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import matches.organizer.domain.Player;
-import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.dto.MatchDTO;
+import matches.organizer.dto.RegisterPlayerDTO;
 import matches.organizer.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -38,7 +38,7 @@ public class MatchController {
         return matchService.getMatchAndPlayerCounterFrom(from);
     }
 
-    @PatchMapping(value = "/matches/{matchId}/players", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/matches/{matchId}/players", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody List<Player> registerPlayer(@PathVariable UUID matchId, @RequestBody RegisterPlayerDTO registerPlayerDTO) {
         return matchService.registerNewPlayer(matchId, registerPlayerDTO.user, registerPlayerDTO.phone, registerPlayerDTO.email) ;
     }
