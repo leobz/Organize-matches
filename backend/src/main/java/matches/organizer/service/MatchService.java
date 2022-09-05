@@ -26,17 +26,6 @@ public class MatchService {
     }
 
     public List<Match> getMatches() {
-        User anyUser = new User("Arthur", "Arthur Friedenreich", "Mi contraseña secreta");
-        Match anyMatch = new MatchBuilder()
-                .setName("Nuestro partido")
-                .setUserId(UUID.randomUUID())
-                .setDate(LocalDate.now().plusDays(1))
-                .setHour(LocalTime.now())
-                .setLocation("La Bombonera")
-                .build();
-
-        anyMatch.addPlayer(anyUser, "1234-5678", "afriedenreich@gmail.com");
-        matchRepository.add(anyMatch);
         return matchRepository.getAll();
     }
 

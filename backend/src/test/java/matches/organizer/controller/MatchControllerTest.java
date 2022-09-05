@@ -35,7 +35,20 @@ class MatchControllerTest {
 
     @Test
     void matchesRetrieved() throws Exception {
-        this.mvc.perform(get("/matches").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+        sanitize();
+
+        match = createMatch();
+        match2 = createMatch();
+        for (int i = 0; i < 2; i++) {
+            match.addPlayer(createUser(), "", "");
+            match2.addPlayer(createUser(), "", "");
+            match2.addPlayer(createUser(), "", "");
+        }
+
+        this.mvc.perform(get("/matches"))
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().json('{ "matches": [{  }] }'))
     }
 
     /**
