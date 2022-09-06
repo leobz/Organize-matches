@@ -1,6 +1,11 @@
 package matches.organizer.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import matches.organizer.domain.Match;
+import matches.organizer.dto.MatchDTO;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
 import matches.organizer.dto.RegisterPlayerDTO;
@@ -20,6 +25,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.time.temporal.Temporal;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -36,7 +43,29 @@ class MatchControllerTest {
 
     @Test
     void matchesRetrieved() throws Exception {
-        this.mvc.perform(get("/matches").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+        sanitize();
+
+        Match match = createMatch();
+        Match match2 = createMatch();
+        for (int i = 0; i < 2; i++) {
+            match.addPlayer(UUID.randomUUID());
+            match2.addPlayer(UUID.randomUUID());
+            match2.addPlayer(UUID.randomUUID());
+        }
+
+        matchRepository.add(match);
+        matchRepository.add(match2);
+
+        ArrayList<MatchDTO> matches = new ArrayList<MatchDTO>();
+
+        matches.add(match.getDto());
+        matches.add(match2.getDto());
+
+        Gson gson = getJsonParser();
+
+        this.mvc.perform(get("/matches")
+                .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().json(gson.toJson(matches)));
     }
 
     /**
@@ -114,7 +143,6 @@ class MatchControllerTest {
         matchRepository.getAll().clear();
     }
 
-
     Match createMatch() {
         return new MatchBuilder().
                 setName("Match").
@@ -129,18 +157,21 @@ class MatchControllerTest {
         return new User("User", "User", "Password");
     }
 
+    Gson getJsonParser() {
+        JsonSerializer<Temporal> localDateTimeSerializer = (src, type, context) -> new JsonPrimitive(src.toString());
 
-
-	@Test
-	void matchesRetrieved() throws Exception {
-		this.mvc.perform(MockMvcRequestBuilders.get("/matches").accept(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk());
-	}
+        return new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(LocalDateTime.class, localDateTimeSerializer)
+                .registerTypeAdapter(LocalDate.class, localDateTimeSerializer)
+                .registerTypeAdapter(LocalTime.class, localDateTimeSerializer)
+                .create();
+    }
 
 	@Test
 	void createMathOK() throws Exception {
 
-		this.mvc.perform(MockMvcRequestBuilders.post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
 				"   \"name\": \"un Partido de prueba\",\n" +
 				"   \"location\": \"GRUN FC\",\n" +
 				"   \"date\": \"2023-09-04\",\n" +
@@ -152,7 +183,7 @@ class MatchControllerTest {
 	@Test
 	void createMatchBadRequest() throws Exception {
 	//TODO Configurar como BAD_REQUEST
-		this.mvc.perform(MockMvcRequestBuilders.post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
 				"   \"name\": \"un Partido de prueba\",\n" +
 				"   \"date\": \"2023-09-04\",\n" +
 				"   \"hour\": \"17:00:00\"\n" +
