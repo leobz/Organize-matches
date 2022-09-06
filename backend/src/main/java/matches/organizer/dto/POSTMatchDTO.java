@@ -1,5 +1,6 @@
 package matches.organizer.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ public class POSTMatchDTO {
     private String name;
     private String location;
     private LocalDate date;
+    @Schema(example = "23:00:00")
     private LocalTime  hour;
 
     private UUID id;
