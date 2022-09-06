@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @EnableWebMvc
-@RequestMapping(value = "/users", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
     private final UserService userService;
@@ -22,7 +22,7 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) { this.userService = userService; }
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody UserDTO createUser(@RequestBody NewUserDTO newUserDTO) {
         return userService.createUser(newUserDTO).getDto();
