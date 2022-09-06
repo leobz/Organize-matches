@@ -6,6 +6,7 @@ import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.exception.AddPlayerException;
+import matches.organizer.exception.MatchNotFoundException;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +60,9 @@ public class MatchService {
             + "\ncon el telefono: " + phone
             + "\ncon el email " + email);
             */
-
             return match.getPlayers();
         } else {
-            return new ArrayList<>();
+            throw new MatchNotFoundException("Match: Match not found.");
         }
     }
 
