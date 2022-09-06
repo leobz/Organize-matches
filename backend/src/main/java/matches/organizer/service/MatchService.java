@@ -33,9 +33,15 @@ public class MatchService {
         return matchRepository.getAll();
     }
 
+    public Match getMatch(UUID id) {
+        return matchRepository.get(id);
+    }
 
+    public void updateMatch(Match match) {
+        matchRepository.update(match);
+    }
 
-    public void createMatch(POSTMatchDTO newMatch){
+    public Match createMatch(POSTMatchDTO newMatch){
 
         Match match = new MatchBuilder()
                 .setName(newMatch.getName())
@@ -45,8 +51,9 @@ public class MatchService {
                 .setLocation(newMatch.getLocation())
                 .build();
 
-        newMatch.setId(match.getId());
         matchRepository.add(match);
+
+        return match;
   }
 
 
