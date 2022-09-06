@@ -8,6 +8,7 @@ import matches.organizer.domain.Match;
 import matches.organizer.dto.MatchDTO;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
+import matches.organizer.dto.RegisterPlayerDTO;
 import matches.organizer.service.MatchService;
 import matches.organizer.storage.InMemoryMatchRepository;
 import matches.organizer.storage.InMemoryUserRepository;
@@ -19,15 +20,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.time.temporal.Temporal;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,7 +40,6 @@ class MatchControllerTest {
     private MockMvc mvc;
     @Autowired
     private MatchRepository matchRepository;
-
 
     @Test
     void matchesRetrieved() throws Exception {
@@ -109,6 +109,36 @@ class MatchControllerTest {
                 .andExpect(content().json("{\"matches\": 1, \"players\": 2}"));
     }
 
+    @Test
+    public void registerNewPlayer() throws Exception {
+
+        Match match = createMatch();
+        matchRepository.add(match);
+
+        RegisterPlayerDTO registerPlayerDTO = new RegisterPlayerDTO();
+        registerPlayerDTO.user = new User("alias");
+        registerPlayerDTO.email = "email";
+        registerPlayerDTO.phone = "phone";
+
+        assertTrue(matchRepository.get(match.getId()).getPlayers().isEmpty());
+
+        this.mvc.perform(
+                post( "/matches/" + match.getId() + "/players")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                "  {\n" +
+                                        "    \"user\" : {\n" +
+                                        "    \"alias\" : \"y2\"\n" +
+                                        "    },\n" +
+                                        "    \"phone\" : \"54241248\",\n" +
+                                        "    \"email\" : \"helpme@gmail.com\"\n" +
+                                        "}")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+
+        assertFalse(matchRepository.get(match.getId()).getPlayers().isEmpty());
+
+    }
+
     void sanitize() {
         matchRepository.getAll().clear();
     }
@@ -137,4 +167,30 @@ class MatchControllerTest {
                 .registerTypeAdapter(LocalTime.class, localDateTimeSerializer)
                 .create();
     }
+
+	@Test
+	void createMathOK() throws Exception {
+
+		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+				"   \"name\": \"un Partido de prueba\",\n" +
+				"   \"location\": \"GRUN FC\",\n" +
+				"   \"date\": \"2023-09-04\",\n" +
+				"   \"hour\": \"17:00:00\",\n" +
+				"   \"userId\": \"fbc82470-1c30-4ad6-bff4-a2181dddf747\"\n" +
+				"}")).andExpect(status().isCreated());
+
+	}
+	@Test
+	void createMatchBadRequest() throws Exception {
+	//TODO Configurar como BAD_REQUEST
+		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+				"   \"name\": \"un Partido de prueba\",\n" +
+				"   \"date\": \"2023-09-04\",\n" +
+				"   \"hour\": \"17:00:00\"\n" +
+				"}")).andExpect(status().isInternalServerError());
+
+
+
+	}
+
 }

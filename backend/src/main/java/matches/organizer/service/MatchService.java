@@ -4,16 +4,16 @@ import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
+import matches.organizer.dto.POSTMatchDTO;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.exception.AddPlayerException;
+import matches.organizer.exception.MatchNotFoundException;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,6 +31,44 @@ public class MatchService {
 
     public List<Match> getMatches() {
         return matchRepository.getAll();
+    }
+
+
+
+    public void createMatch(POSTMatchDTO newMatch){
+
+        Match match = new MatchBuilder()
+                .setName(newMatch.getName())
+                .setUserId(newMatch.getUserId())
+                .setDate(newMatch.getDate())
+                .setHour(newMatch.getHour())
+                .setLocation(newMatch.getLocation())
+                .build();
+
+        newMatch.setId(match.getId());
+        matchRepository.add(match);
+  }
+
+
+    public List<Player> registerNewPlayer(UUID id, User user, String phone, String email) {
+        var match = matchRepository.get(id);
+
+        if(match != null) {
+            addPlayerToMatch(match, user, phone, email);
+            matchRepository.update(match);
+
+            // TODO capaz estaría bueno loggear algo de esto
+
+            /*
+            System.out.println("Se agrega un player al match" + id
+            + "\ncon el alias: " + user.getAlias()
+            + "\ncon el telefono: " + phone
+            + "\ncon el email " + email);
+            */
+            return match.getPlayers();
+        } else {
+            throw new MatchNotFoundException("Match: Match not found.");
+        }
     }
 
     /**
@@ -64,4 +102,5 @@ public class MatchService {
             userRepository.add(user);
         }
     }
+    
 }
