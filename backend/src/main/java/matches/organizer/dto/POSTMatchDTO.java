@@ -15,6 +15,8 @@ public class POSTMatchDTO {
     private LocalDate date;
     private LocalTime  hour;
 
+    private UUID id;
+
 
     public String getName() {
         return name;
@@ -46,5 +48,13 @@ public class POSTMatchDTO {
 
     public void setHour(LocalTime hour) {
         this.hour = hour;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

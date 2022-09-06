@@ -3,6 +3,7 @@ package matches.organizer.service;
 import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
+import matches.organizer.dto.POSTMatchDTO;
 import matches.organizer.storage.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,21 +36,21 @@ public class MatchService {
     }
 
 
-    public String createMatchFromPost(String matchName, String matchLocation, LocalDate matchDate, LocalTime matchHour){
+
+
+    public void createMatch(POSTMatchDTO newMatch){
 
 
 
-        Match anyMatch = new MatchBuilder()
-                .setName(matchName)
+        Match match = new MatchBuilder()
+                .setName(newMatch.getName())
                 .setUserId(UUID.randomUUID())
-                .setDate(matchDate)
-                .setHour(matchHour)
-                .setLocation(matchLocation)
+                .setDate(newMatch.getDate())
+                .setHour(newMatch.getHour())
+                .setLocation(newMatch.getLocation())
                 .build();
 
-        matchRepository.add(anyMatch);
-
-
-        return anyMatch.getId().toString();
+        newMatch.setId(match.getId());
+        matchRepository.add(match);
     }
 }
