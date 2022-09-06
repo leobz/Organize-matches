@@ -2,6 +2,7 @@ package matches.organizer.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import matches.organizer.dto.UserDTO;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.UUID;
 
@@ -62,5 +63,9 @@ public class User {
 
     public boolean authenticate(String password) {
         return new BCryptPasswordEncoder().matches(password, this.getPassword());
+    }
+
+    public UserDTO getDto() {
+        return new UserDTO(this);
     }
 }
