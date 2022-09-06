@@ -15,12 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -116,6 +114,7 @@ class MatchControllerTest {
         matchRepository.getAll().clear();
     }
 
+
     Match createMatch() {
         return new MatchBuilder().
                 setName("Match").
@@ -129,4 +128,38 @@ class MatchControllerTest {
     User createUser() {
         return new User("User", "User", "Password");
     }
+
+
+
+	@Test
+	void matchesRetrieved() throws Exception {
+		this.mvc.perform(MockMvcRequestBuilders.get("/matches").accept(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	void createMathOK() throws Exception {
+
+		this.mvc.perform(MockMvcRequestBuilders.post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+				"   \"name\": \"un Partido de prueba\",\n" +
+				"   \"location\": \"GRUN FC\",\n" +
+				"   \"date\": \"2023-09-04\",\n" +
+				"   \"hour\": \"17:00:00\",\n" +
+				"   \"userId\": \"fbc82470-1c30-4ad6-bff4-a2181dddf747\"\n" +
+				"}")).andExpect(status().isCreated());
+
+	}
+	@Test
+	void createMatchBadRequest() throws Exception {
+	//TODO Configurar como BAD_REQUEST
+		this.mvc.perform(MockMvcRequestBuilders.post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+				"   \"name\": \"un Partido de prueba\",\n" +
+				"   \"date\": \"2023-09-04\",\n" +
+				"   \"hour\": \"17:00:00\"\n" +
+				"}")).andExpect(status().isInternalServerError());
+
+
+
+	}
+
 }

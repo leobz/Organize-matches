@@ -2,8 +2,8 @@ package matches.organizer.service;
 
 import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
-import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
+import matches.organizer.dto.POSTMatchDTO;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.exception.AddPlayerException;
 import matches.organizer.exception.MatchNotFoundException;
@@ -11,11 +11,8 @@ import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,6 +41,23 @@ public class MatchService {
         matchRepository.add(anyMatch);
         return matchRepository.getAll();
     }
+
+
+
+    public void createMatch(POSTMatchDTO newMatch){
+
+        Match match = new MatchBuilder()
+                .setName(newMatch.getName())
+                .setUserId(newMatch.getUserId())
+                .setDate(newMatch.getDate())
+                .setHour(newMatch.getHour())
+                .setLocation(newMatch.getLocation())
+                .build();
+
+        newMatch.setId(match.getId());
+        matchRepository.add(match);
+  }
+
 
     public List<Player> registerNewPlayer(UUID id, User user, String phone, String email) {
         var match = matchRepository.get(id);
@@ -97,4 +111,5 @@ public class MatchService {
             userRepository.add(user);
         }
     }
+    
 }
