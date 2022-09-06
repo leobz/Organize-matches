@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -35,7 +35,6 @@ class MatchControllerTest {
     private MockMvc mvc;
     @Autowired
     private MatchRepository matchRepository;
-
 
     @Test
     void matchesRetrieved() throws Exception {
@@ -94,6 +93,8 @@ class MatchControllerTest {
         registerPlayerDTO.email = "email";
         registerPlayerDTO.phone = "phone";
 
+        assertTrue(matchRepository.get(match.getId()).getPlayers().isEmpty());
+
         this.mvc.perform(
                 post( "/matches/" + match.getId() + "/players")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -106,6 +107,9 @@ class MatchControllerTest {
                                         "    \"email\" : \"helpme@gmail.com\"\n" +
                                         "}")
                         .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+
+        assertFalse(matchRepository.get(match.getId()).getPlayers().isEmpty());
+
     }
 
     void sanitize() {

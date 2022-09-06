@@ -45,16 +45,22 @@ public class MatchService {
     }
 
     public List<Player> registerNewPlayer(UUID id, User user, String phone, String email) {
-        var newMatch = matchRepository.get(id);
+        var match = matchRepository.get(id);
 
-        if(newMatch != null) {
-            addPlayerToMatch(newMatch, user, phone, email);
-            matchRepository.update(newMatch);
+        if(match != null) {
+            addPlayerToMatch(match, user, phone, email);
+            matchRepository.update(match);
+
+            // TODO capaz estaría bueno loggear algo de esto
+
+            /*
             System.out.println("Se agrega un player al match" + id
             + "\ncon el alias: " + user.getAlias()
             + "\ncon el telefono: " + phone
             + "\ncon el email " + email);
-            return newMatch.getPlayers();
+            */
+
+            return match.getPlayers();
         } else {
             return new ArrayList<>();
         }
