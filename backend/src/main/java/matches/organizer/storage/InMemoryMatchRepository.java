@@ -15,10 +15,6 @@ public class InMemoryMatchRepository implements MatchRepository {
 
     private final List<Match> matches = new ArrayList<>();
 
-    private static boolean hasSameId(UUID anyMatchId, Match match) {
-        return anyMatchId.toString().equals(match.getId().toString());
-    }
-
     @Override
     public Match get(UUID id) {
         return matches.stream()
@@ -47,6 +43,10 @@ public class InMemoryMatchRepository implements MatchRepository {
     @Override
     public void remove(Match match) {
         matches.removeIf(anyMatch -> hasSameId(anyMatch.getId(), match));
+    }
+
+    private static boolean hasSameId(UUID anyMatchId, Match match) {
+        return anyMatchId.equals(match.getId());
     }
 
     @Override

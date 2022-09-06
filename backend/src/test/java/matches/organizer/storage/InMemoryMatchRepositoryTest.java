@@ -2,7 +2,6 @@ package matches.organizer.storage;
 
 import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
-import matches.organizer.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +20,6 @@ class InMemoryMatchRepositoryTest {
     private MatchRepository matchRepository;
     private Match anyMatch;
     private Match anotherMatch;
-    private final User user1 = new User("1", "User 1", "1111");
-    private final User user2 = new User("2", "User 2", "2222");
-    private final User user3 = new User("3", "User 3", "3333");
-    private final User user4 = new User("4", "User 4", "4444");
-    private final User user5 = new User("5", "User 5", "5555");
-
 
     @BeforeEach
     void setUp() {
@@ -86,9 +79,9 @@ class InMemoryMatchRepositoryTest {
                 .setHour(LocalTime.now())
                 .setLocation("La Bombonera")
                 .build();
-        anyMatch.addPlayer(user1, "1111-1111", "player1@gmail.com");
-        anyMatch.addPlayer(user2, "2222-2222", "player2@gmail.com");
-        anyMatch.addPlayer(user3, "3333-3333", "player3@gmail.com");
+        anyMatch.addPlayer(UUID.randomUUID());
+        anyMatch.addPlayer(UUID.randomUUID());
+        anyMatch.addPlayer(UUID.randomUUID());
         return anyMatch;
     }
 
@@ -100,8 +93,8 @@ class InMemoryMatchRepositoryTest {
                 .setHour(LocalTime.now())
                 .setLocation("La Bombonera")
                 .build();
-        anotherMatch.addPlayer(user4, "4444-4444", "player4@gmail.com");
-        anotherMatch.addPlayer(user5, "5555-5555", "player5@gmail.com");
+        anotherMatch.addPlayer(UUID.randomUUID());
+        anotherMatch.addPlayer(UUID.randomUUID());
         return anotherMatch;
     }
 }

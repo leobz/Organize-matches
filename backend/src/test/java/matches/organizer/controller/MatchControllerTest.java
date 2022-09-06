@@ -1,10 +1,16 @@
 package matches.organizer.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import matches.organizer.domain.Match;
+import matches.organizer.dto.MatchDTO;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
 import matches.organizer.service.MatchService;
 import matches.organizer.storage.InMemoryMatchRepository;
+import matches.organizer.storage.InMemoryUserRepository;
 import matches.organizer.storage.MatchRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +24,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.time.temporal.Temporal;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {MatchService.class, MatchController.class, InMemoryMatchRepository.class})
+@SpringBootTest(classes = {MatchService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 
@@ -37,18 +45,27 @@ class MatchControllerTest {
     void matchesRetrieved() throws Exception {
         sanitize();
 
-        match = createMatch();
-        match2 = createMatch();
+        Match match = createMatch();
+        Match match2 = createMatch();
         for (int i = 0; i < 2; i++) {
-            match.addPlayer(createUser(), "", "");
-            match2.addPlayer(createUser(), "", "");
-            match2.addPlayer(createUser(), "", "");
+            match.addPlayer(UUID.randomUUID());
+            match2.addPlayer(UUID.randomUUID());
+            match2.addPlayer(UUID.randomUUID());
         }
 
-        this.mvc.perform(get("/matches"))
+        matchRepository.add(match);
+        matchRepository.add(match2);
+
+        ArrayList<MatchDTO> matches = new ArrayList<MatchDTO>();
+
+        matches.add(match.getDto());
+        matches.add(match2.getDto());
+
+        Gson gson = getJsonParser();
+
+        this.mvc.perform(get("/matches")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk())
-                .andExpect(content().json('{ "matches": [{  }] }'))
+                .andExpect(content().json(gson.toJson(matches)));
     }
 
     /**
@@ -62,9 +79,8 @@ class MatchControllerTest {
         ///////////////////////////////////////////////////////////////////////////
         sanitize();
 
-        result = this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE));
-        result = result.andExpect(status().isOk());
-        result = result.andExpect(content().json("{'matches': 0, 'players': 0}"));
+        this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isOk()).andExpect(content().json("{\"matches\": 0, \"players\": 0}"));
 
 
         ///////							Test Counter						///////
@@ -72,8 +88,8 @@ class MatchControllerTest {
 
         // Valid matches: 1, Valid Players: 2
         Match m1 = createMatch();
-        m1.addPlayer(createUser(), "", "");
-        m1.addPlayer(createUser(), "", "");
+        m1.addPlayer(UUID.randomUUID());
+        m1.addPlayer(UUID.randomUUID());
 
         // Invalid matches and players (older than 2 hours)
         LocalDateTime oderDT = LocalDateTime.now().minusHours(2).minusMinutes(1);
@@ -81,16 +97,16 @@ class MatchControllerTest {
         Match m2 = createMatch();
         m2.setCreatedAt(oderDT);
 
-        m1.addPlayer(createUser(), "", "");
+        m1.addPlayer(UUID.randomUUID());
         m1.getPlayers().get(0).setConfirmedAt(oderDT);
 
         // Test
         matchRepository.add(m1);
         matchRepository.add(m2);
 
-        result = this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE));
-        result = result.andExpect(status().isOk());
-        result = result.andExpect(content().json("{'matches': 1, 'players': 2}"));
+        this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"matches\": 1, \"players\": 2}"));
     }
 
     void sanitize() {
@@ -109,5 +125,16 @@ class MatchControllerTest {
 
     User createUser() {
         return new User("User", "User", "Password");
+    }
+
+    Gson getJsonParser() {
+        JsonSerializer<Temporal> localDateTimeSerializer = (src, type, context) -> new JsonPrimitive(src.toString());
+
+        return new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(LocalDateTime.class, localDateTimeSerializer)
+                .registerTypeAdapter(LocalDate.class, localDateTimeSerializer)
+                .registerTypeAdapter(LocalTime.class, localDateTimeSerializer)
+                .create();
     }
 }

@@ -1,7 +1,5 @@
 package matches.organizer.dto;
 
-import matches.organizer.domain.Player;
-
 public class CounterDTO {
     private int matches;
     private int players;
