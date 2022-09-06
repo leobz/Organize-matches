@@ -68,6 +68,20 @@ class MatchControllerTest {
                 .andExpect(content().json(gson.toJson(matches)));
     }
 
+    @Test
+    void getMatch() throws Exception {
+        sanitize();
+
+        Match match = createMatch();
+        matchRepository.add(match);
+
+        Gson gson = getJsonParser();
+
+        this.mvc.perform(get("/matches/" + match.getId())
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().json(gson.toJson(match.getDto())));
+    }
+
     /**
      * Verifica: Obtencion de contador con la cantidad de partidos creados y jugadores anotados en las últimas 2 horas.
      */

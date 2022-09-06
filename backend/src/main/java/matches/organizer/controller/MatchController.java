@@ -34,6 +34,10 @@ public class MatchController {
         return matchService.getMatches().stream().map(match -> match.getDto()).collect(Collectors.toList());
     }
 
+    @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody MatchDTO getMatch(@PathVariable UUID matchId) {
+        return matchService.getMatch(matchId).getDto();
+    }
 
     @PostMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
     @ResponseStatus(HttpStatus.CREATED)
@@ -42,8 +46,6 @@ public class MatchController {
         matchService.createMatch(newMatch);
         return newMatch;
     }
-
-
 
     @Operation(summary = "Retorna un contador con la cantidad de partidos creados y jugadores anotados en las últimas 2 horas.")
     @GetMapping(value = "/matches/counter", produces = MediaType.APPLICATION_JSON_VALUE)
