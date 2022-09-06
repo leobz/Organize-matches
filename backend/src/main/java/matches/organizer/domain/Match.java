@@ -19,17 +19,17 @@ public class Match {
     private LocalDate date;
     private LocalTime hour;
     private String location;
-    private LocalDateTime creationDate;
+    private LocalDateTime createdAt;
     private List<Player> players;
 
-    public Match(UUID id, String name, UUID userId, LocalDate date, LocalTime hour, String location, LocalDateTime creationDate){
+    public Match(UUID id, String name, UUID userId, LocalDate date, LocalTime hour, String location, LocalDateTime createdAt){
        this.id = id;
        this.name = name;
        this.userId = userId;
        this.date = date;
        this.hour = hour;
        this.location = location;
-       this.creationDate = creationDate;
+       this.createdAt = createdAt;
        this.players = new ArrayList<>();
     }
 
@@ -53,12 +53,17 @@ public class Match {
         return hour;
     }
 
+    public LocalDateTime getDateTime() { return hour.atDate(date);}
+
     public String getLocation() {
         return location;
     }
 
-    public LocalDateTime getCreationDate() {
-        return creationDate;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(LocalDateTime dateTime) {
+        this.createdAt = dateTime;
     }
 
     public List<Player> getPlayers() { return players; }
@@ -75,16 +80,10 @@ public class Match {
         players = new ArrayList<>();
     }
 
-    public void addPlayer(User user, String phone, String email) {
-        if(players.size() >= 13)
+    public void addPlayer(UUID userId) {
+        if(getPlayers().size() >= 13)
             throw new AddPlayerException("Match: Cannot add player. The team is complete.");
-        if(phone == null)
-            throw new AddPlayerException("Match: Cannot add player. Phone cannot be null.");
-        if(email == null)
-            throw new AddPlayerException("Match: Cannot add player. Email cannot be null.");
-        user.setPhone(phone);
-        user.setEmail(email);
-        players.add(new Player(user.getId()));
+        players.add(new Player(userId));
     }
 
     public MatchDTO getDto() {

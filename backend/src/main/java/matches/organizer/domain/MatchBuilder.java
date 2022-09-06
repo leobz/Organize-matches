@@ -54,8 +54,7 @@ public class MatchBuilder {
         if(!LocalDateTime.now().isBefore(LocalDateTime.of(date, hour)))
             throw new MatchBuildException("MatchBuilder: date and hour is in the past");
         UUID id = UUID.randomUUID();
-        LocalDateTime creationDate = LocalDateTime.now();
-
-        return new Match(id, name, userId, date, hour, location, creationDate);
+        LocalDateTime createdAt = LocalDateTime.now();
+        return new Match(id, name, userId, date, hour, location, createdAt);
     }
 }

@@ -16,7 +16,7 @@ RUN ARTIFACT=$(grep "artifactId" target/maven-archiver/pom.properties | cut -d '
 FROM amazoncorretto:11-alpine as prod
 
 VOLUME /opt/logs
-EXPOSE 8080/tcp
+EXPOSE 8081/tcp
 
 COPY --from=build /workspace/target/app.jar /opt/
 COPY src/main/resources/* /opt/

@@ -1,5 +1,7 @@
 # organize-matches
 
+
+## Comandos básicos
 Run backend locally- MacOS/Linux:
 ```
 make dev # Compila con maven y ejecuta localmente el backend con java
@@ -21,6 +23,14 @@ make stop # Finaliza la ejecución de los componentes del proyecto
 ```
 
 ---
+
+## Documentación de la API
+
+```
+http://localhost:8081/swagger-ui/index.html
+```
+
+## Visión General
 
 Para probar la aplicación se puede ejecutar un curl por ejemplo a:
 

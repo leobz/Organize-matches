@@ -19,8 +19,8 @@ build: ## Crea imagen docker del backend
 
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.
-	docker compose up -d
+	docker-compose up -d
 
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto
-	docker compose down
+	docker-compose down
