@@ -1,5 +1,7 @@
 package matches.organizer.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.UUID;
 
@@ -10,6 +12,11 @@ public class User {
     private String phone;
     private String email;
     private String password;
+
+    @JsonCreator
+    public User(@JsonProperty("alias") String alias) {
+        this.alias = alias;
+    }
 
     public User(String alias, String fullName, String password) {
         setAlias(alias);

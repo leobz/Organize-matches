@@ -6,6 +6,7 @@ import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.exception.AddPlayerException;
+import matches.organizer.exception.MatchNotFoundException;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +43,27 @@ public class MatchService {
         addPlayerToMatch(anyMatch, anyUser, "1234-5678", "afriedenreich@gmail.com");
         matchRepository.add(anyMatch);
         return matchRepository.getAll();
+    }
+
+    public List<Player> registerNewPlayer(UUID id, User user, String phone, String email) {
+        var match = matchRepository.get(id);
+
+        if(match != null) {
+            addPlayerToMatch(match, user, phone, email);
+            matchRepository.update(match);
+
+            // TODO capaz estaría bueno loggear algo de esto
+
+            /*
+            System.out.println("Se agrega un player al match" + id
+            + "\ncon el alias: " + user.getAlias()
+            + "\ncon el telefono: " + phone
+            + "\ncon el email " + email);
+            */
+            return match.getPlayers();
+        } else {
+            throw new MatchNotFoundException("Match: Match not found.");
+        }
     }
 
     /**

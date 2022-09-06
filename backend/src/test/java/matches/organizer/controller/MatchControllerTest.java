@@ -3,6 +3,7 @@ package matches.organizer.controller;
 import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
+import matches.organizer.dto.RegisterPlayerDTO;
 import matches.organizer.service.MatchService;
 import matches.organizer.storage.InMemoryMatchRepository;
 import matches.organizer.storage.InMemoryUserRepository;
@@ -20,7 +21,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,7 +35,6 @@ class MatchControllerTest {
     private MockMvc mvc;
     @Autowired
     private MatchRepository matchRepository;
-
 
     @Test
     void matchesRetrieved() throws Exception {
@@ -78,6 +80,36 @@ class MatchControllerTest {
         this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"matches\": 1, \"players\": 2}"));
+    }
+
+    @Test
+    public void registerNewPlayer() throws Exception {
+
+        Match match = createMatch();
+        matchRepository.add(match);
+
+        RegisterPlayerDTO registerPlayerDTO = new RegisterPlayerDTO();
+        registerPlayerDTO.user = new User("alias");
+        registerPlayerDTO.email = "email";
+        registerPlayerDTO.phone = "phone";
+
+        assertTrue(matchRepository.get(match.getId()).getPlayers().isEmpty());
+
+        this.mvc.perform(
+                post( "/matches/" + match.getId() + "/players")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(
+                                "  {\n" +
+                                        "    \"user\" : {\n" +
+                                        "    \"alias\" : \"y2\"\n" +
+                                        "    },\n" +
+                                        "    \"phone\" : \"54241248\",\n" +
+                                        "    \"email\" : \"helpme@gmail.com\"\n" +
+                                        "}")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+
+        assertFalse(matchRepository.get(match.getId()).getPlayers().isEmpty());
+
     }
 
     void sanitize() {

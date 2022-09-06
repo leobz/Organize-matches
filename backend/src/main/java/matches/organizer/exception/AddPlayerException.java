@@ -12,9 +12,7 @@ public class AddPlayerException extends RuntimeException {
     public AddPlayerException(String message, Throwable cause) {
         super(message, cause);
     }
-    public AddPlayerException(String message) {
-        super(message);
-    }
+    public AddPlayerException(String message) { super(message); }
     public AddPlayerException(Throwable cause) {
         super(cause);
     }
