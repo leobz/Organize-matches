@@ -40,11 +40,9 @@ public class MatchService {
 
     public void createMatch(POSTMatchDTO newMatch){
 
-
-
         Match match = new MatchBuilder()
                 .setName(newMatch.getName())
-                .setUserId(UUID.randomUUID())
+                .setUserId(newMatch.getUserId())
                 .setDate(newMatch.getDate())
                 .setHour(newMatch.getHour())
                 .setLocation(newMatch.getLocation())

@@ -17,6 +17,8 @@ public class POSTMatchDTO {
 
     private UUID id;
 
+    private UUID userId;
+
 
     public String getName() {
         return name;
@@ -56,5 +58,14 @@ public class POSTMatchDTO {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
     }
 }

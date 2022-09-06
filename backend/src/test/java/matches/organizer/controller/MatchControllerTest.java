@@ -35,7 +35,8 @@ class MatchControllerTest {
 				"   \"name\": \"un Partido de prueba\",\n" +
 				"   \"location\": \"GRUN FC\",\n" +
 				"   \"date\": \"2023-09-04\",\n" +
-				"   \"hour\": \"17:00:00\"\n" +
+				"   \"hour\": \"17:00:00\",\n" +
+				"   \"userId\": \"fbc82470-1c30-4ad6-bff4-a2181dddf747\"\n" +
 				"}")).andExpect(status().isCreated());
 
 	}
