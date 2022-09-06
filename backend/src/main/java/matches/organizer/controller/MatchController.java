@@ -1,6 +1,7 @@
 package matches.organizer.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import matches.organizer.domain.Match;
 import matches.organizer.domain.Player;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.dto.MatchDTO;
@@ -34,17 +35,17 @@ public class MatchController {
         return matchService.getMatches().stream().map(match -> match.getDto()).collect(Collectors.toList());
     }
 
-    @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody MatchDTO getMatch(@PathVariable UUID matchId) {
-        return matchService.getMatch(matchId).getDto();
-    }
-
     @PostMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
     @ResponseStatus(HttpStatus.CREATED)
     public @ResponseBody Object createMatch(@RequestBody POSTMatchDTO newMatch){
 
-        matchService.createMatch(newMatch);
-        return newMatch;
+        Match match = matchService.createMatch(newMatch);
+        return match.getDto();
+    }
+
+    @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody MatchDTO getMatch(@PathVariable UUID matchId) {
+        return matchService.getMatch(matchId).getDto();
     }
 
     @Operation(summary = "Retorna un contador con la cantidad de partidos creados y jugadores anotados en las últimas 2 horas.")

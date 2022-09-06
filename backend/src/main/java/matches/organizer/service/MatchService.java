@@ -37,7 +37,11 @@ public class MatchService {
         return matchRepository.get(id);
     }
 
-    public void createMatch(POSTMatchDTO newMatch){
+    public void updateMatch(Match match) {
+        matchRepository.update(match);
+    }
+
+    public Match createMatch(POSTMatchDTO newMatch){
 
         Match match = new MatchBuilder()
                 .setName(newMatch.getName())
@@ -48,6 +52,8 @@ public class MatchService {
                 .build();
 
         matchRepository.add(match);
+
+        return match;
   }
 
 
