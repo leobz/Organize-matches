@@ -37,8 +37,9 @@ export default function CreateMatch() {
           onChange={(newValue) => {
             setValue(newValue);
           }}
-          renderInput={(params) => <TextField {...params} sx={{ width: 0.5}} />}
-          inputFormat="DD/MM/YYYY"
+
+          renderInput={(params) => <TextField {...params} id={"date"} sx={{ width: 0.5}} />}
+          inputFormat="YYYY-MM-DD"
         />
 
         <TimePicker
@@ -47,13 +48,14 @@ export default function CreateMatch() {
           onChange={(newValue) => {
             setValue(newValue);
           }}
-          renderInput={(params) => <TextField {...params} sx={{ width: 0.5}} />}
+          inputFormat="HH:MM:00"
+          renderInput={(params) => <TextField {...params} id={"time"} sx={{ width: 0.5}} />}
         />
       </LocalizationProvider>
       <FormSpace/>
 
       <Grid container justifyContent="flex-end">
-        <Button variant="contained" startIcon={<AddIcon/>} onClick={() => {alert('clicked');}}>
+        <Button variant="contained" startIcon={<AddIcon/>} onClick={() => {postCreateMatch();}}>
           Crear Partido
         </Button>
       </Grid>
@@ -82,4 +84,38 @@ class RequiredTextField extends React.Component{
     }}
   />)
   }
+}
+
+async function postCreateMatch() {
+  // TODO: Externalizar a variables de configuracion
+  const url_base = "http://localhost:8081"
+  const path = "/matches"
+  const url = url_base + path
+
+  // TODO: Hardcodeado momentaneamente.
+  // IMPORTANTE: Cuando se obtenga el userId desde el controller del backend, eliminar esta linea
+  const userId = "00000000-0000-0000-0000-000000000000"
+
+  var body = {
+    name : document.getElementById("name").value,
+    location: document.getElementById("location").value,
+    date: document.getElementById("date").value,
+    hour: document.getElementById("time").value,
+    userId: userId
+  }
+
+  // TODO: Agregar manejo de errores (console.log + alert)
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(body),
+    });
+
+    response.json().then(data => {
+      // TODO: Agregar redireccion al recurso creado + Opcional Mensaje flotante indicando exito en creacion
+      alert(JSON.stringify(data));
+    });
 }
