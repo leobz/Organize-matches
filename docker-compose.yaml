@@ -3,8 +3,15 @@ services:
   backend:
     build: ./backend
     image: be-organize-matches:latest
-    pull_policy: if_not_present
-    restart: always
     container_name: be-organize-matches
+    restart: on-failure
     ports:
       - "8081:8081"
+
+  frontend:
+    build: ./frontend
+    image: fe-organize-matches:latest
+    container_name: fe-organize-matches
+    restart: on-failure
+    ports:
+      - "3001:3000"
