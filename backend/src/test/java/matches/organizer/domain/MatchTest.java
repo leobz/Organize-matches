@@ -5,40 +5,41 @@ import org.junit.jupiter.api.TestInstance;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(PER_CLASS)
-public class MatchTest {
+class MatchTest {
 
     @Test
     void createMatchInPastAndFail() {
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-                    Match anotherMatch = new MatchBuilder()
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                    new MatchBuilder()
                             .setName("Another Match")
                             .setUserId(UUID.randomUUID())
-                            .setDate(LocalDate.now().minusDays(1))
-                            .setHour(LocalTime.now())
+                            .setDate(LocalDate.now(ZoneOffset.UTC).minusDays(1))
+                            .setHour(LocalTime.now(ZoneOffset.UTC))
                             .setLocation("La Bombonera")
-                            .build();
-                });
+                            .build()
+                );
 
         assertTrue(exception.getMessage().contains("MatchBuilder: date and hour is in the past"));
     }
 
     @Test
     void createMatchInPresentAndFail() {
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            Match anotherMatch = new MatchBuilder()
+        Exception exception = assertThrows(RuntimeException.class, () ->
+            new MatchBuilder()
                     .setName("Another Match")
                     .setUserId(UUID.randomUUID())
-                    .setDate(LocalDate.now())
-                    .setHour(LocalTime.now())
+                    .setDate(LocalDate.now(ZoneOffset.UTC))
+                    .setHour(LocalTime.now(ZoneOffset.UTC))
                     .setLocation("La Bombonera")
-                    .build();
-        });
+                    .build()
+        );
 
         assertTrue(exception.getMessage().contains("MatchBuilder: date and hour is in the past"));
     }
@@ -47,11 +48,11 @@ public class MatchTest {
     @Test
     void createMatchInFutureAndSuccess() {
         assertDoesNotThrow(() -> {
-            Match anotherMatch = new MatchBuilder()
+            new MatchBuilder()
                     .setName("Another Match")
                     .setUserId(UUID.randomUUID())
-                    .setDate(LocalDate.now().plusDays(1))
-                    .setHour(LocalTime.now())
+                    .setDate(LocalDate.now(ZoneOffset.UTC).plusDays(1))
+                    .setHour(LocalTime.now(ZoneOffset.UTC))
                     .setLocation("La Bombonera")
                     .build();
         });

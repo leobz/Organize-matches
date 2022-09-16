@@ -7,19 +7,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(PER_CLASS)
-public class UserTest {
+class UserTest {
 
     @Test
     void passwordIsHashed() {
         String password = "secretpassword";
-        User user = new User("alias", "fullName", password);
-        assertFalse(password.equals(user.getPassword()));
+        User user = new User("alias", "fullName","0303456", "pp@g.com", password);
+        assertNotEquals(password, user.getPassword());
     }
 
     @Test
     void authenticatePassword() {
         String password = "secretpassword";
-        User user = new User("alias", "fullName", password);
+        User user = new User("alias", "fullName","0303456", "pp@g.com", password);
         assertTrue(user.authenticate(password));
     }
 
@@ -27,7 +27,7 @@ public class UserTest {
     void notAuthenticateWrongPassword() {
         String password = "secretpassword";
         String wrongPassword = "secretpasword";
-        User user = new User("alias", "fullName", password);
+        User user = new User("alias", "fullName","0303456", "pp@g.com", password);
         assertFalse(user.authenticate(wrongPassword));
     }
 }

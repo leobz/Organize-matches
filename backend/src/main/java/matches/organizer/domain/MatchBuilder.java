@@ -1,10 +1,12 @@
 package matches.organizer.domain;
 
-import matches.organizer.exception.MatchBuildException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 public class MatchBuilder {
@@ -42,19 +44,19 @@ public class MatchBuilder {
 
     public Match build() {
         if(name == null)
-            throw new MatchBuildException("MatchBuilder: name is missing");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: name is missing");
         if(userId == null)
-            throw new MatchBuildException("MatchBuilder: user id is missing");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: user id is missing");
         if(date == null)
-            throw new MatchBuildException("MatchBuilder: date is missing");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: date is missing");
         if(hour == null)
-            throw new MatchBuildException("MatchBuilder: hour is missing");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: hour is missing");
         if(location == null)
-            throw new MatchBuildException("MatchBuilder: location is missing");
-        if(!LocalDateTime.now().isBefore(LocalDateTime.of(date, hour)))
-            throw new MatchBuildException("MatchBuilder: date and hour is in the past");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: location is missing");
+        if(!LocalDateTime.now(ZoneOffset.UTC).isBefore(LocalDateTime.of(date, hour)))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: date and hour is in the past");
         UUID id = UUID.randomUUID();
-        LocalDateTime createdAt = LocalDateTime.now();
+        LocalDateTime createdAt = LocalDateTime.now(ZoneOffset.UTC);
         return new Match(id, name, userId, date, hour, location, createdAt);
     }
 }
