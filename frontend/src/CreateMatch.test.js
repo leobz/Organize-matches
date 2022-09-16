@@ -1,21 +1,15 @@
 import React from 'react';
 import {cleanup, screen, fireEvent, render} from '@testing-library/react';
 import CreateMatch from './CreateMatch';
+require('jest-fetch-mock').enableMocks()
 
 
-// POST fetch mock
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({ rates: { CAD: 1.42 } }),
-  })
-);
 // alert mock
 global.window.alert = jest.fn();
 
-
 // test setup
 beforeEach(() => {
-    fetch.mockClear();
+    fetch.resetMocks();
     window.alert.mockClear();
 });
 afterEach(cleanup);
@@ -46,7 +40,10 @@ it('Post Create Form', () => {
     expect(timeInput.value).toBe("00:00:00")
 
 
-    // click on 'Create Match' button (submit form)
+    // mock POST request
+    fetch.mockResponseOnce(JSON.stringify({id: '12345',}))
+
+    // click on 'Create Match' button (submit form with POST request)
     const button = screen.getByText(/Crear Partido/i)
     fireEvent.click(button)
 
@@ -57,7 +54,7 @@ it('Post Create Form', () => {
         hour: timeInput.value,
         userId: "00000000-0000-0000-0000-000000000000"
     })
-
+    
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch).toHaveBeenCalledWith(
         'http://localhost:8081/matches',
