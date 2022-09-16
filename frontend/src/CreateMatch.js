@@ -110,7 +110,7 @@ function validateForm(dateTime) {
 };
 
 async function postCreateMatch() {
-  // TODO: Externalizar a variables de configuracion
+  // TODO: Externalizar url_base a variable de configuracion
   const url_base = "http://localhost:8081"
   const path = "/matches"
   const url = url_base + path
@@ -127,18 +127,30 @@ async function postCreateMatch() {
     userId: userId
   }
 
-  // TODO: Agregar manejo de errores (console.log + alert)
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify(body),
-    });
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(body),
+      });
 
-    response.json().then(data => {
-      // TODO: Agregar redireccion al recurso creado + Opcional Mensaje flotante indicando exito en creacion
-      alert(JSON.stringify(data));
-    });
+      if (!response.ok){
+        alert("Ah ocurrido un error");
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message)
+      }
+
+      response.json().then(data => {
+        // TODO: Agregar redireccion al recurso creado + Opcional Mensaje flotante indicando exito en creacion
+        const message = `Recurso creado exitosamente ID: ${data.id}`;
+        alert(message);
+      });
+  }
+  catch(e){
+    console.log(e)
+  }
+
 }
