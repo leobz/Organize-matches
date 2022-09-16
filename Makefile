@@ -1,4 +1,6 @@
 BE_DOCKER_TAG = be-organize-matches:latest
+FE_DOCKER_TAG = fe-organize-matches:latest
+
 
 PHONY: help
 help: ## Imprime targets y ayuda 
@@ -12,10 +14,12 @@ dev: ## Compila y ejecuta localmente el backend
 	java -jar target/matches-organizer-0.0.1-SNAPSHOT.jar
 
 .PHONY: build
-build: ## Crea imagen docker del backend
+build: ## Crea imagen docker del todos los componentes (backend y frontend)
 # TODO: Migrar a llamada de docker-compose cuando se cuenten con otros servicios
 	cd backend; \
 	docker build -t $(BE_DOCKER_TAG) .
+	cd frontend; \
+	docker build -t $(FE_DOCKER_TAG) .
 
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.

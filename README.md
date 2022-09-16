@@ -9,17 +9,26 @@ make dev # Compila con maven y ejecuta localmente el backend con java
 
 Build docker image - MacOS/Linux:
 ```
-make build # Crea imagen docker del backend
+make build # Crea imagen docker de todos los componentes (backend+frontend)
 ```
 
 Run docker project - MacOS/Linux:
 ```
-make prod # Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente. Ver status con ´docker ps´
+# Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente. Ver status con ´docker ps´
+make prod
+
+
+# Si no funciona el comando anterior, usar:
+docker compose up -d
 ```
 
 Stop docker project - MacOS/Linux:
 ```
-make stop # Finaliza la ejecución de los componentes del proyecto
+# Finaliza la ejecución de los componentes del proyecto
+make stop
+
+# Si no funciona el comando anterior, usar:
+docker compose down
 ```
 
 ---
