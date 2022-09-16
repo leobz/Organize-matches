@@ -2,6 +2,8 @@ package matches.organizer.domain;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,7 +18,7 @@ class MatchTest {
 
     @Test
     void createMatchInPastAndFail() {
-        Exception exception = assertThrows(RuntimeException.class, () ->
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
                     new MatchBuilder()
                             .setName("Another Match")
                             .setUserId(UUID.randomUUID())
@@ -25,13 +27,12 @@ class MatchTest {
                             .setLocation("La Bombonera")
                             .build()
                 );
-
-        assertTrue(exception.getMessage().contains("MatchBuilder: date and hour is in the past"));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
     @Test
     void createMatchInPresentAndFail() {
-        Exception exception = assertThrows(RuntimeException.class, () ->
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
             new MatchBuilder()
                     .setName("Another Match")
                     .setUserId(UUID.randomUUID())
@@ -41,7 +42,7 @@ class MatchTest {
                     .build()
         );
 
-        assertTrue(exception.getMessage().contains("MatchBuilder: date and hour is in the past"));
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     }
 
 
