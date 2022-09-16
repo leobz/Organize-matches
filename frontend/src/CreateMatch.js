@@ -13,19 +13,24 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import TextField from '@mui/material/TextField';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
+
+/******************                   Main Component                       ******************/
 export default function CreateMatch() {
   const [dateTime, setDateTime] = React.useState(nowPlus30Min());
   const [minTime, setMinTime] = React.useState(nowPlus30Min());
   const today = dayjs();
 
+ const onSubmitEvent = (e) => {
+    e.preventDefault();
+    if(validateForm(dateTime)){postCreateMatch();}
+  };
+
   return(
-    <Box component="form" autoComplete="off">
+    <Box component="form" onSubmit={onSubmitEvent}>
     <div>
       <FormSpace/>
       <RequiredTextField adornment={<AbcIcon/>} id={"name"} defaultValue={"Nombre del Partido"}/>
-      <FormSpace/>
       <RequiredTextField adornment={<LocationOnIcon/>} id={"location"} defaultValue={"Ubicacion"}/>
-      <FormSpace/>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           label="Fecha"
@@ -57,51 +62,46 @@ export default function CreateMatch() {
       <FormSpace/>
 
       <Grid container justifyContent="flex-end">
-        <Button variant="contained" startIcon={<AddIcon/>} onClick={() => {
-          if(validateForm(dateTime)){postCreateMatch();}}}>
+        <Button type="submit" variant="contained" startIcon={<AddIcon/>}>
           Crear Partido
         </Button>
       </Grid>
-
     </div>
   </Box>
   )
 }
 
+/******************                   Sub Components                       ******************/
 class FormSpace extends React.Component{
   render(){return(<Box sx={{ height: 20}}/>)}
 } 
 
 class RequiredTextField extends React.Component{
   render(){
-    return(       
-    <TextField required fullWidth
-    id = {this.props.id}
-    placeholder= {this.props.defaultValue}
-    InputProps={{
-      startAdornment: (
-        <InputAdornment position="start"> 
-           {this.props.adornment}
-        </InputAdornment>
-      ),
-    }}
-  />)
+    return(
+    <>
+      <TextField id={this.props.id} placeholder={this.props.defaultValue} required fullWidth
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            {this.props.adornment}
+          </InputAdornment>
+        ),
+      }}
+      />
+      <FormSpace/>
+    </>
+  )
   }
 }
+
+/******************                   Functions                       ******************/
 
 function nowPlus30Min() {
   return dayjs().add(30, 'minute');
 }
 
 function validateForm(dateTime) {
-  if (document.getElementById("name").value.trim() == "") {
-      alert("Campo nombre es requerido");
-      return false;
-  }
-  if (document.getElementById("location").value.trim() == "") {
-    alert("Campo Ubicacion es requerido");
-    return false;
-  }
   if (dateTime.isBefore(dayjs())) {
     alert("Fecha y hora deben ser posterior al momento actual");
     return false;
