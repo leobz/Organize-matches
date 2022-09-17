@@ -7,9 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
@@ -54,8 +52,7 @@ class InMemoryMatchRepositoryTest {
                 anyMatch.getId(),
                 "Modified Match",
                 anyMatch.getUserId(),
-                LocalDate.now(ZoneOffset.UTC).plusDays(1),
-                LocalTime.now(ZoneOffset.UTC),
+                LocalDateTime.now(ZoneOffset.UTC).plusDays(1),
                 "Defensores del Chaco",
                 LocalDateTime.now(ZoneOffset.UTC));
         matchRepository.update(modifiedMatch);
@@ -76,8 +73,7 @@ class InMemoryMatchRepositoryTest {
         Match anyMatch = new MatchBuilder()
                 .setName("Any Match")
                 .setUserId(UUID.randomUUID())
-                .setDate(LocalDate.now(ZoneOffset.UTC).plusDays(1))
-                .setHour(LocalTime.now(ZoneOffset.UTC))
+                .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                 .setLocation("La Bombonera")
                 .build();
         anyMatch.addPlayer(UUID.randomUUID());
@@ -90,8 +86,7 @@ class InMemoryMatchRepositoryTest {
         Match anotherMatch = new MatchBuilder()
                 .setName("Another Match")
                 .setUserId(UUID.randomUUID())
-                .setDate(LocalDate.now(ZoneOffset.UTC).plusDays(1))
-                .setHour(LocalTime.now(ZoneOffset.UTC))
+                .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                 .setLocation("La Bombonera")
                 .build();
         anotherMatch.addPlayer(UUID.randomUUID());

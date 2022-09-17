@@ -5,8 +5,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
@@ -22,8 +21,7 @@ class MatchTest {
                     new MatchBuilder()
                             .setName("Another Match")
                             .setUserId(UUID.randomUUID())
-                            .setDate(LocalDate.now(ZoneOffset.UTC).minusDays(1))
-                            .setHour(LocalTime.now(ZoneOffset.UTC))
+                            .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).minusDays(1))
                             .setLocation("La Bombonera")
                             .build()
                 );
@@ -36,8 +34,7 @@ class MatchTest {
             new MatchBuilder()
                     .setName("Another Match")
                     .setUserId(UUID.randomUUID())
-                    .setDate(LocalDate.now(ZoneOffset.UTC))
-                    .setHour(LocalTime.now(ZoneOffset.UTC))
+                    .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC))
                     .setLocation("La Bombonera")
                     .build()
         );
@@ -52,8 +49,7 @@ class MatchTest {
             new MatchBuilder()
                     .setName("Another Match")
                     .setUserId(UUID.randomUUID())
-                    .setDate(LocalDate.now(ZoneOffset.UTC).plusDays(1))
-                    .setHour(LocalTime.now(ZoneOffset.UTC))
+                    .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                     .setLocation("La Bombonera")
                     .build();
         });

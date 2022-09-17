@@ -1,14 +1,13 @@
 package matches.organizer.domain;
 
 import com.google.gson.*;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Type;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,21 +17,20 @@ public class Match {
     private UUID id;
     private String name;
     private UUID userId;
-    private LocalDate date;
-    @Schema(example = "23:00:00")
-    private LocalTime hour;
+    @Schema(description = "Format yyyy-MM-ddTHH:mm:ss.sssZ")
+    private LocalDateTime dateAndTime;
     private String location;
     private LocalDateTime createdAt;
+    @Hidden
     private List<Player> players;
 
     public Match(){}
 
-    public Match(UUID id, String name, UUID userId, LocalDate date, LocalTime hour, String location, LocalDateTime createdAt){
+    public Match(UUID id, String name, UUID userId, LocalDateTime dateAndTime, String location, LocalDateTime createdAt){
        this.id = id;
        this.name = name;
        this.userId = userId;
-       this.date = date;
-       this.hour = hour;
+       this.dateAndTime = dateAndTime;
        this.location = location;
        this.createdAt = createdAt;
        this.players = new ArrayList<>();
@@ -50,12 +48,8 @@ public class Match {
         return userId;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public LocalTime getHour() {
-        return hour;
+    public LocalDateTime getDateAndTime() {
+        return dateAndTime;
     }
 
     public String getLocation() {
@@ -71,16 +65,12 @@ public class Match {
 
     public List<Player> getPlayers() { return players; }
 
+    @Hidden
     public List<Player> getStartingPlayers() {
         return players.stream().limit(10).collect(Collectors.toList());
     }
 
-    public static JsonArray getPlayersJsonArray(List<Player> players) {
-        JsonArray matchesArray = new JsonArray();
-        players.forEach(player -> matchesArray.add(JsonParser.parseString(player.toJsonString())));
-        return matchesArray;
-    }
-
+    @Hidden
     public List<Player> getSubstitutePlayers() {
         return players.stream().skip(10).limit(3).collect(Collectors.toList());
     }
@@ -98,6 +88,12 @@ public class Match {
         return gson.toJson(this);
     }
 
+    public static JsonArray getPlayersJsonArray(List<Player> players) {
+        JsonArray matchesArray = new JsonArray();
+        players.forEach(player -> matchesArray.add(JsonParser.parseString(player.toJsonString())));
+        return matchesArray;
+    }
+
     static class MatchSerializer implements JsonSerializer<Match> {
         @Override
         public JsonElement serialize(Match match, Type type, JsonSerializationContext jsonSerializationContext) {
@@ -105,8 +101,7 @@ public class Match {
             matchJson.addProperty("id", match.getId().toString());
             matchJson.addProperty("name", match.getName());
             matchJson.addProperty("userId", match.getUserId().toString());
-            matchJson.addProperty("date", match.getDate().toString());
-            matchJson.addProperty("hour", match.getHour().toString());
+            matchJson.addProperty("dateAndTime", match.getDateAndTime().toString());
             matchJson.addProperty("location", match.getLocation());
             matchJson.add("startingPlayers", getPlayersJsonArray(match.getStartingPlayers()));
             matchJson.add("substitutePlayers", getPlayersJsonArray(match.getSubstitutePlayers()));

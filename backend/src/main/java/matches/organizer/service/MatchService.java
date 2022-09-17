@@ -48,8 +48,7 @@ public class MatchService {
         Match match = new MatchBuilder()
                 .setName(newMatch.getName())
                 .setUserId(newMatch.getUserId())
-                .setDate(newMatch.getDate())
-                .setHour(newMatch.getHour())
+                .setDateAndTime(newMatch.getDateAndTime())
                 .setLocation(newMatch.getLocation())
                 .build();
 

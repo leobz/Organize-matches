@@ -18,9 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -161,8 +159,7 @@ class MatchControllerTest {
                 setName("Match").
                 setLocation("Location").
                 setUserId(UUID.randomUUID()).
-                setDate(LocalDate.now(ZoneOffset.UTC).plusDays(1))
-                .setHour(LocalTime.now(ZoneOffset.UTC))
+                setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                 .build();
     }
 
@@ -177,8 +174,7 @@ class MatchControllerTest {
 		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
 				"   \"name\": \"un Partido de prueba\",\n" +
 				"   \"location\": \"GRUN FC\",\n" +
-				"   \"date\": \"2023-09-04\",\n" +
-				"   \"hour\": \"17:00:00\",\n" +
+				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\",\n" +
 				"   \"userId\": \"" + user.getId() + "\"\n" +
 				"}")).andExpect(status().isCreated());
 
@@ -189,8 +185,7 @@ class MatchControllerTest {
         userRepository.add(user);
 		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
 				"   \"name\": \"un Partido de prueba\",\n" +
-				"   \"date\": \"2023-09-04\",\n" +
-				"   \"hour\": \"17:00:00\",\n" +
+				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\",\n" +
                 "   \"userId\": \"" + user.getId() + "\"\n" +
 				"}")).andExpect(status().isBadRequest());
 
