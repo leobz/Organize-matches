@@ -4,14 +4,13 @@ import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
-import matches.organizer.dto.POSTMatchDTO;
 import matches.organizer.dto.CounterDTO;
-import matches.organizer.exception.AddPlayerException;
-import matches.organizer.exception.MatchNotFoundException;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,13 +40,15 @@ public class MatchService {
         matchRepository.update(match);
     }
 
-    public Match createMatch(POSTMatchDTO newMatch){
+    public Match createMatch(Match newMatch){
 
+        if (userRepository.get(newMatch.getUserId()) == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
         Match match = new MatchBuilder()
                 .setName(newMatch.getName())
                 .setUserId(newMatch.getUserId())
-                .setDate(newMatch.getDate())
-                .setHour(newMatch.getHour())
+                .setDateAndTime(newMatch.getDateAndTime())
                 .setLocation(newMatch.getLocation())
                 .build();
 
@@ -57,11 +58,11 @@ public class MatchService {
   }
 
 
-    public List<Player> registerNewPlayer(UUID id, User user, String phone, String email) {
+    public List<Player> registerNewPlayer(UUID id, User user) {
         var match = matchRepository.get(id);
 
         if(match != null) {
-            addPlayerToMatch(match, user, phone, email);
+            addPlayerToMatch(match, user);
             matchRepository.update(match);
 
             // TODO capaz estaría bueno loggear algo de esto
@@ -74,7 +75,7 @@ public class MatchService {
             */
             return match.getPlayers();
         } else {
-            throw new MatchNotFoundException("Match: Match not found.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found.");
         }
     }
 
@@ -91,18 +92,16 @@ public class MatchService {
         return new CounterDTO(matches.size(), players.size());
     }
 
-    public void addPlayerToMatch(Match match, User user, String phone, String email) {
-        if(phone == null)
-            throw new AddPlayerException("Match: Cannot add player. Phone cannot be null.");
-        if(email == null)
-            throw new AddPlayerException("Match: Cannot add player. Email cannot be null.");
+    public void addPlayerToMatch(Match match, User user) {
+        if(user.getPhone() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Phone cannot be null.");
+        if(user.getEmail() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Email cannot be null.");
         match.addPlayer(user.getId());
-        updateUser(user, phone, email);
+        updateUser(user);
     }
 
-    private void updateUser(User user, String phone, String email) {
-        user.setPhone(phone);
-        user.setEmail(email);
+    private void updateUser(User user) {
         if (userRepository.get(user.getId()) != null) {
             userRepository.update(user);
         } else {

@@ -1,16 +1,15 @@
 package matches.organizer.controller;
 
-import matches.organizer.dto.NewUserDTO;
-import matches.organizer.dto.UserDTO;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import matches.organizer.domain.User;
 import matches.organizer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @EnableWebMvc
@@ -24,13 +23,17 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public @ResponseBody UserDTO createUser(@RequestBody NewUserDTO newUserDTO) {
-        return userService.createUser(newUserDTO).getDto();
+    public String createUser(@RequestBody User newUser) {
+        return userService.createUser(newUser).toJsonString();
     }
 
     @GetMapping()
-    public @ResponseBody List<UserDTO> getUsers() {
-        return userService.getUsers().stream().map(user -> user.getDto()).collect(Collectors.toList());
+    public String getUsers() {
+        JsonObject allUsers = new JsonObject();
+        JsonArray userArray = new JsonArray();
+        userService.getUsers().forEach(user -> userArray.add(JsonParser.parseString(user.toJsonString())));
+        allUsers.add("users", userArray);
+        return allUsers.toString();
     }
 
 }

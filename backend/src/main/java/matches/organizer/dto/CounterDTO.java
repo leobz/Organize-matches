@@ -1,8 +1,8 @@
 package matches.organizer.dto;
 
 public class CounterDTO {
-    private int matches;
-    private int players;
+    private final int matches;
+    private final int players;
 
     public CounterDTO(int matches, int players) {
         this.matches = matches;

@@ -1,11 +1,9 @@
 package matches.organizer.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import matches.organizer.domain.Match;
-import matches.organizer.domain.MatchBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import matches.organizer.domain.User;
-import matches.organizer.dto.UserDTO;
 import matches.organizer.service.UserService;
 import matches.organizer.storage.InMemoryUserRepository;
 import matches.organizer.storage.UserRepository;
@@ -16,19 +14,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {UserService.class, UserController.class, InMemoryUserRepository.class})
 @AutoConfigureMockMvc
-public class UserControllerTest {
+class UserControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -36,7 +31,7 @@ public class UserControllerTest {
     private UserRepository userRepository;
 
     @Test
-    public void createUser() throws Exception {
+    void createUser() throws Exception {
         this.mvc.perform(post( "/users").contentType(MediaType.APPLICATION_JSON_VALUE).content("{\n" +
             "    \"alias\": \"pepito\",\n" +
             "    \"fullName\": \"Pepito Pepitez\",\n" +
@@ -45,23 +40,31 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getUsers() throws Exception {
+    void getUsers() throws Exception {
         sanitize();
         User user1 = addNewUser();
         User user2 = addNewUser();
 
-        ArrayList<UserDTO> users = new ArrayList<UserDTO>();
+        ArrayList<User> users = new ArrayList<>();
 
-        users.add(user1.getDto());
-        users.add(user2.getDto());
+        users.add(user1);
+        users.add(user2);
 
-        Gson gson = new Gson();
+        this.mvc.perform(get("/users")
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().json(getUsersResponse(users)));
+    }
 
-        this.mvc.perform(get("/users").contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(content().json(gson.toJson(users)));
+    private String getUsersResponse(ArrayList<User> users) {
+        JsonObject allUsers = new JsonObject();
+        JsonArray userArray = new JsonArray();
+        users.forEach(user -> userArray.add(JsonParser.parseString(user.toJsonString())));
+        allUsers.add("users", userArray);
+        return allUsers.toString();
     }
 
     private User addNewUser() {
-        User user = new User("pepito", "Pepito Pepitez", "pepito123");
+        User user = new User("pepito", "Pepito Pepitez", "0303456", "pp@g.com", "pepito123");
         userRepository.add(user);
         return user;
     }

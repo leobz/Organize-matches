@@ -2,26 +2,40 @@ package matches.organizer.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import matches.organizer.dto.UserDTO;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.util.UUID;
 
 public class User {
-    private UUID id = UUID.randomUUID();
+    @Expose
+    private UUID id;
+    @Expose
     private String alias;
+    @Expose
     private String fullName;
+    @Expose
     private String phone;
+    @Expose
     private String email;
     private String password;
 
+    public User(){}
+
     @JsonCreator
     public User(@JsonProperty("alias") String alias) {
+        this.id = UUID.randomUUID();
         this.alias = alias;
     }
 
-    public User(String alias, String fullName, String password) {
+    public User(String alias, String fullName, String phone, String email, String password) {
+        this.id = UUID.randomUUID();
         setAlias(alias);
         setFullName(fullName);
+        setPhone(phone);
+        setEmail(email);
         setPassword(password);
     }
 
@@ -65,7 +79,11 @@ public class User {
         return new BCryptPasswordEncoder().matches(password, this.getPassword());
     }
 
-    public UserDTO getDto() {
-        return new UserDTO(this);
+    public String toJsonString() {
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
+        return gson.toJson(this);
     }
+
 }

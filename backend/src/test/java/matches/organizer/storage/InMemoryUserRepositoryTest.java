@@ -59,12 +59,10 @@ class InMemoryUserRepositoryTest {
     }
 
     private User buildAUser() {
-        User anyUser = new User("Any User", "Any User fullname", "anypassword");
-        return anyUser;
+        return new User("Any User", "Any User fullname", "0303456", "pp@g.com", "anypassword");
     }
 
     private User buildAnotherUser() {
-        User anotherUser = new User("Another User", "Another User fullname", "anotherpassword");
-        return anotherUser;
+        return new User("Another User", "Another User fullname", "0303456", "pp@g.com", "another-password");
     }
 }
