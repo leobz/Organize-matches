@@ -1,25 +1,26 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
+import { Typography, Container, CssBaseline, Avatar, Box, createTheme, ThemeProvider } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { redirect } from 'react-router-dom';
 import SignUpForm from './SignUpForm';
+import { registerUser } from "../../services/users";
 
 const theme = createTheme();
 
-export default function SignUp() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+export async function action({ request }) {
+	const formData = await request.formData();
+	const user = {
+    fullName: formData.get('fullName'),
+    alias: formData.get('alias'),
+    phone: formData.get('phone'),
+    email: formData.get('phone'),
+    password: formData.get('password')
+	};
+	registerUser(user);
+	return redirect('/login');
+}
 
+export default function SignUp() {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
