@@ -3,6 +3,9 @@ package matches.organizer.domain;
 import com.google.gson.*;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
+import matches.organizer.controller.UserController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -35,6 +38,8 @@ public class Match {
        this.createdAt = createdAt;
        this.players = new ArrayList<>();
     }
+
+    Logger logger = LoggerFactory.getLogger(Match.class);
 
     public UUID getId() {
         return id;
@@ -76,8 +81,10 @@ public class Match {
     }
 
     public void addPlayer(UUID userId) {
-        if(getPlayers().size() >= 13)
+        if(getPlayers().size() >= 13) {
+            logger.error("NO MORE PLAYERS THAN 13 CAN BE SUBSCRIBED TO A MATCH");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. The team is complete.");
+        }
         players.add(new Player(userId));
     }
 

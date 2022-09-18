@@ -1,5 +1,8 @@
 package matches.organizer.domain;
 
+import matches.organizer.service.MatchService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -13,6 +16,8 @@ public class MatchBuilder {
     private UUID userId;
     private LocalDateTime dateAndTime;
     private String location;
+
+    Logger logger = LoggerFactory.getLogger(MatchBuilder.class);
 
     public MatchBuilder setName(String name) {
         this.name = name;
@@ -35,18 +40,31 @@ public class MatchBuilder {
     }
 
     public Match build() {
-        if(name == null)
+        if(name == null){
+            logger.error("CANNOT CREATE A MATCH WITHOUT NAME");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: name is missing");
-        if(userId == null)
+        }
+        if(userId == null) {
+            logger.error("CANNOT CREATE A MATCH WITHOUT ID");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: user id is missing");
-        if(dateAndTime == null)
+        }
+        if(dateAndTime == null){
+            logger.error("CANNOT CREATE A MATCH WITHOUT DATE AND TIME");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: date and time is missing");
-        if(location == null)
+        }
+        if(location == null) {
+            logger.error("CANNOT CREATE A MATCH WITHOUT LOCATION");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: location is missing");
-        if(!LocalDateTime.now(ZoneOffset.UTC).isBefore(dateAndTime))
+        }
+        if(!LocalDateTime.now(ZoneOffset.UTC).isBefore(dateAndTime)) {
+            logger.error("CANNOT CREATE A MATCH IN THE PAST");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: date and hour is in the past");
+
+        }
         UUID id = UUID.randomUUID();
         LocalDateTime createdAt = LocalDateTime.now(ZoneOffset.UTC);
+        //logger.info("MATCH CRE");
+
         return new Match(id, name, userId, dateAndTime, location, createdAt);
     }
 }
