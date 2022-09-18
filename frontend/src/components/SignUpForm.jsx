@@ -2,18 +2,42 @@ import { Grid, Button, TextField, Box, Link } from "@mui/material";
 
 export default function SignUpForm ()
 {
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-      console.log({
+      var body = {
         fullName: data.get('fullName'),
         alias: data.get('alias'),
         phone: data.get('phone'),
         email: data.get('phone'),
-        password: data.get('password'),
-        repeatPassword: data.get('repeatPassword'),
-      });
+        password: data.get('password')
+      };
       
+      try {
+        const response = await fetch("/users", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(body),
+            });
+        
+            if (!response.ok){
+                alert("Ah ocurrido un error");
+                const message = `An error has occured: ${response.status}`;
+                throw new Error(message)
+            }
+        
+            response.json().then(data => {
+                // TODO: Agregar redireccion al recurso creado + Opcional Mensaje flotante indicando exito en creacion
+                const message = `Recurso creado exitosamente ID: ${data.id}`;
+                alert(message);
+            });
+        }
+        catch(e){
+            console.log(e)
+        }
     };
 
     return (

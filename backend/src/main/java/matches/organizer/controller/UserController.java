@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import matches.organizer.domain.User;
+import matches.organizer.dto.RegisterUserDTO;
 import matches.organizer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public String createUser(@RequestBody User newUser) {
+    public String createUser(@RequestBody RegisterUserDTO newUser) {
         return userService.createUser(newUser).toJsonString();
     }
 
