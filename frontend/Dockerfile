@@ -1,10 +1,9 @@
 FROM node:16-alpine
 
-WORKDIR app/
+WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm install react-router-dom localforage match-sorter sort-by
 COPY . ./
-# Agregar VOLUME para hotreload
 
 CMD [ "npm", "start" ]

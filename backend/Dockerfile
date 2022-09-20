@@ -1,12 +1,12 @@
 FROM maven:3.8.1-jdk-11 as build
 WORKDIR /workspace
 COPY pom.xml pom.xml
-RUN mvn dependency:go-offline
-RUN mvn clean verify
+RUN mvn dependency:go-offline &&\
+    mvn clean verify
 COPY src/main/java src/main/java
-RUN mvn clean package
-RUN ls target/
-RUN ARTIFACT=$(grep "artifactId" target/maven-archiver/pom.properties | cut -d '=' -f2); \
+RUN mvn clean package &&\
+    ls target/ &&\
+    ARTIFACT=$(grep "artifactId" target/maven-archiver/pom.properties | cut -d '=' -f2); \
     VERSION=$(grep "version" target/maven-archiver/pom.properties|cut -d '=' -f2); \
     mv target/${ARTIFACT}-${VERSION}.jar target/app.jar
 

@@ -21,9 +21,15 @@ build: ## Crea imagen docker del todos los componentes (backend y frontend)
 	cd frontend; \
 	docker build -t $(FE_DOCKER_TAG) .
 
+.PHONY: clean
+clean: ## Elimina los containers e imagenes (no borra la cache)
+	docker container kill be-organize-matches fe-organize-matches; \
+	docker container rm be-organize-matches fe-organize-matches; \
+	docker image rm --no-prune be-organize-matches fe-organize-matches;
+
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.
-	docker-compose up -d
+	docker-compose up -d;
 
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto

@@ -11,6 +11,8 @@ services:
   frontend:
     build: ./frontend
     image: fe-organize-matches:latest
+    volumes:
+      - ./frontend/src:/app/src:ro
     container_name: fe-organize-matches
     restart: on-failure
     ports:
