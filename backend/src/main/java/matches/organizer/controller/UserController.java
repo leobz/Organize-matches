@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import matches.organizer.domain.User;
-import matches.organizer.dto.RegisterUserDTO;
 import matches.organizer.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public String createUser(@RequestBody RegisterUserDTO newUser) {
+    public String createUser(@RequestBody User newUser) {
         logger.info("POST TO: /users ");
         return userService.createUser(newUser).toJsonString();
     }

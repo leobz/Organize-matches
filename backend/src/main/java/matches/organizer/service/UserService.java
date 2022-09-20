@@ -1,7 +1,6 @@
 package matches.organizer.service;
 
 import matches.organizer.domain.User;
-import matches.organizer.dto.RegisterUserDTO;
 import matches.organizer.storage.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ public class UserService {
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public User createUser(RegisterUserDTO newUser) {
+    public User createUser(User newUser) {
         User user = new User(newUser.getAlias(), newUser.getFullName(), newUser.getPhone(), newUser.getEmail(), newUser.getPassword());
         userRepository.add(user);
         logger.info("USER WITH ID: " + user.getId().toString() + " CREATED CORRECTLY");

@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public class User {
     @Expose
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
     @Expose
     private String alias;
