@@ -10,7 +10,9 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Config from "./Config";
+import {Alert} from "@mui/material";
+import { redirect } from 'react-router-dom';
+import { loginUser, buildUser } from "../../services/login";
 
 const theme = createTheme();
 
@@ -18,8 +20,18 @@ export default function SignIn() {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log(Config.backendUrlBase);
+
+        loginUser(buildUser(data))
+            .then(function(userId) {
+                console.log(userId);//set in local storage
+                return redirect('/home');
+            }).catch(error => {
+                hideWrongUserOrPasswordAlert = false;
+            });
+
     };
+
+    let hideWrongUserOrPasswordAlert = true;
 
     return (
         <ThemeProvider theme={theme}>
@@ -60,6 +72,12 @@ export default function SignIn() {
                             id="password"
                             autoComplete="current-password"
                         />
+                        <Alert
+                            severity="error"
+                            id="unknownUser"
+                            hidden={hideWrongUserOrPasswordAlert}>
+                            Usuario o contraseña incorrecta.
+                        </Alert>
                         <Button
                             type="submit"
                             fullWidth
@@ -70,7 +88,7 @@ export default function SignIn() {
                         </Button>
                         <Grid container>
                             <Grid item>
-                                <Link href="#" variant="body2">
+                                <Link href="frontend/src/routes/signIn/SignIn.jsx#" variant="body2">
                                     {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>
