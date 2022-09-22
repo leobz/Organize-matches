@@ -28,6 +28,12 @@ public class UserService {
         return user;
     }
 
+    public User addUser(User newUser) {
+        userRepository.add(newUser);
+        logger.info("USER WITH ID: " + newUser.getId().toString() + " CREATED CORRECTLY");
+        return newUser;
+    }
+
     public List<User> getUsers() {
         return userRepository.getAll();
     }

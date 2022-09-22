@@ -28,7 +28,8 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public String createUser(@RequestBody User newUser) {
         logger.info("POST TO: /users ");
-        return userService.createUser(newUser).toJsonString();
+        return userService.addUser(newUser).toJsonString();
+        //return userService.createUser(newUser).toJsonString();
     }
 
     @GetMapping()
