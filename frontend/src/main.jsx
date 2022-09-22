@@ -1,3 +1,4 @@
+// El practico
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
@@ -21,6 +22,8 @@ import Users, {
   loader as usersLoader
 } from './routes/users/users';
 
+import CreateMatch from './routes/matches/CreateMatch';
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -43,7 +46,11 @@ const router = createBrowserRouter([
             path: "register",
             element: <SignUp/>,
             action: signUpAction,
-          },   
+          },
+          {
+            path: "create-match",
+            element: <CreateMatch/>
+          },
           {
             index: true,
             element: <Index/>,
