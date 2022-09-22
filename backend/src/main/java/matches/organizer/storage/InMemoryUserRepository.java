@@ -44,4 +44,12 @@ public class InMemoryUserRepository implements UserRepository {
     private static boolean hasSameId(UUID anyUserId, User user) {
         return anyUserId.equals(user.getId());
     }
+
+    @Override
+    public User getUserByEmail(String mail){
+        return users.stream()
+                .filter(user -> user.getEmail().equalsIgnoreCase(mail))
+                .findFirst().orElse(null);
+    }
+
 }
