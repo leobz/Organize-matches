@@ -12,6 +12,9 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import TextField from '@mui/material/TextField';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import {useEffect, useState} from "react";
+
+const [userId, setUserId] = useState('');
 
 
 /******************                   Main Component                       ******************/
@@ -109,15 +112,18 @@ function validateForm(dateTime) {
   return true;
 };
 
+useEffect(() => {
+  let userId = localStorage.getItem('userId');
+  if(userId){
+    setUserId(userId);
+  }
+}, []);
+
 async function postCreateMatch() {
   // TODO: Externalizar url_base a variable de configuracion
   const url_base = "http://localhost:8081"
   const path = "/matches"
   const url = url_base + path
-
-  // TODO: Hardcodeado momentaneamente.
-  // IMPORTANTE: Cuando se obtenga el userId desde el controller del backend, eliminar esta linea
-  const userId = "00000000-0000-0000-0000-000000000000"
 
   var body = {
     name : document.getElementById("name").value,

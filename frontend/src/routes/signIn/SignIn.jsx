@@ -3,7 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
+import { Link } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -11,27 +11,41 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {Alert} from "@mui/material";
-import { redirect } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import { loginUser, buildUser } from "../../services/login";
+import { useEffect, useState } from "react";
 
 const theme = createTheme();
 
 export default function SignIn() {
-    const handleSubmit = (event) => {
+
+    const [userId, setUserId] = useState('');
+    const navigate = useNavigate();
+    const [renderWrongUserOrPasswordAlert, setRenderWrongUserOrPasswordAlert] = useState(false);
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
         loginUser(buildUser(data))
-            .then(function(userId) {
-                console.log(userId);//set in local storage
-                return redirect('/home');
-            }).catch(error => {
-                hideWrongUserOrPasswordAlert = false;
-            });
+        .then((response) => {
+            if (response.status >= 400){
+                console.log("tiro error")
+                setRenderWrongUserOrPasswordAlert(true);
+            } else {
+                response.json().then(data => {
+                    setUserId(data.userId);
+                });
+                navigate('/users');
+            }
+        });
+
 
     };
 
-    let hideWrongUserOrPasswordAlert = true;
+    useEffect(() => {
+        localStorage.setItem('userId', userId);
+    }, [userId]);
 
     return (
         <ThemeProvider theme={theme}>
@@ -72,12 +86,13 @@ export default function SignIn() {
                             id="password"
                             autoComplete="current-password"
                         />
-                        <Alert
-                            severity="error"
-                            id="unknownUser"
-                            hidden={hideWrongUserOrPasswordAlert}>
-                            Usuario o contraseña incorrecta.
-                        </Alert>
+                        {renderWrongUserOrPasswordAlert &&
+                            <Alert
+                                severity="error"
+                                id="unknownUser">
+                                Usuario o contraseña incorrecta.
+                            </Alert>
+                        }
                         <Button
                             type="submit"
                             fullWidth
@@ -88,7 +103,7 @@ export default function SignIn() {
                         </Button>
                         <Grid container>
                             <Grid item>
-                                <Link href="frontend/src/routes/signIn/SignIn.jsx#" variant="body2">
+                                <Link to="/register">
                                     {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>
