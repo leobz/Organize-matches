@@ -23,14 +23,13 @@ export default function SignIn() {
     const navigate = useNavigate();
     const [renderWrongUserOrPasswordAlert, setRenderWrongUserOrPasswordAlert] = useState(false);
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-        loginUser(buildUser(data))
+        loginUser(buildUser(data.get('email'), data.get('password')))
         .then((response) => {
             if (response.status >= 400){
-                console.log("tiro error")
                 setRenderWrongUserOrPasswordAlert(true);
             } else {
                 response.json().then(data => {

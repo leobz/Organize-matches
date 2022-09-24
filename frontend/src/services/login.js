@@ -9,10 +9,10 @@ export async function loginUser(user) {
     })
 }
 
-export function buildUser(data) {
+export function buildUser(email, password) {
     const user = {
-        email : data.email,
-        password : data.password
+        email : email,
+        password : password
     };
     return JSON.stringify(user);
 }
