@@ -23,6 +23,7 @@ import Users, {
 } from './routes/users/users';
 
 import CreateMatch from './routes/matches/CreateMatch';
+import GetMatch from './routes/matches/GetMatch';
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,10 @@ const router = createBrowserRouter([
           {
             path: "create-match",
             element: <CreateMatch/>
+          },
+          {
+            path: "get-match",
+            element: <GetMatch/>
           },
           {
             index: true,
