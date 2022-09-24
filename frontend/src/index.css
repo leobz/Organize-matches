@@ -201,6 +201,10 @@ i {
   color: inherit;
 }
 
+#logo {
+  text-align: center;
+}
+
 #sidebar ul {
   padding: 0;
   margin: 0;
@@ -230,12 +234,12 @@ i {
 }
 
 #sidebar nav a.active {
-  background: hsl(224, 98%, 58%);
+  background: hsl(212, 80%, 42%);
   color: white;
 }
 
 #sidebar nav a.pending {
-  color: hsl(224, 98%, 58%);
+  color: hsl(212, 80%, 42%);
 }
 
 #detail {
@@ -272,13 +276,13 @@ i {
 
 #contact h1:focus {
   outline: none;
-  color: hsl(224, 98%, 58%);
+  color: hsl(212, 80%, 42%);
 }
 
 #contact a[href*="twitter"] {
   display: flex;
   font-size: 1.5rem;
-  color: #3992ff;
+  color: #1565c0;
   text-decoration: none;
 }
 #contact a[href*="twitter"]:hover {

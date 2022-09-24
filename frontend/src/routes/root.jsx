@@ -6,11 +6,11 @@ export default function Root() {
   return (
     <>
       <div id="sidebar">
-        <h1>React Router Contacts</h1>
+        <h1>Organize Matches</h1>
         <nav>
           <ul>
             <li key='login'>
-              <NavLink to='login'> Login </NavLink>
+              <NavLink to='login'> Sign In </NavLink>
               <NavLink to='register'> Sign Up </NavLink>
               <NavLink to='users'> Users </NavLink>
             </li>

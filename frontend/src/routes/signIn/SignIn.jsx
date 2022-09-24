@@ -21,7 +21,7 @@ export default function SignIn() {
 
     const [userId, setUserId] = useState('');
     const navigate = useNavigate();
-    const [renderWrongUserOrPasswordAlert, setRenderWrongUserOrPasswordAlert] = useState(false);
+    const [wrongUserOrPasswordAlert, setWrongUserOrPasswordAlert] = useState(false);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -30,7 +30,7 @@ export default function SignIn() {
         loginUser(buildUser(data.get('email'), data.get('password')))
         .then((response) => {
             if (response.status >= 400){
-                setRenderWrongUserOrPasswordAlert(true);
+                setWrongUserOrPasswordAlert(true);
             } else {
                 response.json().then(data => {
                     setUserId(data.userId);
@@ -85,7 +85,7 @@ export default function SignIn() {
                             id="password"
                             autoComplete="current-password"
                         />
-                        {renderWrongUserOrPasswordAlert &&
+                        {wrongUserOrPasswordAlert &&
                             <Alert
                                 severity="error"
                                 id="unknownUser">
