@@ -21,7 +21,9 @@ import Users, {
   loader as usersLoader
 } from './routes/users/users';
 
-import SignIn from './routes/signIn/SignIn.jsx';
+import Metrics, { 
+  loader as metricsLoader
+} from './routes/home/home';
 
 const router = createBrowserRouter([
   {
@@ -34,7 +36,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "login",
-            element: <SignIn/>
+            element: <div>Esto es la pantalla de login</div>
           },
           {
             path: "users",
@@ -46,6 +48,11 @@ const router = createBrowserRouter([
             element: <SignUp/>,
             action: signUpAction,
           },   
+          {
+            path: "home",
+            element: <Metrics/>,
+            loader: metricsLoader,
+          },  
           {
             index: true,
             element: <Index/>,

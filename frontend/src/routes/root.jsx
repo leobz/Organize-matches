@@ -10,6 +10,7 @@ export default function Root() {
         <nav>
           <ul>
             <li key='login'>
+              <NavLink to='home'> Home </NavLink>
               <NavLink to='login'> Login </NavLink>
               <NavLink to='register'> Sign Up </NavLink>
               <NavLink to='users'> Users </NavLink>
