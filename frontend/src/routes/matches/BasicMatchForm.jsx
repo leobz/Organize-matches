@@ -62,20 +62,27 @@ export function BasicMatchForm(props) {
 }
 
 /******************                   Sub Components                       ******************/
-class FormSpace extends React.Component{
-  render(){return(<Box sx={{ height: 20}}/>)}
+export function FormSpace(){
+  return(<Box sx={{ height: 20}}/>)
 } 
 
 export function RequiredTextField (props){
     return(
     <>
       <TextField 
-      id={props.id} placeholder={props.defaultValue} name={props.id} value={props.value}
-      required fullWidth
+        //variant={props.readOnly? "filled" : "outlined"}
+        id={props.id}
+        name={props.id}
+        value={props.value}
+        label={props.id}
+        required
+        fullWidth
+        autoFocus
       InputProps={{
+
         readOnly: props.readOnly  ,
-        startAdornment: (
-          <InputAdornment position="start">
+        endAdornment: (
+          <InputAdornment position="start" sx={{ml: 2}}>
             {props.adornment}
           </InputAdornment>
         ),
