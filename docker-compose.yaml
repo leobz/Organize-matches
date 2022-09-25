@@ -11,9 +11,11 @@ services:
   frontend:
     build: ./frontend
     image: fe-organize-matches:latest
-    volumes:
-      - ./frontend/src:/app/src:ro
     container_name: fe-organize-matches
     restart: on-failure
     ports:
       - "3001:3000"
+    volumes:
+      - ./frontend/src:/app/src
+    environment:
+      REACT_APP_API_HOST: localhost:8081

@@ -8,15 +8,15 @@ export const loader = async () => {
         // return resp.json()
         return {matches: [
             {
-                name: "Torneo de los cinco papis",
+                name: "Qatar 2022",
                 time: new Date("2022-09-21 20:00:00"),
-                location: "Qatar 2022",
+                location: "Doha, Qatar",
                 players: 5
             },
             {
-                name: "Fulbito de las 11",
+                name: "Picado de las 11",
                 time: new Date("2022-09-20 23:00:00"),
-                location: "Paysandú y Méndez de Andes",
+                location: "Estadio Monumental",
                 players: 10
             },
         ]};
