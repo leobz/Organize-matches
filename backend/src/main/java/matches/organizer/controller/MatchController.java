@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Operation;
 import matches.organizer.domain.Match;
+import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.service.MatchService;
@@ -18,7 +19,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.UUID;
+import java.util.*;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
@@ -66,9 +67,18 @@ public class MatchController {
     }
 
     @PostMapping(value = "/matches/{matchId}/players", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String registerPlayer(@PathVariable UUID matchId, @RequestBody User user) {
+    public Map<String, List<Player>> registerPlayer(@PathVariable UUID matchId, @RequestBody User user) {
         logger.info("POST TO: /matches/{"+ user.getId().toString() +"}/players ");
-        return Match.getPlayersJsonArray(matchService.registerNewPlayer(matchId, user)).toString();
+
+        List<Player> _players = matchService.registerNewPlayer(matchId, user);
+
+        var match = matchService.getMatch(matchId);
+
+        Map<String, List<Player>> response = new HashMap<String, List<Player>>();
+        response.put("startingPlayers", match.getStartingPlayers());
+        response.put("substitutePlayers", match.getSubstitutePlayers());
+
+        return response;
     }
 
 }

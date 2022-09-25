@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -45,12 +46,13 @@ class MatchControllerTest {
     void matchesRetrieved() throws Exception {
         sanitize();
 
+        User user = createUser();
         Match match = MatchService.createRandomMatch();
         Match match2 = MatchService.createRandomMatch();
         for (int i = 0; i < 2; i++) {
-            match.addPlayer(UUID.randomUUID());
-            match2.addPlayer(UUID.randomUUID());
-            match2.addPlayer(UUID.randomUUID());
+            match.addPlayer(user);
+            match2.addPlayer(user);
+            match2.addPlayer(user);
         }
 
         matchRepository.add(match);
@@ -94,6 +96,7 @@ class MatchControllerTest {
         ///////							Test Empty Counter					///////
         ///////////////////////////////////////////////////////////////////////////
         sanitize();
+        User user = createUser();
 
         this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk()).andExpect(content().json("{\"matches\": 0, \"players\": 0}"));
@@ -104,8 +107,8 @@ class MatchControllerTest {
 
         // Valid matches: 1, Valid Players: 2
         Match m1 = MatchService.createRandomMatch();
-        m1.addPlayer(UUID.randomUUID());
-        m1.addPlayer(UUID.randomUUID());
+        m1.addPlayer(user);
+        m1.addPlayer(user);
 
         // Invalid matches and players (older than 2 hours)
         LocalDateTime oderDT = LocalDateTime.now(ZoneOffset.UTC).minusHours(2).minusMinutes(1);
@@ -113,7 +116,7 @@ class MatchControllerTest {
         Match m2 = MatchService.createRandomMatch();
         m2.setCreatedAt(oderDT);
 
-        m1.addPlayer(UUID.randomUUID());
+        m1.addPlayer(user);
         m1.getPlayers().get(0).setConfirmedAt(oderDT);
 
         // Test
@@ -133,8 +136,8 @@ class MatchControllerTest {
 
         assertTrue(matchRepository.get(match.getId()).getPlayers().isEmpty());
 
-        this.mvc.perform(
-                post( "/matches/" + match.getId() + "/players")
+        ResultActions request = this.mvc.perform(
+                post("/matches/" + match.getId() + "/players")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
                                 "  {\n" +
@@ -144,7 +147,9 @@ class MatchControllerTest {
                                         "    \"phone\" : \"54241248\",\n" +
                                         "    \"email\" : \"helpme@gmail.com\"\n" +
                                         "}")
-                        .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
+
+        request.andExpect(status().isOk());
 
         assertFalse(matchRepository.get(match.getId()).getPlayers().isEmpty());
 

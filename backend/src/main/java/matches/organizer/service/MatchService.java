@@ -126,7 +126,7 @@ public class MatchService {
         if(user.getEmail() == null){
             logger.error("CANNOT ADD PLAYER IF EMAIL IS NULL.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Email cannot be null.");}
-        match.addPlayer(user.getId());
+        match.addPlayer(user);
         updateUser(user);
     }
 

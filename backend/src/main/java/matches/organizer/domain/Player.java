@@ -10,16 +10,22 @@ import java.util.UUID;
 public class Player {
 
     private final UUID userId;
+    private final String alias;
 
     private LocalDateTime confirmedAt;
 
-    public Player(UUID userId) {
+    public Player(UUID userId, String alias) {
         this.userId = userId;
+        this.alias = alias;
         this.confirmedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public UUID getUserId() {
         return userId;
+    }
+
+    public String getAlias() {
+        return alias;
     }
 
     public LocalDateTime getConfirmedAt() {
@@ -43,6 +49,7 @@ public class Player {
             JsonObject playerJson = new JsonObject();
             playerJson.addProperty("userId", player.getUserId().toString());
             playerJson.addProperty("confirmedAt", player.getConfirmedAt().toString());
+            playerJson.addProperty("alias", player.getAlias().toString());
             return playerJson;
         }
     }
