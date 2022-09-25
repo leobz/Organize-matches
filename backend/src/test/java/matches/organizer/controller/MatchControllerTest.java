@@ -45,8 +45,8 @@ class MatchControllerTest {
     void matchesRetrieved() throws Exception {
         sanitize();
 
-        Match match = createMatch();
-        Match match2 = createMatch();
+        Match match = MatchService.createRandomMatch();
+        Match match2 = MatchService.createRandomMatch();
         for (int i = 0; i < 2; i++) {
             match.addPlayer(UUID.randomUUID());
             match2.addPlayer(UUID.randomUUID());
@@ -78,7 +78,7 @@ class MatchControllerTest {
     void getMatch() throws Exception {
         sanitize();
 
-        Match match = createMatch();
+        Match match = MatchService.createRandomMatch();
         matchRepository.add(match);
 
         this.mvc.perform(get("/matches/" + match.getId())
@@ -103,14 +103,14 @@ class MatchControllerTest {
         ///////////////////////////////////////////////////////////////////////////
 
         // Valid matches: 1, Valid Players: 2
-        Match m1 = createMatch();
+        Match m1 = MatchService.createRandomMatch();
         m1.addPlayer(UUID.randomUUID());
         m1.addPlayer(UUID.randomUUID());
 
         // Invalid matches and players (older than 2 hours)
         LocalDateTime oderDT = LocalDateTime.now(ZoneOffset.UTC).minusHours(2).minusMinutes(1);
 
-        Match m2 = createMatch();
+        Match m2 = MatchService.createRandomMatch();
         m2.setCreatedAt(oderDT);
 
         m1.addPlayer(UUID.randomUUID());
@@ -128,7 +128,7 @@ class MatchControllerTest {
     @Test
     void registerNewPlayer() throws Exception {
 
-        Match match = createMatch();
+        Match match = MatchService.createRandomMatch();
         matchRepository.add(match);
 
         assertTrue(matchRepository.get(match.getId()).getPlayers().isEmpty());
@@ -152,15 +152,6 @@ class MatchControllerTest {
 
     void sanitize() {
         matchRepository.getAll().clear();
-    }
-
-    Match createMatch() {
-        return new MatchBuilder().
-                setName("Match").
-                setLocation("Location").
-                setUserId(UUID.randomUUID()).
-                setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
-                .build();
     }
 
     User createUser() {
