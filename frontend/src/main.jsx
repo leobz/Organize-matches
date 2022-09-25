@@ -22,8 +22,13 @@ import Users, {
   loader as usersLoader
 } from './routes/users/users';
 
-import CreateMatch from './routes/matches/CreateMatch';
-import GetMatch from './routes/matches/GetMatch';
+import GetMatch, {
+  loader as matchLoader
+} from './routes/matches/GetMatch';
+
+import CreateMatch, {
+  action as matchAction
+} from './routes/matches/CreateMatch';
 
 const router = createBrowserRouter([
   {
@@ -44,17 +49,19 @@ const router = createBrowserRouter([
             loader: usersLoader
           },
           {
-            path: "register",
-            element: <SignUp/>,
-            action: signUpAction,
+            path: "get-match",
+            element: <GetMatch/>,
+            loader: matchLoader,
           },
           {
             path: "create-match",
-            element: <CreateMatch/>
+            element: <CreateMatch/>,
+            action: matchAction,
           },
           {
-            path: "get-match",
-            element: <GetMatch/>
+            path: "register",
+            element: <SignUp/>,
+            action: signUpAction,
           },
           {
             index: true,

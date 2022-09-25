@@ -3,6 +3,9 @@ import { Box } from '@mui/system';
 import dayjs from 'dayjs';
 import { BasicMatchForm } from './BasicMatchForm';
 import { Form } from "react-router-dom";
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import AddIcon from '@mui/icons-material/Add';
 
 export async function action({ request }) {
 	const formData = await request.formData();
@@ -32,6 +35,11 @@ export default function CreateMatch() {
     <Box>
       <Form method="post">
         <BasicMatchForm/>
+        <Grid container justifyContent="flex-end">
+          <Button type="submit" variant="contained" startIcon={<AddIcon/>}>
+            Crear Partido
+          </Button>
+        </Grid>
       </Form>
     </Box>
   )

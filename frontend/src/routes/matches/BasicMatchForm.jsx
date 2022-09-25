@@ -1,12 +1,9 @@
 import * as React from 'react';
 import AbcIcon from '@mui/icons-material/Abc';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import AddIcon from '@mui/icons-material/Add';
 import { Box } from '@mui/system';
-import Button from '@mui/material/Button';
 import dayjs from 'dayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Grid from '@mui/material/Grid';
 import InputAdornment from '@mui/material/InputAdornment';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -14,20 +11,26 @@ import TextField from '@mui/material/TextField';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 /******************                   Main Component                       ******************/
-export function BasicMatchForm() {
+export function BasicMatchForm(props) {
   const [dateTime, setDateTime] = React.useState(nowPlus30Min());
   const [minTime, setMinTime] = React.useState(nowPlus30Min());
   const today = dayjs();
+  const readOnly =  props.readOnly || false
 
   return(
     <div>
       <FormSpace/>
-      <RequiredTextField name="hola" adornment={<AbcIcon/>} id={"name"} defaultValue={"Nombre del Partido"}/>
-      <RequiredTextField adornment={<LocationOnIcon/>} id={"location"} defaultValue={"Ubicacion"}/>
+      <RequiredTextField
+        value={props.name}
+        readOnly={props.readOnly} adornment={<AbcIcon/>} id={"name"} defaultValue={"Nombre del Partido"}/>
+      <RequiredTextField
+        value={props.location}
+        adornment={<LocationOnIcon/>} id={"location"} defaultValue={"Ubicacion"}/>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           label="Fecha"
-          value={dateTime}
+          value={props.date || dateTime}
+          disabled={readOnly}
           onChange={(newValue) => {
             setDateTime(newValue);
 
@@ -43,22 +46,17 @@ export function BasicMatchForm() {
 
         <TimePicker
           label="Hora"
-          value={dateTime}
+          value={props.time || dateTime}
           onChange={(newValue) => {
             setDateTime(newValue);
           }}
+          disabled={readOnly}
           inputFormat="HH:mm:00"
           renderInput={(params) => <TextField {...params} name={"time"} id={"time"} sx={{ width: 0.5}} />}
           minTime={minTime}
         />
       </LocalizationProvider>
       <FormSpace/>
-
-      <Grid container justifyContent="flex-end">
-        <Button type="submit" variant="contained" startIcon={<AddIcon/>}>
-          Crear Partido
-        </Button>
-      </Grid>
     </div>
   )
 }
@@ -68,17 +66,17 @@ class FormSpace extends React.Component{
   render(){return(<Box sx={{ height: 20}}/>)}
 } 
 
-class RequiredTextField extends React.Component{
-  render(){
+export function RequiredTextField (props){
     return(
     <>
       <TextField 
-      id={this.props.id} placeholder={this.props.defaultValue}  name={this.props.id}
+      id={props.id} placeholder={props.defaultValue} name={props.id} value={props.value}
       required fullWidth
       InputProps={{
+        readOnly: props.readOnly  ,
         startAdornment: (
           <InputAdornment position="start">
-            {this.props.adornment}
+            {props.adornment}
           </InputAdornment>
         ),
       }}
@@ -86,7 +84,6 @@ class RequiredTextField extends React.Component{
       <FormSpace/>
     </>
   )
-  }
 }
 
 /******************                   Functions                       ******************/
