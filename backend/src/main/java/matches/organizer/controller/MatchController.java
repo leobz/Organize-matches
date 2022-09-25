@@ -46,9 +46,9 @@ public class MatchController {
 
     @PostMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
     @ResponseStatus(HttpStatus.CREATED)
-    public String createMatch(@RequestBody Match newMatch){
+    public Match createMatch(@RequestBody Match newMatch){
         logger.info("POST TO: /matches ");
-        return matchService.createMatch(newMatch).toJsonString();
+        return matchService.createMatch(newMatch);
     }
 
     @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
