@@ -38,7 +38,13 @@ export default function Metrics() {
   const { metrics } = useLoaderData();
 
   return (
+
+
     <ThemeProvider theme={theme}>
+      <Box sx = {{textAlign: "center",}}>
+        <img src="https://media.giphy.com/media/MsJJJUtugeNNCPL2lA/giphy.gif"/>
+      </Box>
+
       <Box
         sx={{
           bgcolor: 'background.general',
@@ -53,15 +59,16 @@ export default function Metrics() {
         }}
       >
         <Grid container spacing={2}>
+
           <Grid xs={6}>
             <Item>
-              <Box sx={{ color: 'text.special'}}>Last Matches </Box>
+              <Box sx={{ color: 'text.special'}}> Last Matches </Box>
               <Box sx={{ color: 'text.regular', fontSize: 34, fontWeight: 'medium' }}> { JSON.parse(metrics)["matches"]} </Box>
             </Item>
           </Grid>
           <Grid xs={6}>
             <Item>
-              <Box sx={{ color: 'text.special' }}>Last Players </Box>
+              <Box sx={{ color: 'text.special' }}> Last Players </Box>
               <Box sx={{ color: 'text.regular', fontSize: 34, fontWeight: 'medium' }}> { JSON.parse(metrics)["players"]} </Box>
             </Item>
           </Grid>
