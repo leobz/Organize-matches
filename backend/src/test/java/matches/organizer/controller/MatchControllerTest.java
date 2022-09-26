@@ -12,6 +12,7 @@ import matches.organizer.storage.InMemoryMatchRepository;
 import matches.organizer.storage.InMemoryUserRepository;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
+import matches.organizer.util.JwtUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {MatchService.class, UserService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
+@SpringBootTest(classes = {JwtUtils.class, MatchService.class, UserService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 
