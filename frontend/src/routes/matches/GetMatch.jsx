@@ -4,7 +4,12 @@ import { Form } from "react-router-dom";
 import { useLoaderData } from "react-router-dom";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { Typography, Container, CssBaseline, Box, createTheme, ThemeProvider } from '@mui/material';
+import { Typography, Container, CssBaseline, Box, createTheme, ThemeProvider , Avatar} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import SportsSoccerOutlinedIcon from '@mui/icons-material/SportsSoccerOutlined';
+import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
 
 
 const theme = createTheme();
@@ -25,10 +30,23 @@ export default function GetMatch() {
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <Box> 
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+              <SportsSoccerOutlinedIcon />
+            </Avatar>
+
+        </Box>
+        <Box>
           <Form>
-          <Typography component="div">
-            <Box sx={{ textAlign: 'center', m: 1, fontWeight: 'bold'}}>
+          <Typography component="h1" variant="h5">
+            <Box sx={{ textAlign: 'center', m: 1}}>
               Datos de partido
             </Box>
           </Typography>
@@ -39,17 +57,36 @@ export default function GetMatch() {
               date={match.dateAndTime}
               time={match.dateAndTime}
               />
-          <Typography component="div">
-            <Box sx={{ textAlign: 'center', m: 1, fontWeight: 'bold'}}>
+          <FormSpace/>
+
+          <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+              <Groups2OutlinedIcon />
+            </Avatar>
+
+        </Box>
+          <Typography component="h1" variant="h5">
+            <Box sx={{ textAlign: 'center', m: 1}}>
               Jugadores
             </Box>
           </Typography>
-            <p>Titulares</p>
+          <Grid container justifyContent="center">
+            <Button variant="contained" fullWidth startIcon={<AddIcon/>}>
+              ¡Anotarme!
+            </Button>
+          </Grid>
+            <h4>Titulares</h4>
             <Box>
               {match.startingPlayers.map((player) => <BasicCard playerName={player.alias}/>)}
             </Box>
 
-            <p>Suplentes</p>
+            <h4>Suplentes</h4>
             <Box>
               {match.substitutePlayers.map((player) => <BasicCard playerName={player.alias}/>)}
             </Box>
