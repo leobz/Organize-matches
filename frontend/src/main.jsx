@@ -25,6 +25,9 @@ import Metrics, {
   loader as metricsLoader
 } from './routes/home/home';
 
+import SignIn from './routes/signIn/SignIn.jsx';
+import MatchList, {loader as getMatches} from "./routes/Matches/MatchList";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,7 +39,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "login",
-            element: <div>Esto es la pantalla de login</div>
+            element: <SignIn/>
           },
           {
             path: "users",
@@ -47,7 +50,12 @@ const router = createBrowserRouter([
             path: "register",
             element: <SignUp/>,
             action: signUpAction,
-          },   
+          },
+          {
+            path: "matches",
+            element: <MatchList />,
+            loader: getMatches
+          },
           {
             path: "home",
             element: <Metrics/>,
@@ -56,7 +64,7 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <Index/>,
-          },   
+          },
         ]
       }
     ],

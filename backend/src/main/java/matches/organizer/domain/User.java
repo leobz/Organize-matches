@@ -5,11 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import matches.organizer.service.AuthenticationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.UUID;
 
 public class User {
+    Logger logger = LoggerFactory.getLogger(User.class);
+
     @Expose
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
@@ -22,6 +28,7 @@ public class User {
     @Expose
     private String email;
     private String password;
+
 
     public User(){}
 
@@ -78,6 +85,7 @@ public class User {
 
     public boolean authenticate(String password) {
         return new BCryptPasswordEncoder().matches(password, this.getPassword());
+
     }
 
     public String toJsonString() {
