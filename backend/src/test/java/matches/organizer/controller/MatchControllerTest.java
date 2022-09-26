@@ -7,6 +7,7 @@ import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
 import matches.organizer.service.MatchService;
+import matches.organizer.service.UserService;
 import matches.organizer.storage.InMemoryMatchRepository;
 import matches.organizer.storage.InMemoryUserRepository;
 import matches.organizer.storage.MatchRepository;
@@ -31,7 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {MatchService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
+@SpringBootTest(classes = {MatchService.class, UserService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 
@@ -130,6 +131,11 @@ class MatchControllerTest {
 
     @Test
     void registerNewPlayer() throws Exception {
+        sanitize();
+
+        User user = createUser();
+        userRepository.add(user);
+        UUID userID = user.getId();
 
         Match match = MatchService.createRandomMatch();
         matchRepository.add(match);
@@ -139,14 +145,7 @@ class MatchControllerTest {
         ResultActions request = this.mvc.perform(
                 post("/matches/" + match.getId() + "/players")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(
-                                "  {\n" +
-                                        "    \"user\" : {\n" +
-                                        "    \"alias\" : \"y2\"\n" +
-                                        "    },\n" +
-                                        "    \"phone\" : \"54241248\",\n" +
-                                        "    \"email\" : \"helpme@gmail.com\"\n" +
-                                        "}")
+                        .content("\""+ userID + "\"")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         request.andExpect(status().isOk());
@@ -157,6 +156,7 @@ class MatchControllerTest {
 
     void sanitize() {
         matchRepository.getAll().clear();
+        userRepository.getAll().clear();
     }
 
     User createUser() {

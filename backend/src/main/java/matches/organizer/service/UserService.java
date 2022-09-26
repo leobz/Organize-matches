@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -26,6 +27,10 @@ public class UserService {
         userRepository.add(user);
         logger.info("USER WITH ID: " + user.getId().toString() + " CREATED CORRECTLY");
         return user;
+    }
+
+    public User getUser(UUID userId) {
+        return  userRepository.get(userId);
     }
 
     public List<User> getUsers() {
