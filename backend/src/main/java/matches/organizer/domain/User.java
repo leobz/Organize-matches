@@ -78,7 +78,6 @@ public class User {
     }
 
     public void setPassword(String password) {
-        logger.info("LA CONTRASEÑA ANTES DEL ENCODER ES:" + password);
         this.password = new BCryptPasswordEncoder().encode(password);
     }
 

@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 public class AuthenticationService{
 
@@ -22,14 +24,23 @@ public class AuthenticationService{
     private final UserRepository userRepository;
 
     Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+
+    /*
+    public JwtUtils getJwtUtils() {
+        return jwtUtils;
+    }
+
+     */
+
     @Autowired
-    private JwtUtils jwtUtils;
+    public JwtUtils jwtUtils;
 
     @Autowired
     public AuthenticationService(UserService userService, UserRepository userRepository)  {
         this.userService = userService;
         this.userRepository = userRepository;
     }
+
 
 
 
@@ -41,9 +52,6 @@ public class AuthenticationService{
             logger.info("CANNOT MAP THE EMAIL WITH AN EXISTING USER");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access denied.");
         }
-
-        logger.error("userTryngLogin with mail: " +userTryingLogin.getEmail() + " y password " + userTryingLogin.getPassword());
-        logger.error("user with mail: " + user.getEmail() + " y password " + user.getPassword());
 
         if(user.authenticate(userTryingLogin.getPassword())){
             String token = jwtUtils.generateJwt(user);
@@ -60,4 +68,9 @@ public class AuthenticationService{
     public User getUserByEmail(String email) {
         return userRepository.getUserByEmail(email);
     }
+
+
+
+
+
 }

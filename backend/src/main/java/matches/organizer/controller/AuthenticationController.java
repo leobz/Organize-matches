@@ -34,30 +34,15 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @Autowired
-    private JwtUtils jwtUtils;
 
     Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
-/*
-    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public @ResponseBody LoginUserDTO loginUser(@RequestBody LoginUserDTO newLogin) throws Exception{
-
-        authenticationService.loginUser(newLogin);
-    return newLogin;
-    }
- */
 
 
-    @GetMapping(value= "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value= "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public String login(@RequestBody AuthenticationDTO userTryingLogin, HttpServletResponse response) {
+        logger.info("POST TO: /login");
         logger.info("THE USER WITH MAIL: " + userTryingLogin.getEmail() + " AND PASSWORD: " + userTryingLogin.getPassword() + " IS TRYING TO LOGIN");
-
-
-        //User user = userService.getUserByEmail(userToLogin.getEmail()); //<-- yo te creo este método en mi branch 39-sign-in
-        //if (user == null )
-        //   logger.error("CANNOT MAPPED THE EMAIL WITH AN EXISTING USER");
 
         String token = authenticationService.loginUser(userTryingLogin);//<-- si el usuario no existe, tirás el 401 desde acá
 
@@ -79,15 +64,20 @@ public class AuthenticationController {
         return loginResponse.toString();
     }
 
-    /*
-    @GetMapping(value = "/privateApi", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Object privateApi(@RequestHeader(value = "authorization", defaultValue = "") String auth) throws Exception {
 
-        jwtUtils.verify(auth);
-        return  authenticationService.getUsers();
+    @PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody Object logout(@RequestHeader(value = "authorization", defaultValue = "") String auth) throws Exception {
+        logger.info("POST TO: /logout");
+        authenticationService.jwtUtils.verify(auth);
+        authenticationService.jwtUtils.addTokenToBlacklist(auth);
+        JsonObject loginResponse = new JsonObject();
+        loginResponse.addProperty("response","You have successfully logged out.");
+        return  loginResponse.toString();
     }
 
-     */
+
+
 
 
 }

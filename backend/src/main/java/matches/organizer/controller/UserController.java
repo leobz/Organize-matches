@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import matches.organizer.domain.User;
 import matches.organizer.service.UserService;
+import matches.organizer.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class UserController {
     private final UserService userService;
     Logger logger = LoggerFactory.getLogger(UserController.class);
 
+
     @Autowired
     public UserController(UserService userService) { this.userService = userService; }
 
@@ -32,6 +34,7 @@ public class UserController {
         //return userService.createUser(newUser).toJsonString();
     }
 
+
     @GetMapping()
     public String getUsers() {
         logger.info("GET TO: /users ");
@@ -41,5 +44,22 @@ public class UserController {
         allUsers.add("users", userArray);
         return allUsers.toString();
     }
+
+    
+/*
+    @GetMapping(value = "/private")
+    public String getUsersPrivate(@RequestHeader(value = "authorization", defaultValue = "") String auth) throws Exception {
+        logger.info("GET TO: /private ");
+        userService.getJwtUtils().verify(auth);
+        JsonObject allUsers = new JsonObject();
+        JsonArray userArray = new JsonArray();
+        userService.getUsers().forEach(user -> userArray.add(JsonParser.parseString(user.toJsonString())));
+        allUsers.add("users", userArray);
+        return allUsers.toString();
+    }
+
+
+ */
+
 
 }
