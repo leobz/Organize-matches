@@ -16,7 +16,7 @@ export async function action({ request }) {
     email: formData.get('phone'),
     password: formData.get('password')
 	};
-	registerUser(user);
+	await registerUser(user);
 	return redirect('/login');
 }
 
