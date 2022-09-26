@@ -14,10 +14,8 @@ import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
 
 const theme = createTheme();
 
-export async function loader() {
-  // TODO: Eliminar id hardoced. Recibir el ID desde la URL del path.
-  const id = "b32d97ca-0bc7-44be-bc31-19bab3637990"
-  const match = await getMatch(id);
+export async function loader(request) {
+  const match = await getMatch(request.params.matchID);
   return { match };
 }
 

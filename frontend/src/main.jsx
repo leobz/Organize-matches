@@ -49,7 +49,7 @@ const router = createBrowserRouter([
             loader: usersLoader
           },
           {
-            path: "get-match",
+            path: "matches/:matchID",
             element: <GetMatch/>,
             loader: matchLoader,
           },
