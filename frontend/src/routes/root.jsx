@@ -14,6 +14,9 @@ export default function Root() {
               <NavLink to='register'> Sign Up </NavLink>
               <NavLink to='users'> Users </NavLink>
             </li>
+              <li key="sections">
+                  <NavLink to="matches">Matches</NavLink>
+              </li>
           </ul>
         </nav>
       </div>
