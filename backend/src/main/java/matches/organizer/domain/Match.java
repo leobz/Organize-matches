@@ -65,6 +65,8 @@ public class Match {
         return userId;
     }
 
+    public void setUserId(UUID userId) { this.userId = userId; }
+
     public LocalDateTime getDateAndTime() {
         return dateAndTime;
     }
