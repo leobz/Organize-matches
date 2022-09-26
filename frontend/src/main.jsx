@@ -21,6 +21,8 @@ import Users, {
   loader as usersLoader
 } from './routes/users/users';
 
+import SignIn from './routes/signIn/SignIn.jsx';
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -32,7 +34,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "login",
-            element: <div>Esto es la pantalla de login</div>
+            element: <SignIn/>
           },
           {
             path: "users",

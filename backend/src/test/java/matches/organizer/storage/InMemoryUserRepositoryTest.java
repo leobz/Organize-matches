@@ -31,6 +31,12 @@ class InMemoryUserRepositoryTest {
     }
 
     @Test
+    void addAndGetUserByEmail() {
+        userRepository.add(anyUser);
+        Assertions.assertEquals(anyUser.getEmail(),userRepository.getByEmail(anyUser.getEmail()).getEmail());
+    }
+
+    @Test
     void addAndRemoveUser() {
         userRepository.add(anyUser);
         userRepository.add(anotherUser);

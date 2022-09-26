@@ -32,7 +32,7 @@ public class UserService {
     public User createUser(User newUser) {
         User user = new User(newUser.getAlias(), newUser.getFullName(), newUser.getPhone(), newUser.getEmail(), newUser.getPassword());
         userRepository.add(user);
-        logger.info("USER WITH ID: " + user.getId().toString() + " CREATED CORRECTLY");
+        logger.info("USER WITH ID: {} CREATED CORRECTLY", user.getId());
         return user;
     }
 
@@ -46,9 +46,8 @@ public class UserService {
         return userRepository.getAll();
     }
 
-
-
-
-
-
+    public User getUserByEmail(String email) {
+        return userRepository.getByEmail(email);
+    }
+    
 }
