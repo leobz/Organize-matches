@@ -15,7 +15,7 @@ export default function Root() {
               <NavLink to='users'> Users </NavLink>
             </li>
               <li key="sections">
-                  <NavLink to="partidos">Partidos</NavLink>
+                  <NavLink to="matches">Matches</NavLink>
               </li>
           </ul>
         </nav>

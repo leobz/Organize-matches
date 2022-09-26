@@ -48,7 +48,7 @@ const router = createBrowserRouter([
             action: signUpAction,
           },
           {
-            path: "partidos",
+            path: "matches",
             element: <MatchList />,
             loader: getMatches
           },
