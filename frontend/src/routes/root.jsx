@@ -15,6 +15,9 @@ export default function Root() {
               <NavLink to='users'> Users </NavLink>
               <NavLink to='create-match'> Create Match </NavLink>
             </li>
+              <li key="sections">
+                  <NavLink to="matches">Matches</NavLink>
+              </li>
           </ul>
         </nav>
       </div>

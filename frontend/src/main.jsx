@@ -31,6 +31,7 @@ import CreateMatch, {
 } from './routes/matches/CreateMatch';
 
 import SignIn from './routes/signIn/SignIn.jsx';
+import MatchList, {loader as getMatches} from "./routes/Matches/MatchList";
 
 const router = createBrowserRouter([
   {
@@ -66,9 +67,14 @@ const router = createBrowserRouter([
             action: signUpAction,
           },
           {
+            path: "matches",
+            element: <MatchList />,
+            loader: getMatches
+          },
+          {
             index: true,
             element: <Index/>,
-          },   
+          },
         ]
       }
     ],
