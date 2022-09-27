@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.util.ArrayList;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,11 +31,15 @@ class UserControllerTest {
     private MockMvc mvc;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Test
     void createUser() throws Exception {
         this.mvc.perform(post( "/users").contentType(MediaType.APPLICATION_JSON_VALUE).content("{\n" +
             "    \"alias\": \"pepito\",\n" +
+            "    \"phone\": \"123456\",\n" +
+            "    \"email\": \"pepito@gmail.com\",\n" +
             "    \"fullName\": \"Pepito Pepitez\",\n" +
             "    \"password\": \"pepito123\"\n" +
             "}").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isCreated());
@@ -52,8 +57,9 @@ class UserControllerTest {
         users.add(user2);
 
         this.mvc.perform(get("/users")
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().json(getUsersResponse(users)));
+                        .cookie(new Cookie("token",jwtUtils.generateJwt(user1)))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                        .andExpect(content().json(getUsersResponse(users)));
     }
 
     private String getUsersResponse(ArrayList<User> users) {

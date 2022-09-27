@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import javax.servlet.http.Cookie;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @SpringBootTest(classes = {JwtUtils.class, MatchService.class, UserService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
@@ -44,6 +46,8 @@ class MatchControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtUtils jwtUtils;
     @Test
     void matchesRetrieved() throws Exception {
         sanitize();
@@ -66,7 +70,8 @@ class MatchControllerTest {
         matches.add(match2);
 
         this.mvc.perform(get("/matches")
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(getMatchesResponse(matches)));
     }
 
@@ -81,11 +86,13 @@ class MatchControllerTest {
     @Test
     void getMatch() throws Exception {
         sanitize();
+        User user = createUser();
 
         Match match = MatchService.createRandomMatch();
         matchRepository.add(match);
 
         this.mvc.perform(get("/matches/" + match.getId())
+                        .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(match.toJsonString()));
     }
@@ -132,6 +139,7 @@ class MatchControllerTest {
 
     @Test
     void registerNewPlayer() throws Exception {
+
         sanitize();
 
         User user = createUser();
@@ -143,16 +151,16 @@ class MatchControllerTest {
 
         assertTrue(matchRepository.get(match.getId()).getPlayers().isEmpty());
 
+
         ResultActions request = this.mvc.perform(
                 post("/matches/" + match.getId() + "/players")
+                .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content("\""+ userID + "\"")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         request.andExpect(status().isOk());
 
         assertFalse(matchRepository.get(match.getId()).getPlayers().isEmpty());
-
     }
 
     void sanitize() {
@@ -168,26 +176,25 @@ class MatchControllerTest {
 	void createMathOK() throws Exception {
         var user = createUser();
         userRepository.add(user);
-		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+		this.mvc.perform(post("/matches")
+                .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
+                .contentType(MediaType.APPLICATION_JSON).content("{\n" +
 				"   \"name\": \"un Partido de prueba\",\n" +
 				"   \"location\": \"GRUN FC\",\n" +
-				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\",\n" +
-				"   \"userId\": \"" + user.getId() + "\"\n" +
+				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\"\n" +
 				"}")).andExpect(status().isCreated());
-
 	}
 	@Test
 	void createMatchBadRequest() throws Exception {
         var user = createUser();
         userRepository.add(user);
-		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+		this.mvc.perform(post("/matches")
+                .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
+                .contentType(MediaType.APPLICATION_JSON).content("{\n" +
 				"   \"name\": \"un Partido de prueba\",\n" +
 				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\",\n" +
                 "   \"userId\": \"" + user.getId() + "\"\n" +
 				"}")).andExpect(status().isBadRequest());
-
-
-
 	}
 
 }

@@ -35,8 +35,9 @@ public class UserController {
 
 
     @GetMapping()
-    public String getUsers() {
+    public String getUsers(@CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /users ");
+        userService.jwtUtils.verify(auth);
         JsonObject allUsers = new JsonObject();
         JsonArray userArray = new JsonArray();
         userService.getUsers().forEach(user -> userArray.add(JsonParser.parseString(user.toJsonString())));

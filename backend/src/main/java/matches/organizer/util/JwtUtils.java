@@ -43,14 +43,6 @@ public class JwtUtils {
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiryAt);
 
-        // optional claims
-
-        claims.put("idUser",user.getId().toString());
-        claims.put("name", user.getFullName());
-        claims.put("emailId", user.getEmail());
-        claims.put("phone",user.getPhone());
-
-
         // generate jwt using claims
         return Jwts.builder()
                 .setClaims(claims)
@@ -62,9 +54,10 @@ public class JwtUtils {
         try {
             if (isInBlackList(authorization)) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access denied.");
             Jwts.parser().setSigningKey(secret).parseClaimsJws(authorization).getBody();
-            logger.info("THE TOKEN IS OK");
+            logger.debug("THE TOKEN IS OK");
 
         } catch(Exception e) {
+            logger.error("INVALID TOKEN: " + authorization + ". ACCESS DENIED");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access denied.");
         }
 
@@ -74,10 +67,10 @@ public class JwtUtils {
     public void addTokenToBlacklist(String token){
         tokenBlackList.add(token);
         Iterator iter = tokenBlackList.iterator();
-        logger.info("Blacklist: ");
+        logger.debug("Blacklist: ");
         while(iter.hasNext()){
             String itemList = (String)iter.next();
-            logger.info(itemList);
+            logger.debug(itemList);
         }
 
 
@@ -85,7 +78,7 @@ public class JwtUtils {
 
     private Boolean isInBlackList(String token){
         Boolean isInBlackList = tokenBlackList.contains(token);
-        logger.info("Is the token in the blacklist? " + isInBlackList);
+        logger.debug("Is the token in the blacklist? " + isInBlackList);
         return isInBlackList;
     }
 
