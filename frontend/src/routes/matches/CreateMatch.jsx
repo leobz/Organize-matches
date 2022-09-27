@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box } from '@mui/system';
 import dayjs from 'dayjs';
 import { BasicMatchForm } from './BasicMatchForm';
-import { Form } from "react-router-dom";
+import { Form, redirect } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
@@ -23,10 +23,10 @@ export async function action({ request }) {
 
 
   if(validateForm(dateTime)){
-    postCreateMatch(match)
+    //postCreateMatch(match)
     // TODO: Despues de crear partido, redireccion a partido creado
-    // const matchId = postCreateMatch(match)
-    // return redirect("/matches/matchId" + matchId )
+    const matchId = await postCreateMatch(match)
+    return redirect("/matches/" + matchId )
   }
 }
 
@@ -88,16 +88,13 @@ async function postCreateMatch(body) {
       body: JSON.stringify(body),
       });
 
-      if (!response.ok){
-        alert("Ah ocurrido un error");
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message)
-      }
+    if (!response.ok){
+      alert("Ah ocurrido un error");
+      const message = `An error has occured: ${response.status}`;
+      throw new Error(message)
+    }
 
-      response.json().then(data => {
-        alert("¡Partido creado!");
-        return data.id;
-      });
+    return (await response.json()).id;
   }
   catch(e){
     console.log(e)
