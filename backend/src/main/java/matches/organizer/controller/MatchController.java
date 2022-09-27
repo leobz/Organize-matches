@@ -53,10 +53,12 @@ public class MatchController {
 
     @PostMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
     @ResponseStatus(HttpStatus.CREATED)
-
     public Match createMatch(@RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("POST TO: /matches ");
         matchService.jwtUtils.verify(auth);
+
+        UUID userId = UUID.fromString(matchService.jwtUtils.getUserFromToken(auth));
+        newMatch.setUserId(userId);
         return matchService.createMatch(newMatch);
     }
 
@@ -76,10 +78,13 @@ public class MatchController {
     }
 
     @PostMapping(value = "/matches/{matchId}/players", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, List<Player>> registerPlayer(@PathVariable UUID matchId, @RequestBody UUID userId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+    public Map<String, List<Player>> registerPlayer(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
 
         logger.info("POST TO: /matches/{"+ matchId+"}/players ");
         matchService.jwtUtils.verify(auth);
+
+        UUID userId = UUID.fromString(matchService.jwtUtils.getUserFromToken(auth));
+
         var user = userService.getUser(userId);
         if (user == null) {
             logger.error("USER NOT FOUND: NEED TO CREATE AND USER BEFORE");

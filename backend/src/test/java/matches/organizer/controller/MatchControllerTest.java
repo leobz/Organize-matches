@@ -156,7 +156,6 @@ class MatchControllerTest {
                 post("/matches/" + match.getId() + "/players")
                 .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content("\""+ userID + "\"")
                         .accept(MediaType.APPLICATION_JSON_VALUE));
 
         request.andExpect(status().isOk());
@@ -183,8 +182,7 @@ class MatchControllerTest {
                 .contentType(MediaType.APPLICATION_JSON).content("{\n" +
 				"   \"name\": \"un Partido de prueba\",\n" +
 				"   \"location\": \"GRUN FC\",\n" +
-				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\",\n" +
-				"   \"userId\": \"" + user.getId() + "\"\n" +
+				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\"\n" +
 				"}")).andExpect(status().isCreated());
 
 	}
