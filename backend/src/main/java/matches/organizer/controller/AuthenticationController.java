@@ -42,8 +42,6 @@ public class AuthenticationController {
     @PostMapping(value= "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public String login(@RequestBody AuthenticationDTO userTryingLogin, HttpServletResponse response) {
         logger.info("POST TO: /login");
-        logger.info("THE USER WITH MAIL: " + userTryingLogin.getEmail() + " AND PASSWORD: " + userTryingLogin.getPassword() + " IS TRYING TO LOGIN");
-
         String token = authenticationService.loginUser(userTryingLogin);//<-- si el usuario no existe, tirás el 401 desde acá
 
         // crea una cookie
@@ -67,8 +65,8 @@ public class AuthenticationController {
 
     @PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public @ResponseBody Object logout(@RequestHeader(value = "authorization", defaultValue = "") String auth) throws Exception {
-        logger.info("POST TO: /logout");
+    public String logout(@CookieValue(value = "token", defaultValue = "") String auth) throws Exception {
+        logger.info("POST TO: /logout with token: " + auth);
         authenticationService.jwtUtils.verify(auth);
         authenticationService.jwtUtils.addTokenToBlacklist(auth);
         JsonObject loginResponse = new JsonObject();

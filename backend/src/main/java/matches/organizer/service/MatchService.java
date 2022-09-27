@@ -7,6 +7,7 @@ import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
+import matches.organizer.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class MatchService {
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
 
+    @Autowired
+    public JwtUtils jwtUtils;
     Logger logger = LoggerFactory.getLogger(MatchService.class);
 
     @Autowired
