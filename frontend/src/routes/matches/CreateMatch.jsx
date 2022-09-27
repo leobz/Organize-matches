@@ -6,9 +6,13 @@ import { Form } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
+import {Container, ThemeProvider, CssBaseline, createTheme, Avatar, Typography} from '@mui/material';
+import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
+
+const theme = createTheme();
 
 export async function action({ request }) {
-	const formData = await request.formData();
+  const formData = await request.formData();
   const dateTime = dayjs(formData.get('date') + " " + formData.get('time'))
 
   const match = {
@@ -20,22 +24,46 @@ export async function action({ request }) {
 
   if(validateForm(dateTime)){
     postCreateMatch(match)
+    // TODO: Despues de crear partido, redireccion a partido creado
+    // const matchId = postCreateMatch(match)
+    // return redirect("/matches/matchId" + matchId )
   }
 }
 
 /******************                   Main Component                       ******************/
 export default function CreateMatch() {
   return(
-    <Box>
-      <Form method="post">
-        <BasicMatchForm/>
-        <Grid container justifyContent="flex-end">
-          <Button type="submit" variant="contained" startIcon={<AddIcon/>}>
-            Crear Partido
-          </Button>
-        </Grid>
-      </Form>
-    </Box>
+    // TODO: Reutilizar componente de tema en todos las pantallas, para tener componentes homogeneos de manera sencilla
+    <ThemeProvider theme={theme}>
+      <Container component="main" maxWidth="sm">
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+              <LibraryAddOutlinedIcon />
+            </Avatar>
+        </Box>
+        <Form method="post">
+          <Typography component="h1" variant="h5">
+            <Box sx={{ textAlign: 'center', m: 1}}>
+              Crear Partido
+            </Box>
+          </Typography>
+          <BasicMatchForm/>
+          <Grid container justifyContent="flex-end">
+            <Button type="submit" variant="contained" startIcon={<AddIcon/>}>
+              Crear Partido
+            </Button>
+          </Grid>
+        </Form>
+      </Container>
+    </ThemeProvider>
   )
 }
 
@@ -67,9 +95,8 @@ async function postCreateMatch(body) {
       }
 
       response.json().then(data => {
-        // TODO: Agregar redireccion al recurso creado + Opcional Mensaje flotante indicando exito en creacion
-        const message = `Recurso creado exitosamente ID: ${data.id}`;
-        alert(message);
+        alert("¡Partido creado!");
+        return data.id;
       });
   }
   catch(e){

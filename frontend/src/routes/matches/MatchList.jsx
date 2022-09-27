@@ -6,12 +6,16 @@ import { useLoaderData } from "react-router-dom";
 import ListItemText from '@mui/material/ListItemText';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { Typography, Container, CssBaseline, Box, createTheme, ThemeProvider , Avatar} from '@mui/material';
+import SportsSoccerOutlinedIcon from '@mui/icons-material/SportsSoccerOutlined';
 
 export const loader = async () => {
     return fetch("/api/matches").then(resp => {
         return resp.json()
     });
 }
+
+const theme = createTheme();
 
 const MatchList = () => {
     const { matches } = useLoaderData();
@@ -24,6 +28,26 @@ const MatchList = () => {
     );
 
     return (
+    // TODO: Reutilizar componente de tema en todos las pantallas, para tener componentes homogeneos de manera sencilla
+    <ThemeProvider theme={theme}>
+        <Container component="main" maxWidth="100%">
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+              <SportsSoccerOutlinedIcon />
+            </Avatar>
+        </Box>
+        <Typography component="h1" variant="h5">
+            <Box sx={{ textAlign: 'center', m: 1}}>
+              Partidos disponibles
+            </Box>
+          </Typography>
         <List
             sx={{ width: '100%', bgcolor: 'background.paper' }}
             component="Grid"
@@ -32,6 +56,8 @@ const MatchList = () => {
         >
             {matches.length? matches.map(doparti => <MatchItem container match={doparti} />) : noMatches}
         </List>
+        </Container>
+    </ThemeProvider>
     );
 };
 
