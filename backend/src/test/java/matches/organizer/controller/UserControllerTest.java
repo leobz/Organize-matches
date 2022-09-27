@@ -38,6 +38,8 @@ class UserControllerTest {
     void createUser() throws Exception {
         this.mvc.perform(post( "/users").contentType(MediaType.APPLICATION_JSON_VALUE).content("{\n" +
             "    \"alias\": \"pepito\",\n" +
+            "    \"phone\": \"123456\",\n" +
+            "    \"email\": \"pepito@gmail.com\",\n" +
             "    \"fullName\": \"Pepito Pepitez\",\n" +
             "    \"password\": \"pepito123\"\n" +
             "}").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isCreated());
