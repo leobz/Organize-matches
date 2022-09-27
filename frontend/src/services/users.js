@@ -1,5 +1,5 @@
 export async function registerUser(user) {
-  const response = fetch("/api/users", {
+  const response = await fetch("/api/users", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -8,18 +8,12 @@ export async function registerUser(user) {
     body: JSON.stringify(user),
   });
   
-  if (response.status < 300){
+  if (response.status >= 300){
     throw new Response("", {
       status: response.status,
       statusText: response.statusText,
     });
   }
-  
-  response.json().then(data => {
-    const message = `Recurso creado exitosamente ID: ${data.id}`;
-    alert(message);
-
-  });
 }
  
 export const getUsers = async () =>
