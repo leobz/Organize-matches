@@ -14,9 +14,9 @@ export async function registerUser(user) {
       statusText: response.statusText,
     });
   }
-  
-  response.json().then(data => {
-    const message = `Recurso creado exitosamente ID: ${data.id}`;
+
+  response.then(data => {
+    const message = `Recurso creado exitosamente ID: ${data.json().id}`;
     alert(message);
 
   });
