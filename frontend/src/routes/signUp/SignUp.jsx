@@ -28,7 +28,8 @@ export async function action({ request }) {
 
 export default function SignUp(props) {
   return (
-    <Container component="main" maxWidth="xs">
+    // TODO: Reutilizar componente de tema en todos las pantallas, para tener componentes homogeneos de manera sencilla
+    <Container component="main" maxWidth="sm">
       <CssBaseline />
       <Box
         sx={{

@@ -161,7 +161,6 @@ class MatchControllerTest {
         request.andExpect(status().isOk());
 
         assertFalse(matchRepository.get(match.getId()).getPlayers().isEmpty());
-
     }
 
     void sanitize() {
@@ -184,7 +183,6 @@ class MatchControllerTest {
 				"   \"location\": \"GRUN FC\",\n" +
 				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\"\n" +
 				"}")).andExpect(status().isCreated());
-
 	}
 	@Test
 	void createMatchBadRequest() throws Exception {
@@ -197,9 +195,6 @@ class MatchControllerTest {
 				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\",\n" +
                 "   \"userId\": \"" + user.getId() + "\"\n" +
 				"}")).andExpect(status().isBadRequest());
-
-
-
 	}
 
 }

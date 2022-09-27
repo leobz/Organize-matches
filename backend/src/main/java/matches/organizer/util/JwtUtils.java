@@ -57,6 +57,7 @@ public class JwtUtils {
             logger.debug("THE TOKEN IS OK");
 
         } catch(Exception e) {
+            logger.error("INVALID TOKEN: " + authorization + ". ACCESS DENIED");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access denied.");
         }
 

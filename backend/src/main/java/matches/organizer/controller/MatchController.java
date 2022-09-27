@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:3001", allowedHeaders = "http://localhost:3001", allowCredentials = "true")
 @RestController
 @EnableWebMvc
 public class MatchController {

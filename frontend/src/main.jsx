@@ -34,7 +34,7 @@ import Metrics, {
 } from './routes/home/home';
 
 import SignIn from './routes/signIn/SignIn.jsx';
-import MatchList, {loader as getMatches} from "./routes/Matches/MatchList";
+import MatchList, {loader as getMatches} from "./routes/matches/MatchList";
 
 const router = createBrowserRouter([
   {
