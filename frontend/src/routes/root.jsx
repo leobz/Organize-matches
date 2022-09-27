@@ -8,15 +8,11 @@ const theme = createTheme();
 
 
 export default function Root() {
-    const [userId] = useState(localStorage.getItem('userId') || undefined);
+    const [userId, setUserId] = useState(localStorage.getItem('userId') || undefined);
     useEffect(() => {
-        const userId = localStorage.getItem('userId');
-        onSession = userId !== undefined;
+        setUserId(localStorage.getItem('userId'));
     }, []);
-    let onSession = userId !== undefined;
     const navigation = useNavigation();
-
-    console.log(onSession);
 
     return (
         <>
@@ -26,15 +22,13 @@ export default function Root() {
                         <h1>Organize Matches</h1>
                         <nav>
                             <ul>
-                                {! onSession &&
+                                {!userId &&
                                     <li key='login'>
-
                                         <NavLink to='login'> Sign In </NavLink>
                                         <NavLink to='register'> Sign Up </NavLink>
-
                                     </li>
                                 }
-                                {onSession &&
+                                {userId &&
                                     <li key="sections">
                                         <NavLink to='home'> Home </NavLink>
                                         <NavLink to="matches"> Matches </NavLink>
@@ -49,7 +43,7 @@ export default function Root() {
                             navigation.state === "loading" ? "loading" : ""
                         }
                     >
-                        <Outlet/>
+                        <Outlet context={[userId, setUserId]}/>
                     </div>
                 </SnackbarProvider>
             </ThemeProvider>

@@ -3,7 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -13,11 +13,10 @@ import {Alert} from "@mui/material";
 import {useNavigate} from 'react-router-dom';
 import { loginUser, buildUser } from "../../services/login";
 import { useEffect, useState } from "react";
-import Root from "../root.jsx";
 
 export default function SignIn() {
 
-    const [userId, setUserId] = useState(localStorage.getItem('userId') || undefined);
+    const [userId, setUserId] = useOutletContext();
     const navigate = useNavigate();
     const [wrongUserOrPasswordAlert, setWrongUserOrPasswordAlert] = useState(false);
 
