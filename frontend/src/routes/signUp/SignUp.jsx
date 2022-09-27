@@ -8,7 +8,7 @@ import { registerUser } from "../../services/users";
 export async function action({ request }) {
 	const formData = await request.formData();
 
-  if(formData.get('password') != formData.get('repeatPassword')) {
+  if(formData.get('password') !== formData.get('repeatPassword')) {
     throw json (
       { errorMessage: "Password mismatch" },
       { status: 400 }
@@ -26,7 +26,7 @@ export async function action({ request }) {
 	return redirect('/login');
 }
 
-export default function SignUp(props) {
+export default function SignUp() {
   return (
     // TODO: Reutilizar componente de tema en todos las pantallas, para tener componentes homogeneos de manera sencilla
     <Container component="main" maxWidth="sm">

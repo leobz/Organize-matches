@@ -22,7 +22,7 @@ export default function SignUpForm ()
 		const formData = event.target.elements;
 		event.preventDefault();
 	
-		if(formData.password.value != formData.repeatPassword.value) {
+		if(formData.password.value !== formData.repeatPassword.value) {
 			showError(400, "Password mismatch");
 			return;
 		}
@@ -39,7 +39,7 @@ export default function SignUpForm ()
 			navigate('/login');
 		}
 		catch (error) {
-			if(error.status == 409)
+			if(error.status === 409)
 				showError(error.status, "Email address is taken. Try another one.");
 			else
 				throw error;

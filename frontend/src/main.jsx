@@ -1,10 +1,9 @@
-// El practico
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import {
   createBrowserRouter,
-  RouterProvider,
+  RouterProvider
 } from "react-router-dom";
 
 import ErrorPage from './error-page'
@@ -29,7 +28,7 @@ import CreateMatch, {
   action as matchAction
 } from './routes/matches/CreateMatch';
 
-import Metrics, { 
+import Metrics, {
   loader as metricsLoader
 } from './routes/home/home';
 

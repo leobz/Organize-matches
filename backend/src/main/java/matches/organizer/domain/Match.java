@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.*;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
-import matches.organizer.controller.MatchController;
-import matches.organizer.controller.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,14 +11,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Match {
+
+    @Hidden
     private UUID id;
     private String name;
     private UUID userId;

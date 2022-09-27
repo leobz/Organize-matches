@@ -42,7 +42,7 @@ export default function Metrics() {
 
     <ThemeProvider theme={theme}>
       <Box sx = {{textAlign: "center",}}>
-        <img src="https://media.giphy.com/media/MsJJJUtugeNNCPL2lA/giphy.gif"/>
+          <img src="/img/OrganizeMatches.gif" alt={"logo"}/>
       </Box>
 
       <Box

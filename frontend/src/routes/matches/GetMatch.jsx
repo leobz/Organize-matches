@@ -17,7 +17,6 @@ import {useNavigate} from 'react-router-dom';
 const theme = createTheme();
 
 export async function loader(request) {
-  console.log(request)
   const match = await getMatch(request.params.matchId);
   return { match };
 }
@@ -215,7 +214,6 @@ export const getMatch = async (id) =>
   }).then(function(response) {
     return response.json();
   }).then(function(data) {
-    console.log(data);
     return data;
   }).catch(error => {
     throw new Response("", {

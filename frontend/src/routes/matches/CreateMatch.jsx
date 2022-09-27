@@ -75,7 +75,7 @@ function validateForm(dateTime) {
     return false;
   }
   return true;
-};
+}
 
 async function postCreateMatch(body) {
   try {

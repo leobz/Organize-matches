@@ -26,9 +26,8 @@ export const getUsers = async () =>
   }).then(function(response) {
     return response.json();
   }).then(function(data) {
-    console.log(data);
     return JSON.stringify(data);
-  }).catch(error => {
+  }).catch(() => {
     throw new Response("", {
       status: response.status,
       statusText: response.statusText,
