@@ -47,6 +47,7 @@ export default function Root() {
                                     <li key="sections">
                                         <NavLink to='home'> Home </NavLink>
                                         <NavLink to="matches"> Matches </NavLink>
+                                        <NavLink to="create-match"> Create Match </NavLink>
                                         <NavLink to="logout" onClick={(e) => {onClickLogout(e)}}> Log Out </NavLink>
                                     </li>
                                 }
