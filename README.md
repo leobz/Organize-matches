@@ -32,6 +32,11 @@ docker compose down
 ```
 
 ---
+## URL del front
+
+```
+http://localhost:3001
+```
 
 ## Documentación de la API
 
