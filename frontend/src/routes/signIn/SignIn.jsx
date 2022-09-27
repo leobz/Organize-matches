@@ -13,10 +13,11 @@ import {Alert} from "@mui/material";
 import {useNavigate} from 'react-router-dom';
 import { loginUser, buildUser } from "../../services/login";
 import { useEffect, useState } from "react";
+import Root from "../root.jsx";
 
 export default function SignIn() {
 
-    const [userId, setUserId] = useState('');
+    const [userId, setUserId] = useState(localStorage.getItem('userId') || undefined);
     const navigate = useNavigate();
     const [wrongUserOrPasswordAlert, setWrongUserOrPasswordAlert] = useState(false);
 
@@ -32,7 +33,7 @@ export default function SignIn() {
                 response.json().then(data => {
                     setUserId(data.userId);
                 });
-                navigate('/users');
+                navigate('/home');
             }
         });
 

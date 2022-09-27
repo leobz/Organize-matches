@@ -8,16 +8,15 @@ const theme = createTheme();
 
 
 export default function Root() {
-    const [userId, setUserId] = useState('');
+    const [userId] = useState(localStorage.getItem('userId') || undefined);
     useEffect(() => {
         const userId = localStorage.getItem('userId');
-        if (userId) {
-            setUserId(userId);
-        }
+        onSession = userId !== undefined;
     }, []);
-    let onSession = userId;
+    let onSession = userId !== undefined;
     const navigation = useNavigation();
 
+    console.log(onSession);
 
     return (
         <>
@@ -38,8 +37,7 @@ export default function Root() {
                                 {onSession &&
                                     <li key="sections">
                                         <NavLink to='home'> Home </NavLink>
-                                        <NavLink to="matches">Matches</NavLink>
-                                        <NavLink to='users'> Users </NavLink>
+                                        <NavLink to="matches"> Matches </NavLink>
                                     </li>
                                 }
                             </ul>
