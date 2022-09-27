@@ -2,8 +2,7 @@ import {Outlet, NavLink, useNavigation} from 'react-router-dom';
 import {SnackbarProvider} from 'notistack';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useEffect, useState} from "react";
-import { Link } from '@mui/material';
-
+import {useNavigate} from 'react-router-dom';
 
 const theme = createTheme();
 
@@ -14,12 +13,13 @@ export default function Root() {
         setUserId(localStorage.getItem('userId'));
     }, []);
     const navigation = useNavigation();
+    const navigate = useNavigate();
 
     const onClickLogout = (e) => {
         e.preventDefault()
         localStorage.clear()
         setUserId(undefined)
-        // TODO: Quitar cookie
+        navigate('/login');
     }
 
     return (
