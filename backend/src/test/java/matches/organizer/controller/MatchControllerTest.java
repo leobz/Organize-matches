@@ -11,6 +11,7 @@ import matches.organizer.storage.InMemoryMatchRepository;
 import matches.organizer.storage.InMemoryUserRepository;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
+import matches.organizer.util.JwtUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.servlet.http.Cookie;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {MatchService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
+@SpringBootTest(classes = {MatchService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class, JwtUtils.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 
@@ -41,10 +43,12 @@ class MatchControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtUtils jwtUtils;
     @Test
     void matchesRetrieved() throws Exception {
         sanitize();
-
+        var user = createUser();
         Match match = createMatch();
         Match match2 = createMatch();
         for (int i = 0; i < 2; i++) {
@@ -62,7 +66,8 @@ class MatchControllerTest {
         matches.add(match2);
 
         this.mvc.perform(get("/matches")
-                .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(getMatchesResponse(matches)));
     }
 
@@ -77,11 +82,12 @@ class MatchControllerTest {
     @Test
     void getMatch() throws Exception {
         sanitize();
-
+        var user = createUser();
         Match match = createMatch();
         matchRepository.add(match);
 
         this.mvc.perform(get("/matches/" + match.getId())
+                        .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
                         .accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(match.toJsonString()));
     }
@@ -127,7 +133,7 @@ class MatchControllerTest {
 
     @Test
     void registerNewPlayer() throws Exception {
-
+        var user = createUser();
         Match match = createMatch();
         matchRepository.add(match);
 
@@ -135,6 +141,7 @@ class MatchControllerTest {
 
         this.mvc.perform(
                 post( "/matches/" + match.getId() + "/players")
+                        .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(
                                 "  {\n" +
@@ -171,7 +178,9 @@ class MatchControllerTest {
 	void createMathOK() throws Exception {
         var user = createUser();
         userRepository.add(user);
-		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+		this.mvc.perform(post("/matches")
+                .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
+                .contentType(MediaType.APPLICATION_JSON).content("{\n" +
 				"   \"name\": \"un Partido de prueba\",\n" +
 				"   \"location\": \"GRUN FC\",\n" +
 				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\",\n" +
@@ -183,7 +192,9 @@ class MatchControllerTest {
 	void createMatchBadRequest() throws Exception {
         var user = createUser();
         userRepository.add(user);
-		this.mvc.perform(post("/matches").contentType(MediaType.APPLICATION_JSON).content("{\n" +
+		this.mvc.perform(post("/matches")
+                .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
+                .contentType(MediaType.APPLICATION_JSON).content("{\n" +
 				"   \"name\": \"un Partido de prueba\",\n" +
 				"   \"dateAndTime\": \"2023-09-04T17:00:00.000Z\",\n" +
                 "   \"userId\": \"" + user.getId() + "\"\n" +

@@ -25,12 +25,6 @@ public class AuthenticationService{
 
     Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
-    /*
-    public JwtUtils getJwtUtils() {
-        return jwtUtils;
-    }
-
-     */
 
     @Autowired
     public JwtUtils jwtUtils;
@@ -47,7 +41,7 @@ public class AuthenticationService{
 
     public String loginUser(AuthenticationDTO userTryingLogin) {
 
-        User user = userRepository.getUserByEmail(userTryingLogin.getEmail()); //<-- yo te creo este método en mi branch 39-sign-in
+        User user = userRepository.getUserByEmail(userTryingLogin.getEmail());
         if (user == null ){
             logger.info("CANNOT MAP THE EMAIL WITH AN EXISTING USER");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access denied.");

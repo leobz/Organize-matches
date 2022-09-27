@@ -35,8 +35,9 @@ public class MatchController {
 
 
     @GetMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllMatches() {
+    public String getAllMatches(@CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /matches ");
+        matchService.jwtUtils.verify(auth);
         JsonObject allMatches = new JsonObject();
         JsonArray matchesArray = new JsonArray();
         matchService.getMatches().forEach(match -> matchesArray.add(JsonParser.parseString(match.toJsonString())));
@@ -46,14 +47,16 @@ public class MatchController {
 
     @PostMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
     @ResponseStatus(HttpStatus.CREATED)
-    public String createMatch(@RequestBody Match newMatch){
+    public String createMatch(@RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("POST TO: /matches ");
+        matchService.jwtUtils.verify(auth);
         return matchService.createMatch(newMatch).toJsonString();
     }
 
     @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getMatch(@PathVariable UUID matchId) {
+    public String getMatch(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /matches/{" + matchId.toString() + "}");
+        matchService.jwtUtils.verify(auth);
         return matchService.getMatch(matchId).toJsonString();
     }
 
@@ -66,8 +69,9 @@ public class MatchController {
     }
 
     @PostMapping(value = "/matches/{matchId}/players", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String registerPlayer(@PathVariable UUID matchId, @RequestBody User user) {
+    public String registerPlayer(@PathVariable UUID matchId, @RequestBody User user, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("POST TO: /matches/{"+ user.getId().toString() +"}/players ");
+        matchService.jwtUtils.verify(auth);
         return Match.getPlayersJsonArray(matchService.registerNewPlayer(matchId, user)).toString();
     }
 

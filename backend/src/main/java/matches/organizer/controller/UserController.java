@@ -31,13 +31,13 @@ public class UserController {
     public String createUser(@RequestBody User newUser) {
         logger.info("POST TO: /users ");
         return userService.addUser(newUser).toJsonString();
-        //return userService.createUser(newUser).toJsonString();
     }
 
 
     @GetMapping()
-    public String getUsers() {
+    public String getUsers(@CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /users ");
+        userService.jwtUtils.verify(auth);
         JsonObject allUsers = new JsonObject();
         JsonArray userArray = new JsonArray();
         userService.getUsers().forEach(user -> userArray.add(JsonParser.parseString(user.toJsonString())));

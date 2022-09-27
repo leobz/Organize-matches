@@ -22,12 +22,8 @@ public class UserService {
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public JwtUtils getJwtUtils() {
-        return jwtUtils;
-    }
-
     @Autowired
-    private JwtUtils jwtUtils;
+    public JwtUtils jwtUtils;
 
     public User createUser(User newUser) {
         User user = new User(newUser.getAlias(), newUser.getFullName(), newUser.getPhone(), newUser.getEmail(), newUser.getPassword());
