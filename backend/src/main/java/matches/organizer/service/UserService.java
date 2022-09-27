@@ -3,6 +3,7 @@ package matches.organizer.service;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
 import matches.organizer.storage.UserRepository;
+import matches.organizer.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,13 @@ public class UserService {
     }
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    public JwtUtils getJwtUtils() {
+        return jwtUtils;
+    }
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     public User createUser(User newUser) {
         if(newUser.getAlias() == null || newUser.getAlias() == ""){
@@ -55,6 +63,12 @@ public class UserService {
         return user;
     }
 
+    public User addUser(User newUser) {
+        userRepository.add(newUser);
+        logger.info("USER WITH ID: " + newUser.getId().toString() + " CREATED CORRECTLY");
+        return newUser;
+    }
+
     public List<User> getUsers() {
         return userRepository.getAll();
     }
@@ -62,4 +76,5 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.getByEmail(email);
     }
+    
 }

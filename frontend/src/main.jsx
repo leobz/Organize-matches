@@ -20,7 +20,12 @@ import Users, {
   loader as usersLoader
 } from './routes/users/users';
 
+import Metrics, { 
+  loader as metricsLoader
+} from './routes/home/home';
+
 import SignIn from './routes/signIn/SignIn.jsx';
+import MatchList, {loader as getMatches} from "./routes/Matches/MatchList";
 
 const router = createBrowserRouter([
   {
@@ -44,11 +49,21 @@ const router = createBrowserRouter([
             path: "register",
             element: <SignUp/>,
             action: signUpAction,
-          },   
+          },
+          {
+            path: "matches",
+            element: <MatchList />,
+            loader: getMatches
+          },
+          {
+            path: "home",
+            element: <Metrics/>,
+            loader: metricsLoader,
+          },  
           {
             index: true,
             element: <Index/>,
-          },   
+          },
         ]
       }
     ],
