@@ -5,7 +5,6 @@ import './index.css'
 import {
   createBrowserRouter,
   RouterProvider,
-  Route,
 } from "react-router-dom";
 
 import ErrorPage from './error-page'
@@ -29,6 +28,10 @@ import GetMatch, {
 import CreateMatch, {
   action as matchAction
 } from './routes/matches/CreateMatch';
+
+import Metrics, { 
+  loader as metricsLoader
+} from './routes/home/home';
 
 import SignIn from './routes/signIn/SignIn.jsx';
 import MatchList, {loader as getMatches} from "./routes/Matches/MatchList";
@@ -71,6 +74,11 @@ const router = createBrowserRouter([
             element: <MatchList />,
             loader: getMatches
           },
+          {
+            path: "home",
+            element: <Metrics/>,
+            loader: metricsLoader,
+          },  
           {
             index: true,
             element: <Index/>,

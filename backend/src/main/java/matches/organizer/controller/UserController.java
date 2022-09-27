@@ -31,7 +31,6 @@ public class UserController {
     public String createUser(@RequestBody User newUser) {
         logger.info("POST TO: /users ");
         return userService.addUser(newUser).toJsonString();
-        //return userService.createUser(newUser).toJsonString();
     }
 
 
