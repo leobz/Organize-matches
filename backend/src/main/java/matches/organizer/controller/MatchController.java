@@ -5,30 +5,36 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Operation;
 import matches.organizer.domain.Match;
+import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.service.MatchService;
+import matches.organizer.service.UserService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.UUID;
+import java.util.*;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @EnableWebMvc
 public class MatchController {
     private final MatchService matchService;
+    private final UserService userService;
 
     @Autowired
-    public MatchController(MatchService matchService) {
+    public MatchController(MatchService matchService, UserService userService) {
         this.matchService = matchService;
+        this.userService = userService;
     }
 
     Logger logger = LoggerFactory.getLogger(MatchController.class);
@@ -47,10 +53,11 @@ public class MatchController {
 
     @PostMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
     @ResponseStatus(HttpStatus.CREATED)
-    public String createMatch(@RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+
+    public Match createMatch(@RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("POST TO: /matches ");
         matchService.jwtUtils.verify(auth);
-        return matchService.createMatch(newMatch).toJsonString();
+        return matchService.createMatch(newMatch);
     }
 
     @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,10 +76,23 @@ public class MatchController {
     }
 
     @PostMapping(value = "/matches/{matchId}/players", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String registerPlayer(@PathVariable UUID matchId, @RequestBody User user, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
-        logger.info("POST TO: /matches/{"+ user.getId().toString() +"}/players ");
+    public Map<String, List<Player>> registerPlayer(@PathVariable UUID matchId, @RequestBody UUID userId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+
+        logger.info("POST TO: /matches/{"+ matchId+"}/players ");
         matchService.jwtUtils.verify(auth);
-        return Match.getPlayersJsonArray(matchService.registerNewPlayer(matchId, user)).toString();
+        var user = userService.getUser(userId);
+        if (user == null) {
+            logger.error("USER NOT FOUND: NEED TO CREATE AND USER BEFORE");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        List<Player> _players = matchService.registerNewPlayer(matchId, user);
+        var match = matchService.getMatch(matchId);
+        Map<String, List<Player>> response = new HashMap<String, List<Player>>();
+        response.put("startingPlayers", match.getStartingPlayers());
+        response.put("substitutePlayers", match.getSubstitutePlayers());
+
+        return response;
     }
 
 }

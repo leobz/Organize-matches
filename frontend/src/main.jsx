@@ -1,10 +1,10 @@
+// El practico
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import {
   createBrowserRouter,
   RouterProvider,
-  Route,
 } from "react-router-dom";
 
 import ErrorPage from './error-page'
@@ -20,6 +20,14 @@ import SignUp, {
 import Users, { 
   loader as usersLoader
 } from './routes/users/users';
+
+import GetMatch, {
+  loader as matchLoader
+} from './routes/matches/GetMatch';
+
+import CreateMatch, {
+  action as matchAction
+} from './routes/matches/CreateMatch';
 
 import Metrics, { 
   loader as metricsLoader
@@ -45,6 +53,16 @@ const router = createBrowserRouter([
             path: "users",
             element: <Users/>,
             loader: usersLoader
+          },
+          {
+            path: "matches/:matchId",
+            element: <GetMatch/>,
+            loader: matchLoader,
+          },
+          {
+            path: "create-match",
+            element: <CreateMatch/>,
+            action: matchAction,
           },
           {
             path: "register",

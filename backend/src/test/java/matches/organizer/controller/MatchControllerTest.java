@@ -7,6 +7,7 @@ import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
 import matches.organizer.service.MatchService;
+import matches.organizer.service.UserService;
 import matches.organizer.storage.InMemoryMatchRepository;
 import matches.organizer.storage.InMemoryUserRepository;
 import matches.organizer.storage.MatchRepository;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import javax.servlet.http.Cookie;
 import java.time.LocalDateTime;
@@ -32,7 +34,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {MatchService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class, JwtUtils.class})
+
+@SpringBootTest(classes = {JwtUtils.class, MatchService.class, UserService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 
@@ -48,13 +51,14 @@ class MatchControllerTest {
     @Test
     void matchesRetrieved() throws Exception {
         sanitize();
-        var user = createUser();
-        Match match = createMatch();
-        Match match2 = createMatch();
+
+        User user = createUser();
+        Match match = MatchService.createRandomMatch();
+        Match match2 = MatchService.createRandomMatch();
         for (int i = 0; i < 2; i++) {
-            match.addPlayer(UUID.randomUUID());
-            match2.addPlayer(UUID.randomUUID());
-            match2.addPlayer(UUID.randomUUID());
+            match.addPlayer(user);
+            match2.addPlayer(user);
+            match2.addPlayer(user);
         }
 
         matchRepository.add(match);
@@ -82,8 +86,9 @@ class MatchControllerTest {
     @Test
     void getMatch() throws Exception {
         sanitize();
-        var user = createUser();
-        Match match = createMatch();
+        User user = createUser();
+
+        Match match = MatchService.createRandomMatch();
         matchRepository.add(match);
 
         this.mvc.perform(get("/matches/" + match.getId())
@@ -100,6 +105,7 @@ class MatchControllerTest {
         ///////							Test Empty Counter					///////
         ///////////////////////////////////////////////////////////////////////////
         sanitize();
+        User user = createUser();
 
         this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk()).andExpect(content().json("{\"matches\": 0, \"players\": 0}"));
@@ -109,17 +115,17 @@ class MatchControllerTest {
         ///////////////////////////////////////////////////////////////////////////
 
         // Valid matches: 1, Valid Players: 2
-        Match m1 = createMatch();
-        m1.addPlayer(UUID.randomUUID());
-        m1.addPlayer(UUID.randomUUID());
+        Match m1 = MatchService.createRandomMatch();
+        m1.addPlayer(user);
+        m1.addPlayer(user);
 
         // Invalid matches and players (older than 2 hours)
         LocalDateTime oderDT = LocalDateTime.now(ZoneOffset.UTC).minusHours(2).minusMinutes(1);
 
-        Match m2 = createMatch();
+        Match m2 = MatchService.createRandomMatch();
         m2.setCreatedAt(oderDT);
 
-        m1.addPlayer(UUID.randomUUID());
+        m1.addPlayer(user);
         m1.getPlayers().get(0).setConfirmedAt(oderDT);
 
         // Test
@@ -133,25 +139,27 @@ class MatchControllerTest {
 
     @Test
     void registerNewPlayer() throws Exception {
-        var user = createUser();
-        Match match = createMatch();
+
+        sanitize();
+
+        User user = createUser();
+        userRepository.add(user);
+        UUID userID = user.getId();
+
+        Match match = MatchService.createRandomMatch();
         matchRepository.add(match);
 
         assertTrue(matchRepository.get(match.getId()).getPlayers().isEmpty());
 
-        this.mvc.perform(
-                post( "/matches/" + match.getId() + "/players")
-                        .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
+
+        ResultActions request = this.mvc.perform(
+                post("/matches/" + match.getId() + "/players")
+                .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(
-                                "  {\n" +
-                                        "    \"user\" : {\n" +
-                                        "    \"alias\" : \"y2\"\n" +
-                                        "    },\n" +
-                                        "    \"phone\" : \"54241248\",\n" +
-                                        "    \"email\" : \"helpme@gmail.com\"\n" +
-                                        "}")
-                        .accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+                        .content("\""+ userID + "\"")
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
+
+        request.andExpect(status().isOk());
 
         assertFalse(matchRepository.get(match.getId()).getPlayers().isEmpty());
 
@@ -159,15 +167,7 @@ class MatchControllerTest {
 
     void sanitize() {
         matchRepository.getAll().clear();
-    }
-
-    Match createMatch() {
-        return new MatchBuilder().
-                setName("Match").
-                setLocation("Location").
-                setUserId(UUID.randomUUID()).
-                setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
-                .build();
+        userRepository.getAll().clear();
     }
 
     User createUser() {

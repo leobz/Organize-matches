@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,6 +69,20 @@ public class MatchService {
   }
 
 
+    public static Match createRandomMatch() {
+        return new MatchBuilder().
+                setName("Match").
+                setLocation("Location").
+                setUserId(UUID.randomUUID()).
+                setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
+                .build();
+    }
+
+    public void createAndSaveRandomMatch() {
+        Match match = createRandomMatch();
+        matchRepository.add(match);
+    }
+
     public List<Player> registerNewPlayer(UUID id, User user) {
         var match = matchRepository.get(id);
 
@@ -114,7 +129,7 @@ public class MatchService {
         if(user.getEmail() == null){
             logger.error("CANNOT ADD PLAYER IF EMAIL IS NULL.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Email cannot be null.");}
-        match.addPlayer(user.getId());
+        match.addPlayer(user);
         updateUser(user);
     }
 
