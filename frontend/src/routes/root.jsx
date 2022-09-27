@@ -2,6 +2,7 @@ import {Outlet, NavLink, useNavigation} from 'react-router-dom';
 import {SnackbarProvider} from 'notistack';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useEffect, useState} from "react";
+import { Link } from '@mui/material';
 
 
 const theme = createTheme();
@@ -13,6 +14,13 @@ export default function Root() {
         setUserId(localStorage.getItem('userId'));
     }, []);
     const navigation = useNavigation();
+
+    const onClickLogout = (e) => {
+        e.preventDefault()
+        localStorage.clear()
+        setUserId(undefined)
+        // TODO: Quitar cookie
+    }
 
     return (
         <>
@@ -32,6 +40,7 @@ export default function Root() {
                                     <li key="sections">
                                         <NavLink to='home'> Home </NavLink>
                                         <NavLink to="matches"> Matches </NavLink>
+                                        <NavLink to="logout" onClick={(e) => {onClickLogout(e)}}>Log Out</NavLink>
                                     </li>
                                 }
                             </ul>
