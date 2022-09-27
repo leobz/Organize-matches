@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -31,6 +32,18 @@ public class UserService {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    public User createUser(User newUser) {
+        User user = new User(newUser.getAlias(), newUser.getFullName(), newUser.getPhone(), newUser.getEmail(), newUser.getPassword());
+        userRepository.add(user);
+        logger.info("USER WITH ID: {} CREATED CORRECTLY", user.getId());
+        return user;
+    }
+
+    public User getUser(UUID userId) {
+        return  userRepository.get(userId);
+
+    }
 
     public User addUser(User newUser) {
         validateNewUser(newUser);

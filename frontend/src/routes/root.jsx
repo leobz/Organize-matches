@@ -8,6 +8,7 @@ export default function Root() {
 
   return (
     <>
+
       <ThemeProvider theme={theme}>
         <SnackbarProvider maxSnack={1}>
         <div id="sidebar">
@@ -19,6 +20,7 @@ export default function Root() {
                 <NavLink to='login'> Login </NavLink>
                 <NavLink to='register'> Sign Up </NavLink>
                 <NavLink to='users'> Users </NavLink>
+                <NavLink to='create-match'> Create Match </NavLink>
               </li>
               <li key="sections">
                   <NavLink to="matches">Matches</NavLink>
