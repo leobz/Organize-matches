@@ -8,10 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 
 export const loader = async () => {
-    return fetch("http://localhost:8081/matches",  {
-        method: 'GET',
-        credentials: 'include'
-      }).then(resp => {
+    return fetch("/api/matches").then(resp => {
         return resp.json()
     });
 }

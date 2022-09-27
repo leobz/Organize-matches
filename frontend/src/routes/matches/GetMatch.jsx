@@ -25,15 +25,11 @@ export async function loader(request) {
 /******************                   Main Component                       ******************/
 export default function GetMatch() {
   const { match } = useLoaderData();
+  const userId = localStorage.userId
   const inscriptedUserIds =
     match.startingPlayers.map(p => p.userId).concat(
       match.substitutePlayers.map(p => p.userId)
     )
-
-
-  // TODO: MUY IMPORTANTE - CAMBIAR por userId del userStorage.
-  // Este es el ID del owner del partido y DEBE SER el ID del usuario que usa la APP
-  const userId = match.userId
 
   return(
     <ThemeProvider theme={theme}>

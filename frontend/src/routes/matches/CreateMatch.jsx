@@ -9,20 +9,14 @@ import AddIcon from '@mui/icons-material/Add';
 
 export async function action({ request }) {
 	const formData = await request.formData();
-
-  // TODO: Hardcodeado momentaneamente.
-  // IMPORTANTE: Cuando se obtenga el userId desde el controller del backend, eliminar esta linea
-  const userId = "00000000-0000-0000-0000-000000000000"
+  const dateTime = dayjs(formData.get('date') + " " + formData.get('time'))
 
   const match = {
     name: formData.get('name'),
     location: formData.get('location'),
-    date: formData.get('date'),
-    hour: formData.get('time'),
-    userId: userId
+    dateAndTime: dateTime
 	};
 
-  const dateTime = dayjs(match.date + " " + match.hour)
 
   if(validateForm(dateTime)){
     postCreateMatch(match)
@@ -56,13 +50,8 @@ function validateForm(dateTime) {
 };
 
 async function postCreateMatch(body) {
-  // TODO: Externalizar url_base a variable de configuracion
-  const url_base = "http://localhost:8081"
-  const path = "/matches"
-  const url = url_base + path
-
   try {
-    const response = await fetch(url, {
+    const response = await fetch("/api/matches", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
