@@ -32,7 +32,14 @@ public class UserService {
     @Autowired
     private JwtUtils jwtUtils;
 
-    public User createUser(User newUser) {
+    public User addUser(User newUser) {
+        validateNewUser(newUser);
+        userRepository.add(newUser);
+        logger.info("USER WITH ID: " + newUser.getId().toString() + " CREATED CORRECTLY");
+        return newUser;
+    }
+
+    private void validateNewUser(User newUser){
         if(newUser.getAlias() == null || newUser.getAlias() == ""){
             logger.error("CANNOT CREATE USER WITHOUT ALIAS");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Alias is missing");
@@ -57,16 +64,6 @@ public class UserService {
             logger.error("CANNOT REGISTER USER. EMAIL ALREADY EXISTS.");
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot register. Email already exists.");
         }
-        User user = new User(newUser.getAlias(), newUser.getFullName(), newUser.getPhone(), newUser.getEmail(), newUser.getPassword());
-        userRepository.add(user);
-        logger.info("USER WITH ID: {} CREATED CORRECTLY", user.getId());
-        return user;
-    }
-
-    public User addUser(User newUser) {
-        userRepository.add(newUser);
-        logger.info("USER WITH ID: " + newUser.getId().toString() + " CREATED CORRECTLY");
-        return newUser;
     }
 
     public List<User> getUsers() {
