@@ -3,6 +3,7 @@ import {SnackbarProvider} from 'notistack';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useEffect, useState} from "react";
 import {useNavigate} from 'react-router-dom';
+import { logout } from "../services/login";
 
 const theme = createTheme();
 
@@ -17,9 +18,15 @@ export default function Root() {
 
     const onClickLogout = (e) => {
         e.preventDefault()
-        localStorage.clear()
-        setUserId(undefined)
-        navigate('/login');
+        logout().then((response) => {
+            if (response.status >= 400){
+                console.log("Error on logout")
+            } else {
+                localStorage.clear()
+                setUserId(undefined)
+                navigate('/login');
+            }
+        })
     }
 
     return (
@@ -40,7 +47,7 @@ export default function Root() {
                                     <li key="sections">
                                         <NavLink to='home'> Home </NavLink>
                                         <NavLink to="matches"> Matches </NavLink>
-                                        <NavLink to="logout" onClick={(e) => {onClickLogout(e)}}>Log Out</NavLink>
+                                        <NavLink to="logout" onClick={(e) => {onClickLogout(e)}}> Log Out </NavLink>
                                     </li>
                                 }
                             </ul>
