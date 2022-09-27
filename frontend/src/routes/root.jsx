@@ -1,13 +1,15 @@
 import { Outlet, NavLink, useNavigation } from 'react-router-dom';
-import * as React from "react";
+import { SnackbarProvider } from 'notistack';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+const theme = createTheme();
 
 export default function Root() {
   const navigation = useNavigation();
 
-  let onSession = true;
-
   return (
     <>
+        <ThemeProvider theme={theme}>
+            <SnackbarProvider maxSnack={1}>
       <div id="sidebar">
         <h1>Organize Matches</h1>
         <nav>
@@ -38,6 +40,8 @@ export default function Root() {
       >
         <Outlet/>
       </div>
+    </SnackbarProvider>
+</ThemeProvider>
     </>
   );
 }

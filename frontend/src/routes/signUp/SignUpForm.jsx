@@ -1,11 +1,54 @@
+
+import * as React from 'react';
 import { Grid, Button, TextField, Box } from "@mui/material";
-import { Form, NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { registerUser } from "../../services/users";
+import { useSnackbar } from "notistack";
 
 export default function SignUpForm ()
 {
+	const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+
+	const showError = (statusCode, message) => {
+		enqueueSnackbar("Error " + statusCode + ": " + message, { variant: "error" });
+	}
+
+	const showSuccess = (message) => {
+		enqueueSnackbar(message, { variant: "success" });
+	}
+
+	const handleSubmit = async (event) => {
+		const formData = event.target.elements;
+		event.preventDefault();
+	
+		if(formData.password.value !== formData.repeatPassword.value) {
+			showError(400, "Password mismatch");
+			return;
+		}
+		const user = {
+			fullName: formData.fullName.value,
+			alias: formData.alias.value,
+			phone: formData.phone.value,
+			email: formData.email.value,
+			password: formData.password.value,
+		};
+		try {
+			await registerUser(user);
+			showSuccess("User created successfully.");
+			navigate('/login');
+		}
+		catch (error) {
+			if(error.status === 409)
+				showError(error.status, "Email address is taken. Try another one.");
+			else
+				throw error;
+		}
+	}
+
 	return (
 		<Box noValidate sx={{ mt: 3 }}>
-			<Form method="post">
+			<form onSubmit={handleSubmit}>
 				<Grid container spacing={2}>
 					<Grid item xs={12} sm={12}>
 						<TextField
@@ -57,6 +100,7 @@ export default function SignUpForm ()
 							name="password"
 							required
 							fullWidth
+							type="password"
 							id="password"
 							label="Password"
 							autoFocus
@@ -68,6 +112,7 @@ export default function SignUpForm ()
 							name="repeatPassword"
 							required
 							fullWidth
+							type="password"
 							id="repeatPassword"
 							label="Repeat Password"
 							autoFocus
@@ -91,7 +136,7 @@ export default function SignUpForm ()
 						</Grid>
 					</Grid>
 				</Grid>
-			</Form>
+			</form>
 		</Box>
 	);
 }

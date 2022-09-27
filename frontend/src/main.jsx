@@ -20,7 +20,15 @@ import Users, {
   loader as usersLoader
 } from './routes/users/users';
 
-import Metrics, { 
+import GetMatch, {
+  loader as matchLoader
+} from './routes/matches/GetMatch';
+
+import CreateMatch, {
+  action as matchAction
+} from './routes/matches/CreateMatch';
+
+import Metrics, {
   loader as metricsLoader
 } from './routes/home/home';
 
@@ -44,6 +52,16 @@ const router = createBrowserRouter([
             path: "users",
             element: <Users/>,
             loader: usersLoader
+          },
+          {
+            path: "matches/:matchId",
+            element: <GetMatch/>,
+            loader: matchLoader,
+          },
+          {
+            path: "create-match",
+            element: <CreateMatch/>,
+            action: matchAction,
           },
           {
             path: "register",

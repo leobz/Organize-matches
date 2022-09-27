@@ -2,6 +2,7 @@ package matches.organizer.storage;
 
 import matches.organizer.domain.Match;
 import matches.organizer.domain.MatchBuilder;
+import matches.organizer.domain.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,27 +71,31 @@ class InMemoryMatchRepositoryTest {
     }
 
     private Match buildAMatch() {
+        User user =  new User("User", "User","0303456", "pp@g.com", "Password");
+
         Match anyMatch = new MatchBuilder()
                 .setName("Any Match")
                 .setUserId(UUID.randomUUID())
                 .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                 .setLocation("La Bombonera")
                 .build();
-        anyMatch.addPlayer(UUID.randomUUID());
-        anyMatch.addPlayer(UUID.randomUUID());
-        anyMatch.addPlayer(UUID.randomUUID());
+        anyMatch.addPlayer(user);
+        anyMatch.addPlayer(user);
+        anyMatch.addPlayer(user);
         return anyMatch;
     }
 
     private Match buildAnotherMatch() {
+        User user =  new User("User", "User","0303456", "pp@g.com", "Password");
+
         Match anotherMatch = new MatchBuilder()
                 .setName("Another Match")
                 .setUserId(UUID.randomUUID())
                 .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                 .setLocation("La Bombonera")
                 .build();
-        anotherMatch.addPlayer(UUID.randomUUID());
-        anotherMatch.addPlayer(UUID.randomUUID());
+        anotherMatch.addPlayer(user);
+        anotherMatch.addPlayer(user);
         return anotherMatch;
     }
 }
