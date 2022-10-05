@@ -38,6 +38,10 @@ build/
 ### VS Code ###
 .vscode/
 
-node_modules/**
+node_modules/
 
-out/**
+out/
+
+mongo-express-pass.txt
+mongo-pass.txt
+mongo-express-url.txt
