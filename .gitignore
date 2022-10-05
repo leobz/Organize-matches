@@ -42,6 +42,4 @@ node_modules/
 
 out/
 
-mongo-express-pass.txt
 mongo-pass.txt
-mongo-express-url.txt

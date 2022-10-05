@@ -27,7 +27,7 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: /run/secrets/mongo-pass
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo-pass
     secrets:
       - mongo-pass
 
@@ -40,16 +40,10 @@ services:
       - "mongo"
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: /run/secrets/mongo-express-pass
-      ME_CONFIG_MONGODB_URL: /run/secrets/mongo-express-url
+      ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/mongo-pass
     secrets:
-      - mongo-express-pass
-      - mongo-express-url
+      - mongo-pass
 
 secrets:
   mongo-pass:
     file: ./mongo-pass.txt
-  mongo-express-pass:
-    file: ./mongo-express-pass.txt
-  mongo-express-url:
-    file: ./mongo-express-url.txt
