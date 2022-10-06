@@ -64,5 +64,8 @@ interfaz entendemos servirá para gestionar una BBDD noSql.
 Se decidió usar la base de datos noSQL MongoDB porque nos parece que la funcionalidad puede variar a futuro, y
 esta DDBB es más flexible para agregar nuevas funcionalidades.
 
+Para que funcione la creación de la base de datos, se deberá crear en la raiz del proyecto `/organize-matches`,
+un archivo llamado `mongo-pass.txt` con la password del usuario `root` de la base de datos.
+
 ### Mongo-Express
 http://localhost:8082/
