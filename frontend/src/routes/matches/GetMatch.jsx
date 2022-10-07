@@ -44,8 +44,8 @@ export default function GetMatch() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <SportsSoccerOutlinedIcon />
-            </Avatar>
+            <SportsSoccerOutlinedIcon />
+          </Avatar>
 
         </Box>
         <Box>
@@ -61,7 +61,7 @@ export default function GetMatch() {
               name={match.name}
               date={match.dateAndTime}
               time={match.dateAndTime}
-              />
+            />
           <FormSpace/>
 
           <Box
@@ -72,8 +72,8 @@ export default function GetMatch() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <Groups2OutlinedIcon />
-            </Avatar>
+            <Groups2OutlinedIcon />
+          </Avatar>
 
         </Box>
           <Typography component="h1" variant="h5">
@@ -120,16 +120,19 @@ export function BasicCard(props) {
 }
 
 export function DinamicAddPlayerButton(props){
+  const navigate = useNavigate()
+
   if (props.inscriptedUserIds.includes(props.userId)){
     return(
     <AddPlayerButton
       userId={props.userId}
       matchId={props.matchId}
-      disabled = {true}
-      color= {"success"}
-      text={"Inscripto"}
+      disabled = {false}
+      color= {"error"}
+      text={"Desuscribirse"}
       icon={<CheckCircleOutlineOutlinedIcon/>}
-      />)
+      onClick={() => unregisterPlayer(props.matchId, props.userId, navigate)}
+    />)
   }
   else if (props.inscriptedUserIds.length >= 13){
     return(
@@ -151,13 +154,12 @@ export function DinamicAddPlayerButton(props){
         color= {"primary"}
         text={"¡Anotarme!"}
         icon={<AddIcon/>}
-        />)
+        onClick={() => registerPlayer(props.matchId, props.userId, navigate)}
+      />)
     }
 }
 
 export function AddPlayerButton(props){
-  const navigate = useNavigate()
-
   return(
     <Grid container justifyContent="center">
     <Button
@@ -166,7 +168,7 @@ export function AddPlayerButton(props){
       startIcon={props.icon}
       variant="contained"
       fullWidth
-      onClick={() => registerPlayer(props.matchId, props.userId, navigate)}
+      onClick={() => props.onClick()}
       >
       {props.text}
     </Button>
@@ -195,6 +197,33 @@ async function registerPlayer(matchId, userId, navigate) {
 
       response.json().then(data => {
         alert("¡Te has anotado al partido!");
+        navigate("/matches/"+ matchId)
+      })
+  }
+  catch(e){
+    console.log(e)
+  }
+}
+
+async function unregisterPlayer(matchId, userId, navigate) {
+  try {
+    const response = await fetch("/api/matches/" + matchId + "/players/" + userId, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: null,
+      });
+
+      if (!response.ok){
+        alert("Ah ocurrido un error");
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message)
+      }
+
+      response.json().then(data => {
+        alert("Te has desuscrito del partido");
         navigate("/matches/"+ matchId)
       })
   }

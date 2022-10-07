@@ -107,6 +107,20 @@ public class MatchService {
         }
     }
 
+    public List<Player> unregisterPlayer(UUID matchId, UUID playerId) {
+        var match = matchRepository.get(matchId);
+
+        if(match != null) {
+            match.removePlayer(playerId);
+            matchRepository.update(match);
+            logger.info("PLAYER WITH ID: " + playerId.toString() + " REMOVED CORRECTLY FROM MATCH " + match.getId().toString());
+            return match.getPlayers();
+        } else {
+            logger.error("MATCH NOT FOUND WITH ID: " + matchId.toString());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found.");
+        }
+    }
+
     /**
      * Retorna un contador con la cantidad de partidos creados y jugadores anotados a partir de una fecha/hora.
      *
