@@ -12,7 +12,8 @@ import Button from '@mui/material/Button';
 import SportsSoccerOutlinedIcon from '@mui/icons-material/SportsSoccerOutlined';
 import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
 import {useNavigate} from 'react-router-dom';
-
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { useSnackbar } from "notistack";
 
 const theme = createTheme();
 
@@ -121,6 +122,7 @@ export function BasicCard(props) {
 
 export function DinamicAddPlayerButton(props){
   const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
 
   if (props.inscriptedUserIds.includes(props.userId)){
     return(
@@ -129,9 +131,9 @@ export function DinamicAddPlayerButton(props){
       matchId={props.matchId}
       disabled = {false}
       color= {"error"}
-      text={"Desuscribirse"}
-      icon={<CheckCircleOutlineOutlinedIcon/>}
-      onClick={() => unregisterPlayer(props.matchId, props.userId, navigate)}
+      text={"Darme de baja"}
+      icon={<HighlightOffIcon/>}
+      onClick={() => unregisterPlayer(props.matchId, props.userId, navigate, enqueueSnackbar)}
     />)
   }
   else if (props.inscriptedUserIds.length >= 13){
@@ -154,7 +156,7 @@ export function DinamicAddPlayerButton(props){
         color= {"primary"}
         text={"¡Anotarme!"}
         icon={<AddIcon/>}
-        onClick={() => registerPlayer(props.matchId, props.userId, navigate)}
+        onClick={() => registerPlayer(props.matchId, props.userId, navigate, enqueueSnackbar)}
       />)
     }
 }
@@ -178,7 +180,7 @@ export function AddPlayerButton(props){
 
 
 /******************                   Functions                       ******************/
-async function registerPlayer(matchId, userId, navigate) {
+async function registerPlayer(matchId, userId, navigate, enqueueSnackbar) {
   try {
     const response = await fetch("/api/matches/" + matchId + "/players", {
       method: 'POST',
@@ -190,13 +192,15 @@ async function registerPlayer(matchId, userId, navigate) {
       });
 
       if (!response.ok){
-        alert("Ah ocurrido un error");
+        enqueueSnackbar("Error " + response.status + ": Ha ocurrido un error.", { variant: "error" });
+        //alert("Ha ocurrido un error");
         const message = `An error has occured: ${response.status}`;
         throw new Error(message)
       }
 
       response.json().then(data => {
-        alert("¡Te has anotado al partido!");
+        enqueueSnackbar("¡Te has anotado al partido!", { variant: "success" });
+        //alert("¡Te has anotado al partido!");
         navigate("/matches/"+ matchId)
       })
   }
@@ -205,7 +209,7 @@ async function registerPlayer(matchId, userId, navigate) {
   }
 }
 
-async function unregisterPlayer(matchId, userId, navigate) {
+async function unregisterPlayer(matchId, userId, navigate, enqueueSnackbar) {
   try {
     const response = await fetch("/api/matches/" + matchId + "/players/" + userId, {
       method: 'DELETE',
@@ -217,13 +221,15 @@ async function unregisterPlayer(matchId, userId, navigate) {
       });
 
       if (!response.ok){
-        alert("Ah ocurrido un error");
+        enqueueSnackbar("Error " + response.status + ": Ha ocurrido un error.", { variant: "error" });
+        //alert("Ah ocurrido un error");
         const message = `An error has occured: ${response.status}`;
         throw new Error(message)
       }
 
       response.json().then(data => {
-        alert("Te has desuscrito del partido");
+        enqueueSnackbar("Te has dado de baja del partido", { variant: "success" });
+        //alert("Te has dado de baja del partido");
         navigate("/matches/"+ matchId)
       })
   }
