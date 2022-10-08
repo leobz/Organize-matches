@@ -10,7 +10,7 @@ help: ## Imprime targets y ayuda
 dev: ## Compila y ejecuta localmente el backend
 	cd backend; \
 	mvn clean install; \
-	docker-compose up -d mongo
+	docker-compose up -d mongo; \
 	java -jar target/matches-organizer-0.0.1-SNAPSHOT.jar
 
 .PHONY: build
@@ -22,9 +22,9 @@ build: ## Crea imagen docker del todos los componentes (backend y frontend)
 
 .PHONY: clean
 clean: ## Elimina los containers e imagenes (no borra la cache)
-	docker container kill be-organize-matches fe-organize-matches; \
-	docker container rm be-organize-matches fe-organize-matches; \
-	docker image rm --no-prune be-organize-matches fe-organize-matches;
+	docker container kill be-organize-matches fe-organize-matches mongo mongo-express; \
+	docker container rm be-organize-matches fe-organize-matches mongo mongo-express; \
+	docker image rm --no-prune be-organize-matches fe-organize-matches mongo mongo-express;
 
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.

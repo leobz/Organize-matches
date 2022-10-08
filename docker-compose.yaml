@@ -5,6 +5,8 @@ services:
     image: be-organize-matches:latest
     container_name: be-organize-matches
     restart: on-failure
+    depends_on:
+      - "mongo"
     ports:
       - "8081:8081"
 
