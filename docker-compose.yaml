@@ -9,6 +9,10 @@ services:
       - "mongo"
     ports:
       - "8081:8081"
+    environment:
+      MONGO_PASSWORD: /run/secrets/mongo-pass
+    secrets:
+      - mongo-pass
 
   frontend:
     build: ./frontend

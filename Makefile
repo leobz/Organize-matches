@@ -11,7 +11,8 @@ dev: ## Compila y ejecuta localmente el backend
 	cd backend; \
 	mvn clean install; \
 	docker-compose up -d mongo; \
-	java -jar target/matches-organizer-0.0.1-SNAPSHOT.jar
+	java -jar target/matches-organizer-0.0.1-SNAPSHOT.jar \
+	--spring.data.mongodb.uri=mongodb://root:$(shell cat mongo-pass.txt)@localhost:27017/admin?authMechanism=SCRAM-SHA-256
 
 .PHONY: build
 build: ## Crea imagen docker del todos los componentes (backend y frontend)
@@ -22,9 +23,9 @@ build: ## Crea imagen docker del todos los componentes (backend y frontend)
 
 .PHONY: clean
 clean: ## Elimina los containers e imagenes (no borra la cache)
-	docker container kill be-organize-matches fe-organize-matches mongo mongo-express; \
-	docker container rm be-organize-matches fe-organize-matches mongo mongo-express; \
-	docker image rm --no-prune be-organize-matches fe-organize-matches mongo mongo-express;
+	docker container kill be-organize-matches fe-organize-matches; \
+	docker container rm be-organize-matches fe-organize-matches; \
+	docker image rm --no-prune be-organize-matches fe-organize-matches;
 
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.
