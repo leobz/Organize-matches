@@ -39,3 +39,13 @@ prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la im
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto
 	docker-compose down
+
+.PHONY: lt-matches
+lt-matches: ## lt-matches token=<jwt-token>. Test de Carga HTTP del endpoint GET '/matches'.
+	@if [ -z $(token) ];\
+	then \
+		echo "¡Token no proporcionado!\n   Uso: make lt-matches token=<jwt-token>" ;\
+	else \
+		docker run --network=host --rm -i peterevans/vegeta sh -c \
+		"echo 'GET http://localhost:8081/matches' | vegeta attack -header 'Cookie: token=$(token)' -duration=1s | tee results.bin | vegeta report" ; \
+	fi
