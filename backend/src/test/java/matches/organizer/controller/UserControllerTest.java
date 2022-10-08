@@ -5,31 +5,32 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import matches.organizer.domain.User;
 import matches.organizer.service.UserService;
-import matches.organizer.storage.InMemoryUserRepository;
 import matches.organizer.storage.UserRepository;
 import matches.organizer.util.JwtUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
 import java.util.ArrayList;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {UserService.class, UserController.class, InMemoryUserRepository.class, JwtUtils.class})
+@SpringBootTest(classes = {UserService.class, UserController.class, JwtUtils.class})
 @AutoConfigureMockMvc
 class UserControllerTest {
 
     @Autowired
     private MockMvc mvc;
-    @Autowired
+    @MockBean
     private UserRepository userRepository;
     @Autowired
     private JwtUtils jwtUtils;
@@ -47,14 +48,15 @@ class UserControllerTest {
 
     @Test
     void getUsers() throws Exception {
-        sanitize();
-        User user1 = addNewUser();
-        User user2 = addNewUser();
+        User user1 = buildNewUser();
+        User user2 = buildNewUser();
 
         ArrayList<User> users = new ArrayList<>();
 
         users.add(user1);
         users.add(user2);
+
+        when(userRepository.findAll()).thenReturn(users);
 
         this.mvc.perform(get("/users")
                         .cookie(new Cookie("token",jwtUtils.generateJwt(user1)))
@@ -70,14 +72,8 @@ class UserControllerTest {
         return allUsers.toString();
     }
 
-    private User addNewUser() {
-        User user = new User("pepito", "Pepito Pepitez", "0303456", "pp@g.com", "pepito123");
-        userRepository.add(user);
-        return user;
-    }
-
-    void sanitize() {
-        userRepository.getAll().clear();
+    private User buildNewUser() {
+        return new User("pepito", "Pepito Pepitez", "0303456", "pp@g.com", "pepito123");
     }
 
 }

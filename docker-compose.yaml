@@ -28,6 +28,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo-pass
+      MONGO_INITDB_DATABASE: organize-matches
     secrets:
       - mongo-pass
 

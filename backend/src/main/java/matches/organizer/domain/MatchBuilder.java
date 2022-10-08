@@ -1,6 +1,5 @@
 package matches.organizer.domain;
 
-import matches.organizer.service.MatchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,7 @@ import java.util.UUID;
 public class MatchBuilder {
 
     private String name;
-    private UUID userId;
+    private String userId;
     private LocalDateTime dateAndTime;
     private String location;
 
@@ -24,7 +23,7 @@ public class MatchBuilder {
         return this;
     }
 
-    public MatchBuilder setUserId(UUID userId) {
+    public MatchBuilder setUserId(String userId) {
         this.userId = userId;
         return this;
     }
@@ -63,7 +62,6 @@ public class MatchBuilder {
         }
         UUID id = UUID.randomUUID();
         LocalDateTime createdAt = LocalDateTime.now(ZoneOffset.UTC);
-        //logger.info("MATCH CRE");
 
         return new Match(id, name, userId, dateAndTime, location, createdAt);
     }

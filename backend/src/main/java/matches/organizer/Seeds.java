@@ -3,7 +3,6 @@ package matches.organizer;
 import matches.organizer.domain.Match;
 import matches.organizer.domain.User;
 import matches.organizer.service.MatchService;
-import matches.organizer.storage.InMemoryMatchRepository;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
 import org.springframework.beans.factory.InitializingBean;
@@ -26,7 +25,7 @@ public class Seeds implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         var user =  new User("User", "User","0303456", "pp@g.com", "Password");
-        userRepository.add(user);
+        userRepository.save(user);
 
         Match match = MatchService.createRandomMatch();
         match.setUserId(user.getId());

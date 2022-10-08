@@ -4,12 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import matches.organizer.domain.Match;
-import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
 import matches.organizer.service.MatchService;
 import matches.organizer.service.UserService;
 import matches.organizer.storage.InMemoryMatchRepository;
-import matches.organizer.storage.InMemoryUserRepository;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
 import matches.organizer.util.JwtUtils;
@@ -17,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -25,17 +24,19 @@ import javax.servlet.http.Cookie;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.UUID;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest(classes = {JwtUtils.class, MatchService.class, UserService.class, MatchController.class, InMemoryMatchRepository.class, InMemoryUserRepository.class})
+@SpringBootTest(classes = {JwtUtils.class, MatchService.class, UserService.class, MatchController.class, InMemoryMatchRepository.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 
@@ -43,7 +44,7 @@ class MatchControllerTest {
     private MockMvc mvc;
     @Autowired
     private MatchRepository matchRepository;
-    @Autowired
+    @MockBean
     private UserRepository userRepository;
 
     @Autowired
@@ -143,8 +144,7 @@ class MatchControllerTest {
         sanitize();
 
         User user = createUser();
-        userRepository.add(user);
-        UUID userID = user.getId();
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         Match match = MatchService.createRandomMatch();
         matchRepository.add(match);
@@ -165,7 +165,6 @@ class MatchControllerTest {
 
     void sanitize() {
         matchRepository.getAll().clear();
-        userRepository.getAll().clear();
     }
 
     User createUser() {
@@ -175,7 +174,7 @@ class MatchControllerTest {
 	@Test
 	void createMathOK() throws Exception {
         var user = createUser();
-        userRepository.add(user);
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
 		this.mvc.perform(post("/matches")
                 .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
                 .contentType(MediaType.APPLICATION_JSON).content("{\n" +
@@ -187,7 +186,7 @@ class MatchControllerTest {
 	@Test
 	void createMatchBadRequest() throws Exception {
         var user = createUser();
-        userRepository.add(user);
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
 		this.mvc.perform(post("/matches")
                 .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
                 .contentType(MediaType.APPLICATION_JSON).content("{\n" +

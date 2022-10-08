@@ -6,11 +6,10 @@ import com.google.gson.JsonParser;
 import io.swagger.v3.oas.annotations.Operation;
 import matches.organizer.domain.Match;
 import matches.organizer.domain.Player;
-import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.service.MatchService;
 import matches.organizer.service.UserService;
-
+import matches.organizer.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,10 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @CrossOrigin(origins = "http://localhost:3001", allowedHeaders = "http://localhost:3001", allowCredentials = "true")
 @RestController
@@ -31,10 +33,13 @@ public class MatchController {
     private final MatchService matchService;
     private final UserService userService;
 
+    private final JwtUtils jwtUtils;
+
     @Autowired
-    public MatchController(MatchService matchService, UserService userService) {
+    public MatchController(MatchService matchService, UserService userService, JwtUtils jwtUtils) {
         this.matchService = matchService;
         this.userService = userService;
+        this.jwtUtils = jwtUtils;
     }
 
     Logger logger = LoggerFactory.getLogger(MatchController.class);
@@ -43,7 +48,7 @@ public class MatchController {
     @GetMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getAllMatches(@CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /matches ");
-        matchService.jwtUtils.verify(auth);
+        jwtUtils.verify(auth);
         JsonObject allMatches = new JsonObject();
         JsonArray matchesArray = new JsonArray();
         matchService.getMatches().forEach(match -> matchesArray.add(JsonParser.parseString(match.toJsonString())));
@@ -55,17 +60,17 @@ public class MatchController {
     @ResponseStatus(HttpStatus.CREATED)
     public Match createMatch(@RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("POST TO: /matches ");
-        matchService.jwtUtils.verify(auth);
+        jwtUtils.verify(auth);
 
-        UUID userId = UUID.fromString(matchService.jwtUtils.getUserFromToken(auth));
-        newMatch.setUserId(userId);
+        UUID userId = UUID.fromString(jwtUtils.getUserFromToken(auth));
+        newMatch.setUserId(userId.toString());
         return matchService.createMatch(newMatch);
     }
 
     @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getMatch(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
-        logger.info("GET TO: /matches/{" + matchId.toString() + "}");
-        matchService.jwtUtils.verify(auth);
+        logger.info("GET TO: /matches/{}", matchId);
+        jwtUtils.verify(auth);
         return matchService.getMatch(matchId).toJsonString();
     }
 
@@ -80,10 +85,10 @@ public class MatchController {
     @PostMapping(value = "/matches/{matchId}/players", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, List<Player>> registerPlayer(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
 
-        logger.info("POST TO: /matches/{"+ matchId+"}/players ");
-        matchService.jwtUtils.verify(auth);
+        logger.info("POST TO: /matches/{}/players ", matchId);
+        jwtUtils.verify(auth);
 
-        UUID userId = UUID.fromString(matchService.jwtUtils.getUserFromToken(auth));
+        UUID userId = UUID.fromString(jwtUtils.getUserFromToken(auth));
 
         var user = userService.getUser(userId);
         if (user == null) {
@@ -91,9 +96,9 @@ public class MatchController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
-        List<Player> _players = matchService.registerNewPlayer(matchId, user);
+        matchService.registerNewPlayer(matchId, user);
         var match = matchService.getMatch(matchId);
-        Map<String, List<Player>> response = new HashMap<String, List<Player>>();
+        Map<String, List<Player>> response = new HashMap<>();
         response.put("startingPlayers", match.getStartingPlayers());
         response.put("substitutePlayers", match.getSubstitutePlayers());
 

@@ -75,7 +75,7 @@ class InMemoryMatchRepositoryTest {
 
         Match anyMatch = new MatchBuilder()
                 .setName("Any Match")
-                .setUserId(UUID.randomUUID())
+                .setUserId(UUID.randomUUID().toString())
                 .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                 .setLocation("La Bombonera")
                 .build();
@@ -90,7 +90,7 @@ class InMemoryMatchRepositoryTest {
 
         Match anotherMatch = new MatchBuilder()
                 .setName("Another Match")
-                .setUserId(UUID.randomUUID())
+                .setUserId(UUID.randomUUID().toString())
                 .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                 .setLocation("La Bombonera")
                 .build();

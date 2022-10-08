@@ -8,14 +8,13 @@ help: ## Imprime targets y ayuda
 
 .PHONY: dev
 dev: ## Compila y ejecuta localmente el backend
-# TODO: Migrar a llamada de docker-compose cuando se cuenten con otros servicios
 	cd backend; \
 	mvn clean install; \
+	docker-compose up -d mongo
 	java -jar target/matches-organizer-0.0.1-SNAPSHOT.jar
 
 .PHONY: build
 build: ## Crea imagen docker del todos los componentes (backend y frontend)
-# TODO: Migrar a llamada de docker-compose cuando se cuenten con otros servicios
 	cd backend; \
 	docker build -t $(BE_DOCKER_TAG) .
 	cd frontend; \

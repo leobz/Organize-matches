@@ -1,9 +1,7 @@
 package matches.organizer.service;
 
-import matches.organizer.domain.MatchBuilder;
 import matches.organizer.domain.User;
 import matches.organizer.storage.UserRepository;
-import matches.organizer.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -26,61 +25,51 @@ public class UserService {
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired
-    public JwtUtils jwtUtils;
-
-    public User createUser(User newUser) {
-        User user = new User(newUser.getAlias(), newUser.getFullName(), newUser.getPhone(), newUser.getEmail(), newUser.getPassword());
-        userRepository.add(user);
-        logger.info("USER WITH ID: {} CREATED CORRECTLY", user.getId());
-        return user;
-    }
-
     public User getUser(UUID userId) {
-        return  userRepository.get(userId);
+        return  userRepository.findById(userId.toString()).orElse(null);
 
     }
 
     public User addUser(User newUser) {
         validateNewUser(newUser);
-        userRepository.add(newUser);
-        logger.info("USER WITH ID: " + newUser.getId().toString() + " CREATED CORRECTLY");
+        userRepository.save(newUser);
+        logger.info("USER WITH ID: {} CREATED CORRECTLY", newUser.getId());
         return newUser;
     }
 
     private void validateNewUser(User newUser){
-        if(newUser.getAlias() == null || newUser.getAlias() == ""){
+        if(newUser.getAlias() == null || Objects.equals(newUser.getAlias(), "")){
             logger.error("CANNOT CREATE USER WITHOUT ALIAS");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Alias is missing");
         }
-        if(newUser.getFullName() == null || newUser.getFullName() == ""){
+        if(newUser.getFullName() == null || Objects.equals(newUser.getFullName(), "")){
             logger.error("CANNOT CREATE USER WITHOUT FULL NAME");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full Name is missing");
         }
-        if(newUser.getPhone() == null || newUser.getPhone() == ""){
+        if(newUser.getPhone() == null || Objects.equals(newUser.getPhone(), "")){
             logger.error("CANNOT CREATE USER WITHOUT PHONE");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Phone is missing");
         }
-        if(newUser.getEmail() == null || newUser.getEmail() == ""){
+        if(newUser.getEmail() == null || Objects.equals(newUser.getEmail(), "")){
             logger.error("CANNOT CREATE USER WITHOUT EMAIL");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is missing");
         }
-        if(newUser.getPassword() == null || newUser.getPassword() == ""){
+        if(newUser.getPassword() == null || Objects.equals(newUser.getPassword(), "")){
             logger.error("CANNOT CREATE USER WITHOUT PASSWORD");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is missing");
         }
-        if(userRepository.getByEmail(newUser.getEmail()) != null) {
+        if(userRepository.findByEmail(newUser.getEmail()) != null) {
             logger.error("CANNOT REGISTER USER. EMAIL ALREADY EXISTS.");
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot register. Email already exists.");
         }
     }
 
     public List<User> getUsers() {
-        return userRepository.getAll();
+        return userRepository.findAll();
     }
 
     public User getUserByEmail(String email) {
-        return userRepository.getByEmail(email);
+        return userRepository.findByEmail(email);
     }
     
 }
