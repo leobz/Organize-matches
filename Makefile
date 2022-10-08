@@ -27,6 +27,11 @@ clean: ## Elimina los containers e imagenes (no borra la cache)
 	docker container rm be-organize-matches fe-organize-matches; \
 	docker image rm --no-prune be-organize-matches fe-organize-matches;
 
+.PHONY: lt-counter
+lt-counter: ## Test de Carga HTTP del endpoint /matches/counter
+	docker run --network=host --rm -i peterevans/vegeta sh -c \
+	"echo 'GET http://localhost:8081/matches/counter' | vegeta attack -duration=1s | tee results.bin | vegeta report"
+
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.
 	docker-compose up -d;

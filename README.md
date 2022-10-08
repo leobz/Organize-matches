@@ -69,3 +69,11 @@ un archivo llamado `mongo-pass.txt` con la password del usuario `root` de la bas
 
 ### Mongo-Express
 http://localhost:8082/
+
+## Testing
+
+Para ver los test de carga HTTP disponibles, ejecutar el siguiente comando:
+
+```shell
+make help | grep lt
+```
