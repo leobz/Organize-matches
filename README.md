@@ -77,3 +77,11 @@ Para ver los test de carga HTTP disponibles, ejecutar el siguiente comando:
 ```shell
 make help | grep lt
 ```
+
+Para modificar parametros de los tests de carga, modificar las siguientes variables en el Makefile:
+
+```
+VEGETA_DURATION = 10s # Cantidad de segundos del test
+VEGETA_RATE = 0 # Maxima cantidad de request por segundo. (0 es infinito)
+VEGETA_MAX_WORKERS = 1000 # Maxima cantidad de usuarios (Nota: 1 usuario puede hacer N request)
+```

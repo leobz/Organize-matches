@@ -1,6 +1,8 @@
 BE_DOCKER_TAG = be-organize-matches:latest
 FE_DOCKER_TAG = fe-organize-matches:latest
-
+VEGETA_DURATION = 10s
+VEGETA_RATE = 0
+VEGETA_MAX_WORKERS = 1000
 
 PHONY: help
 help: ## Imprime targets y ayuda 
@@ -38,7 +40,7 @@ stop: ## Finaliza la ejecución de los componentes del proyecto
 .PHONY: lt-counter
 lt-counter: ## Test de Carga HTTP del endpoint GET '/matches/counter'
 	docker run --network=host --rm -i peterevans/vegeta sh -c \
-	"echo 'GET http://localhost:8081/matches/counter' | vegeta attack -duration=1s | tee results.bin | vegeta report"
+	"echo 'GET http://localhost:8081/matches/counter' | vegeta attack -duration=$(VEGETA_DURATION) -rate=$(VEGETA_RATE) -max-workers=$(VEGETA_MAX_WORKERS) | tee results.bin | vegeta report"
 
 .PHONY: lt-matches
 lt-matches: ## lt-matches token=<jwt-token>. Test de Carga HTTP del endpoint GET '/matches'.
@@ -47,7 +49,7 @@ lt-matches: ## lt-matches token=<jwt-token>. Test de Carga HTTP del endpoint GET
 		echo "¡Token no proporcionado!\n   Uso: make lt-matches token=<jwt-token>" ;\
 	else \
 		docker run --network=host --rm -i peterevans/vegeta sh -c \
-		"echo 'GET http://localhost:8081/matches' | vegeta attack -header 'Cookie: token=$(token)' -duration=1s | tee results.bin | vegeta report" ; \
+		"echo 'GET http://localhost:8081/matches' | vegeta attack -header 'Cookie: token=$(token)' -duration=$(VEGETA_DURATION) -rate=$(VEGETA_RATE) -max-workers=$(VEGETA_MAX_WORKERS) | tee results.bin | vegeta report" ; \
 	fi
 
 .PHONY: lt-new-match
@@ -63,7 +65,7 @@ lt-new-match: ## lt-new-match token=<jwt-token>. Test de Carga HTTP del endpoint
 		"vegeta attack -targets=target.txt \
 		-header 'Cookie: token=$(token)' \
 		-header 'Content-Type: application/json' \
-		-format=http -duration=1s \
+		-format=http -duration=$(VEGETA_DURATION) -rate=$(VEGETA_RATE) -max-workers=$(VEGETA_MAX_WORKERS) \
 		| tee results.bin | vegeta report" \
 		&& rm body.json && rm target.txt && rm results.bin ;\
 	fi
