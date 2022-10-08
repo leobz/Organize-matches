@@ -27,11 +27,6 @@ clean: ## Elimina los containers e imagenes (no borra la cache)
 	docker container rm be-organize-matches fe-organize-matches; \
 	docker image rm --no-prune be-organize-matches fe-organize-matches;
 
-.PHONY: lt-counter
-lt-counter: ## Test de Carga HTTP del endpoint /matches/counter
-	docker run --network=host --rm -i peterevans/vegeta sh -c \
-	"echo 'GET http://localhost:8081/matches/counter' | vegeta attack -duration=1s | tee results.bin | vegeta report"
-
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.
 	docker-compose up -d;
@@ -39,6 +34,11 @@ prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la im
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto
 	docker-compose down
+
+.PHONY: lt-counter
+lt-counter: ## Test de Carga HTTP del endpoint GET '/matches/counter'
+	docker run --network=host --rm -i peterevans/vegeta sh -c \
+	"echo 'GET http://localhost:8081/matches/counter' | vegeta attack -duration=1s | tee results.bin | vegeta report"
 
 .PHONY: lt-matches
 lt-matches: ## lt-matches token=<jwt-token>. Test de Carga HTTP del endpoint GET '/matches'.
@@ -48,4 +48,22 @@ lt-matches: ## lt-matches token=<jwt-token>. Test de Carga HTTP del endpoint GET
 	else \
 		docker run --network=host --rm -i peterevans/vegeta sh -c \
 		"echo 'GET http://localhost:8081/matches' | vegeta attack -header 'Cookie: token=$(token)' -duration=1s | tee results.bin | vegeta report" ; \
+	fi
+
+.PHONY: lt-new-match
+lt-new-match: ## lt-new-match token=<jwt-token>. Test de Carga HTTP del endpoint POST '/matches'.
+	@if [ -z $(token) ];\
+	then \
+		echo "¡Token no proporcionado!\n   Uso: make lt-new-match token=<jwt-token>" ;\
+	else \
+		docker run --network=host --rm -i peterevans/vegeta \
+		printf "POST http://localhost:8081/matches\n@./body.json" > target.txt && \
+		echo "{ \"name\": \"test\", \"location\": \"test\", \"dateAndTime\": \"2099-01-01T00:00:00.000Z\" }" > body.json && \
+		sh -c \
+		"vegeta attack -targets=target.txt \
+		-header 'Cookie: token=$(token)' \
+		-header 'Content-Type: application/json' \
+		-format=http -duration=1s \
+		| tee results.bin | vegeta report" \
+		&& rm body.json && rm target.txt && rm results.bin ;\
 	fi
