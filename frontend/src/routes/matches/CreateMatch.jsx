@@ -8,6 +8,7 @@ import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import {Container, ThemeProvider, CssBaseline, createTheme, Avatar, Typography} from '@mui/material';
 import LibraryAddOutlinedIcon from '@mui/icons-material/LibraryAddOutlined';
+import { postCreateMatch, validateDateTime } from '../../services/matches';
 
 const theme = createTheme();
 
@@ -21,10 +22,7 @@ export async function action({ request }) {
     dateAndTime: dateTime
 	};
 
-
-  if(validateForm(dateTime)){
-    //postCreateMatch(match)
-    // TODO: Despues de crear partido, redireccion a partido creado
+  if(validateDateTime(dateTime)){
     const matchId = await postCreateMatch(match)
     return redirect("/matches/" + matchId )
   }
@@ -65,38 +63,4 @@ export default function CreateMatch() {
       </Container>
     </ThemeProvider>
   )
-}
-
-/******************                   Functions                       ******************/
-
-function validateForm(dateTime) {
-  if (dateTime.isBefore(dayjs())) {
-    alert("Fecha y hora deben ser posterior al momento actual");
-    return false;
-  }
-  return true;
-}
-
-async function postCreateMatch(body) {
-  try {
-    const response = await fetch("/api/matches", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(body),
-      });
-
-    if (!response.ok){
-      alert("Ah ocurrido un error");
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message)
-    }
-
-    return (await response.json()).id;
-  }
-  catch(e){
-    console.log(e)
-  }
 }

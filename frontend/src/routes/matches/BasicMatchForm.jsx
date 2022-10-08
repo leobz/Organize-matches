@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react'; 
 import AbcIcon from '@mui/icons-material/Abc';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Box } from '@mui/system';
@@ -9,11 +10,16 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import TextField from '@mui/material/TextField';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import DoneIcon from '@mui/icons-material/Done';
+import CancelIcon from '@mui/icons-material/Cancel';
+import { Button } from '@mui/material'
 
 /******************                   Main Component                       ******************/
 export function BasicMatchForm(props) {
-  const [dateTime, setDateTime] = React.useState(nowPlus30Min());
-  const [minTime, setMinTime] = React.useState(nowPlus30Min());
+  const [dateTime, setDateTime] = React.useState(props.dateTime);
+  const [minTime, setMinTime] = React.useState(undefined);
+  const [name, setName] = React.useState(props.name);
+  const [location, setLocation] = React.useState(props.location);
   const today = dayjs();
   const readOnly =  props.readOnly || false
 
@@ -21,22 +27,25 @@ export function BasicMatchForm(props) {
     <div>
       <FormSpace/>
       <RequiredTextField
-        value={props.name}
-        readOnly={props.readOnly} adornment={<AbcIcon/>} id={"name"} defaultValue={"Nombre del Partido"}/>
+        onChange={(e) => { props.onChange(); setName(e.target.value); }}
+        value={name}
+        readOnly={props.readOnly} adornment={<AbcIcon/>} id={"name"}/>
       <RequiredTextField
-        value={props.location}
-        adornment={<LocationOnIcon/>} id={"location"} defaultValue={"Ubicacion"}/>
+        onChange={(e) => { props.onChange(); setLocation(e.target.value); }}
+        value={location}
+        adornment={<LocationOnIcon/>} id={"location"}/>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           label="Fecha"
-          value={props.date || dateTime}
+          value={dateTime||props.dateTime}
+          defaultValue={props.dateTime||nowPlus30Min()}
           disabled={readOnly}
           onChange={(newValue) => {
             setDateTime(newValue);
-
             var isAfterToday = dayjs(newValue).isAfter(dayjs(), 'day');
             if (isAfterToday) {setMinTime(dayjs().minute(0).hour(0).second(0));}
             else{setMinTime(nowPlus30Min());}
+            props.onChange();
           }
         }
           renderInput={(params) => <TextField {...params} name={"date"} id={"date"} sx={{ width: 0.5}} />}
@@ -46,9 +55,11 @@ export function BasicMatchForm(props) {
 
         <TimePicker
           label="Hora"
-          value={props.time || dateTime}
+          value={dateTime||props.dateTime}
+          defaultValue={dateTime||nowPlus30Min()}
           onChange={(newValue) => {
             setDateTime(newValue);
+            props.onChange();
           }}
           disabled={readOnly}
           inputFormat="HH:mm:00"
@@ -57,6 +68,22 @@ export function BasicMatchForm(props) {
         />
       </LocalizationProvider>
       <FormSpace/>
+      { props.isEditing &&
+          <>
+            <FormSpace/>
+            <Button type="submit" variant="contained" startIcon={<DoneIcon/>}>
+              Guardar
+            </Button>
+            <Button variant="outlined" startIcon={<CancelIcon/>} onClick={() => {
+                props.setIsEditing(false);
+                setLocation(props.location);
+                setName(props.name);
+                setDateTime(props.dateTime);
+              }}>
+              Cancelar
+            </Button>
+          </>
+          }
     </div>
   )
 }
@@ -75,9 +102,11 @@ export function RequiredTextField (props){
         name={props.id}
         value={props.value}
         label={props.id}
+        defaultValue={props.defaultValue}
         required
         fullWidth
         autoFocus
+        onChange={props.onChange}
       InputProps={{
 
         readOnly: props.readOnly  ,

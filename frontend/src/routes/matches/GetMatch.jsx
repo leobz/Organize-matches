@@ -1,29 +1,41 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { BasicMatchForm, FormSpace} from './BasicMatchForm';
-import { Form } from "react-router-dom";
-import { useLoaderData } from "react-router-dom";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import { Typography, Container, CssBaseline, Box, createTheme, ThemeProvider , Avatar} from '@mui/material';
+import { useNavigate, useLoaderData, redirect, Form } from "react-router-dom";
+import { Grid, Button, Typography, Container, CssBaseline, Box, Card, CardContent, Avatar} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 import SportsSoccerOutlinedIcon from '@mui/icons-material/SportsSoccerOutlined';
 import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
-import {useNavigate} from 'react-router-dom';
-
-
-const theme = createTheme();
+import { patchMatch, validateDateTime } from '../../services/matches';
+import dayjs from 'dayjs';
 
 export async function loader(request) {
   const match = await getMatch(request.params.matchId);
   return { match };
 }
 
+export async function action({ params, request }) {
+  const formData = await request.formData();
+  const dateTime = dayjs(formData.get('date') + " " + formData.get('time'))
+
+  const match = {
+    id: params.matchId,
+    name: formData.get('name'),
+    location: formData.get('location'),
+    dateAndTime: dateTime
+	};
+
+  if(validateDateTime(dateTime)){
+    const matchId = await patchMatch(match)
+    return redirect("/matches/" + params.matchId)
+  }
+}
+
 /******************                   Main Component                       ******************/
 export default function GetMatch() {
   const { match } = useLoaderData();
+  const [isEditing, setIsEditing] = useState(false);
   const userId = localStorage.userId
   const inscriptedUserIds =
     match.startingPlayers.map(p => p.userId).concat(
@@ -31,8 +43,6 @@ export default function GetMatch() {
     )
 
   return(
-    // TODO: Reutilizar componente de tema en todos las pantallas, para tener componentes homogeneos de manera sencilla
-    <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="sm">
         <CssBaseline />
         <Box
@@ -44,26 +54,27 @@ export default function GetMatch() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <SportsSoccerOutlinedIcon />
-            </Avatar>
-
+            <SportsSoccerOutlinedIcon />
+          </Avatar>
         </Box>
         <Box>
-          <Form>
           <Typography component="h1" variant="h5">
             <Box sx={{ textAlign: 'center', m: 1}}>
               Datos de partido
             </Box>
           </Typography>
+          <Form action={"/matches/" + match.id} method="patch">
             <BasicMatchForm
-              readOnly={true}
+              readOnly={false}
               location={match.location}
               name={match.name}
-              date={match.dateAndTime}
-              time={match.dateAndTime}
-              />
+              dateTime={match.dateAndTime}
+              onChange={() => setIsEditing(true)}
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
+            />
+          </Form>
           <FormSpace/>
-
           <Box
           sx={{
             display: 'flex',
@@ -95,10 +106,8 @@ export default function GetMatch() {
             <Box>
               {match.substitutePlayers.map((player) => <BasicCard playerName={player.alias}/>)}
             </Box>
-          </Form>
         </Box>
       </Container>
-    </ThemeProvider>
   )
 }
 
@@ -222,4 +231,3 @@ export const getMatch = async (id) =>
     });
   })
   .finally((data) => data);
-
