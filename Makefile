@@ -1,6 +1,6 @@
 BE_DOCKER_TAG = be-organize-matches:latest
 FE_DOCKER_TAG = fe-organize-matches:latest
-VEGETA_DURATION = 10s
+VEGETA_DURATION = 5s
 VEGETA_RATE = 0
 VEGETA_MAX_WORKERS = 1000
 
@@ -58,14 +58,13 @@ lt-new-match: ## lt-new-match token=<jwt-token>. Test de Carga HTTP del endpoint
 	then \
 		echo "¡Token no proporcionado!\n   Uso: make lt-new-match token=<jwt-token>" ;\
 	else \
-		docker run --network=host --rm -i peterevans/vegeta \
-		printf "POST http://localhost:8081/matches\n@./body.json" > target.txt && \
-		echo "{ \"name\": \"test\", \"location\": \"test\", \"dateAndTime\": \"2099-01-01T00:00:00.000Z\" }" > body.json && \
-		sh -c \
-		"vegeta attack -targets=target.txt \
+		docker run --network=host --rm -i peterevans/vegeta sh -c\
+		"printf 'POST http://localhost:8081/matches\n@./body.json' > target.txt && \
+		echo '{ \"name\": \"test\", \"location\": \"test\", \"dateAndTime\": \"2099-01-01T00:00:00.000Z\" }' > body.json && \
+		vegeta attack -targets=target.txt \
 		-header 'Cookie: token=$(token)' \
 		-header 'Content-Type: application/json' \
 		-format=http -duration=$(VEGETA_DURATION) -rate=$(VEGETA_RATE) -max-workers=$(VEGETA_MAX_WORKERS) \
-		| tee results.bin | vegeta report" \
-		&& rm body.json && rm target.txt && rm results.bin ;\
+		| tee results.bin | vegeta report \
+		&& rm body.json && rm target.txt && rm results.bin ";\
 	fi
