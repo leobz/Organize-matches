@@ -5,22 +5,21 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.UUID;
 
 public class Player {
 
-    private final UUID userId;
+    private final String userId;
     private final String alias;
 
     private LocalDateTime confirmedAt;
 
-    public Player(UUID userId, String alias) {
+    public Player(String userId, String alias) {
         this.userId = userId;
         this.alias = alias;
         this.confirmedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 
@@ -47,9 +46,9 @@ public class Player {
         @Override
         public JsonElement serialize(Player player, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject playerJson = new JsonObject();
-            playerJson.addProperty("userId", player.getUserId().toString());
+            playerJson.addProperty("userId", player.getUserId());
             playerJson.addProperty("confirmedAt", player.getConfirmedAt().toString());
-            playerJson.addProperty("alias", player.getAlias().toString());
+            playerJson.addProperty("alias", player.getAlias());
             return playerJson;
         }
     }

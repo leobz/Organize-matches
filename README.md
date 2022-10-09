@@ -34,15 +34,11 @@ docker compose down
 ---
 ## URL del front
 
-```
 http://localhost:3001
-```
 
 ## Documentación de la API
 
-```
 http://localhost:8081/swagger-ui/index.html
-```
 
 ## Visión General
 
@@ -55,17 +51,15 @@ curl --location --request GET 'http://localhost:8081/matches'
 La aplicación es en Java, con el framework Springboot que trae varias facilidades para trabajar en aplicaciones Web.
 
 Para la **persistencia**, se optó por implementar el pattern Repository para tener una aproximación similar 
-al manejo de listas para gestionar los partidos. En este caso se creó la interfaz `MatchRepository`, 
-cuya única implementación en la primer entrega es `InMemoryMatchRepository`, pero en futuras entregas esta misma 
-interfaz entendemos servirá para gestionar una BBDD noSql.
+al manejo de listas para gestionar los partidos. 
 
 ## MongoDB
 
 Se decidió usar la base de datos noSQL MongoDB porque nos parece que la funcionalidad puede variar a futuro, y
-esta DDBB es más flexible para agregar nuevas funcionalidades.
+esta DDBB es más flexible para agregar nuevas funcionalidades que un Cassandra por ejemplo.
 
-Para que funcione la creación de la base de datos, se deberá crear en la raiz del proyecto `/organize-matches`,
-un archivo llamado `mongo-pass.txt` con la password del usuario `root` de la base de datos.
+**Para que funcione la creación de la base de datos, se deberá crear en la raiz del proyecto `/organize-matches`,
+un archivo llamado `mongo-pass.txt` con la password del usuario `root` de la base de datos.**
 
 ### Mongo-Express
 http://localhost:8082/
