@@ -33,7 +33,7 @@ export function BasicMatchForm(props) {
       <RequiredTextField
         onChange={(e) => { props.onChange(); setLocation(e.target.value); }}
         value={location}
-        adornment={<LocationOnIcon/>} id={"location"}/>
+        readOnly={props.readOnly} adornment={<LocationOnIcon/>} id={"location"}/>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           label="Fecha"

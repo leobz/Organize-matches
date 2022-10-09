@@ -22,11 +22,7 @@ export async function patchMatch(match) {
 }
 
 export function validateDateTime(dateTime) {
-  if (dateTime.isBefore(dayjs())) {
-    alert("Fecha y hora deben ser posterior al momento actual");
-    return false;
-  }
-  return true;
+  return !dateTime.isBefore(dayjs());
 }
 
 export async function postCreateMatch(body) {

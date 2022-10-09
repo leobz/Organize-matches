@@ -21,8 +21,7 @@ import Users, {
 } from './routes/users/users';
 
 import GetMatch, {
-  loader as matchLoader,
-  action as patchMatchAction
+  loader as matchLoader
 } from './routes/matches/GetMatch';
 
 import CreateMatch, {
@@ -57,8 +56,7 @@ const router = createBrowserRouter([
           {
             path: "matches/:matchId",
             element: <GetMatch/>,
-            loader: matchLoader,
-            action: patchMatchAction
+            loader: matchLoader
           },
           {
             path: "create-match",

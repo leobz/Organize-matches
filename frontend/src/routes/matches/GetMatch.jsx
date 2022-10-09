@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { BasicMatchForm, FormSpace} from './BasicMatchForm';
-import { useNavigate, useLoaderData, redirect, Form } from "react-router-dom";
+import { useParams, useNavigate, useLoaderData, redirect, Form } from "react-router-dom";
 import { Grid, Button, Typography, Container, CssBaseline, Box, Card, CardContent, Avatar} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
@@ -9,38 +9,46 @@ import SportsSoccerOutlinedIcon from '@mui/icons-material/SportsSoccerOutlined';
 import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
 import { patchMatch, validateDateTime } from '../../services/matches';
 import dayjs from 'dayjs';
+import { useSnackbar } from "notistack";
 
 export async function loader(request) {
   const match = await getMatch(request.params.matchId);
   return { match };
 }
 
-export async function action({ params, request }) {
-  const formData = await request.formData();
-  const dateTime = dayjs(formData.get('date') + " " + formData.get('time'))
-
-  const match = {
-    id: params.matchId,
-    name: formData.get('name'),
-    location: formData.get('location'),
-    dateAndTime: dateTime
-	};
-
-  if(validateDateTime(dateTime)){
-    const matchId = await patchMatch(match)
-    return redirect("/matches/" + params.matchId)
-  }
-}
-
 /******************                   Main Component                       ******************/
 export default function GetMatch() {
+  const { enqueueSnackbar } = useSnackbar();
   const { match } = useLoaderData();
   const [isEditing, setIsEditing] = useState(false);
   const userId = localStorage.userId
+  const { matchId } = useParams();
   const inscriptedUserIds =
     match.startingPlayers.map(p => p.userId).concat(
       match.substitutePlayers.map(p => p.userId)
     )
+
+  const handleSubmit = async (event) => {
+    const formData = event.target.elements;
+    event.preventDefault();
+    const dateTime = dayjs(formData.date.value + " " + formData.time.value)
+  
+    const match = {
+      id: matchId,
+      name: formData.name.value,
+      location: formData.location.value,
+      dateAndTime: dateTime
+    };
+  
+    if(validateDateTime(dateTime)){
+      await patchMatch(match)
+      enqueueSnackbar("Match changes saved", { variant: "success" });
+      setIsEditing(false);
+      navigate("/matches/" + matchId);
+    }
+    else
+      enqueueSnackbar("Error: Fecha y hora deben ser posterior al momento actual", { variant: "error" });      
+  }
 
   return(
       <Container component="main" maxWidth="sm">
@@ -63,9 +71,9 @@ export default function GetMatch() {
               Datos de partido
             </Box>
           </Typography>
-          <Form action={"/matches/" + match.id} method="patch">
+          <form onSubmit={handleSubmit}>
             <BasicMatchForm
-              readOnly={false}
+              readOnly={match.userId != userId}
               location={match.location}
               name={match.name}
               dateTime={match.dateAndTime}
@@ -73,7 +81,7 @@ export default function GetMatch() {
               isEditing={isEditing}
               setIsEditing={setIsEditing}
             />
-          </Form>
+          </form>
           <FormSpace/>
           <Box
           sx={{
