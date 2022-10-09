@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box } from '@mui/system';
 import dayjs from 'dayjs';
-import { BasicMatchForm } from './BasicMatchForm';
+import BasicMatchForm from './BasicMatchForm';
 import { Form, redirect } from "react-router-dom";
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';

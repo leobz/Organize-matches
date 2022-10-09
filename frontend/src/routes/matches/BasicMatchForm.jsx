@@ -15,7 +15,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { Button } from '@mui/material'
 
 /******************                   Main Component                       ******************/
-export function BasicMatchForm(props) {
+function BasicMatchForm(props) {
   const [dateTime, setDateTime] = React.useState(props.dateTime);
   const [minTime, setMinTime] = React.useState(undefined);
   const [name, setName] = React.useState(props.name);
@@ -87,6 +87,12 @@ export function BasicMatchForm(props) {
     </div>
   )
 }
+
+BasicMatchForm.defaultProps = {
+  onChange: () => {}
+}
+
+export default BasicMatchForm
 
 /******************                   Sub Components                       ******************/
 export function FormSpace(){

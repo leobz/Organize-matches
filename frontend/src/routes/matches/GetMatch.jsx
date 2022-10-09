@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { BasicMatchForm, FormSpace} from './BasicMatchForm';
+import BasicMatchForm, {FormSpace} from './BasicMatchForm';
 import { useParams, useNavigate, useLoaderData, redirect, Form } from "react-router-dom";
 import { Grid, Button, Typography, Container, CssBaseline, Box, Card, CardContent, Avatar} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,6 +13,7 @@ import { useSnackbar } from "notistack";
 
 export async function loader(request) {
   const match = await getMatch(request.params.matchId);
+  match.dateAndTime = match.dateAndTime + "z"
   return { match };
 }
 
@@ -33,7 +34,7 @@ export default function GetMatch() {
     event.preventDefault();
     const dateTime = dayjs(formData.date.value + " " + formData.time.value)
   
-    const match = {
+    const bodyMatch = {
       id: matchId,
       name: formData.name.value,
       location: formData.location.value,
@@ -41,10 +42,9 @@ export default function GetMatch() {
     };
   
     if(validateDateTime(dateTime)){
-      await patchMatch(match)
+      await patchMatch(bodyMatch)
       enqueueSnackbar("Match changes saved", { variant: "success" });
       setIsEditing(false);
-      navigate("/matches/" + matchId);
     }
     else
       enqueueSnackbar("Error: Fecha y hora deben ser posterior al momento actual", { variant: "error" });      
