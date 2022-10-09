@@ -24,9 +24,7 @@ import GetMatch, {
   loader as matchLoader
 } from './routes/matches/GetMatch';
 
-import CreateMatch, {
-  action as matchAction
-} from './routes/matches/CreateMatch';
+import CreateMatch from './routes/matches/CreateMatch';
 
 import Metrics, {
   loader as metricsLoader
@@ -60,8 +58,7 @@ const router = createBrowserRouter([
           },
           {
             path: "create-match",
-            element: <CreateMatch/>,
-            action: matchAction,
+            element: <CreateMatch/>
           },
           {
             path: "register",

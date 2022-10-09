@@ -89,7 +89,9 @@ function BasicMatchForm(props) {
 }
 
 BasicMatchForm.defaultProps = {
-  onChange: () => {}
+  onChange: () => {},
+  name: "",
+  location: ""
 }
 
 export default BasicMatchForm
