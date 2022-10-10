@@ -21,7 +21,7 @@ public class Match {
     @Hidden
     private UUID id;
     private String name;
-    private UUID userId;
+    private String userId;
     @Schema(description = "Format yyyy-MM-ddTHH:mm:ss.SSSZ",
             format  = "yyyy-MM-ddTHH:mm:ss.sssZ",
             example= "2030-12-30T00:00:00.001Z")
@@ -39,7 +39,7 @@ public class Match {
 
     public Match(){}
 
-    public Match(UUID id, String name, UUID userId, LocalDateTime dateAndTime, String location, LocalDateTime createdAt){
+    public Match(UUID id, String name, String userId, LocalDateTime dateAndTime, String location, LocalDateTime createdAt){
        this.id = id;
        this.name = name;
        this.userId = userId;
@@ -59,11 +59,11 @@ public class Match {
         return name;
     }
 
-    public UUID getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) { this.userId = userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 
     public LocalDateTime getDateAndTime() {
         return dateAndTime;
@@ -123,7 +123,7 @@ public class Match {
             JsonObject matchJson = new JsonObject();
             matchJson.addProperty("id", match.getId().toString());
             matchJson.addProperty("name", match.getName());
-            matchJson.addProperty("userId", match.getUserId().toString());
+            matchJson.addProperty("userId", match.getUserId());
             matchJson.addProperty("dateAndTime", match.getDateAndTime().toString());
             matchJson.addProperty("location", match.getLocation());
             matchJson.add("startingPlayers", getPlayersJsonArray(match.getStartingPlayers()));

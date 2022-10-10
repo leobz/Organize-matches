@@ -20,7 +20,7 @@ class MatchTest {
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
                     new MatchBuilder()
                             .setName("Another Match")
-                            .setUserId(UUID.randomUUID())
+                            .setUserId(UUID.randomUUID().toString())
                             .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).minusDays(1))
                             .setLocation("La Bombonera")
                             .build()
@@ -33,7 +33,7 @@ class MatchTest {
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
             new MatchBuilder()
                     .setName("Another Match")
-                    .setUserId(UUID.randomUUID())
+                    .setUserId(UUID.randomUUID().toString())
                     .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC))
                     .setLocation("La Bombonera")
                     .build()
@@ -48,7 +48,7 @@ class MatchTest {
         assertDoesNotThrow(() -> {
             new MatchBuilder()
                     .setName("Another Match")
-                    .setUserId(UUID.randomUUID())
+                    .setUserId(UUID.randomUUID().toString())
                     .setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                     .setLocation("La Bombonera")
                     .build();

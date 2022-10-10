@@ -5,28 +5,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import matches.organizer.service.AuthenticationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
+@Document
 public class User {
-    Logger logger = LoggerFactory.getLogger(User.class);
 
+    @Id
     @Expose
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private UUID id;
+    private String id;
     @Expose
     private String alias;
     @Expose
     private String fullName;
     @Expose
     private String phone;
+    @Indexed
     @Expose
     private String email;
     private String password;
@@ -36,12 +35,12 @@ public class User {
 
     @JsonCreator
     public User(@JsonProperty("alias") String alias) {
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
         this.alias = alias;
     }
 
     public User(String alias, String fullName, String phone, String email, String password) {
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
         setAlias(alias);
         setFullName(fullName);
         setPhone(phone);
@@ -49,7 +48,7 @@ public class User {
         setPassword(password);
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 

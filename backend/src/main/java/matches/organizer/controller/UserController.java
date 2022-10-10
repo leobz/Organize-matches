@@ -20,11 +20,16 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class UserController {
 
     private final UserService userService;
+
+    private final JwtUtils jwtUtils;
     Logger logger = LoggerFactory.getLogger(UserController.class);
 
 
     @Autowired
-    public UserController(UserService userService) { this.userService = userService; }
+    public UserController(UserService userService, JwtUtils jwtUtils) {
+        this.userService = userService;
+        this.jwtUtils = jwtUtils;
+    }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -37,29 +42,12 @@ public class UserController {
     @GetMapping()
     public String getUsers(@CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /users ");
-        userService.jwtUtils.verify(auth);
+        jwtUtils.verify(auth);
         JsonObject allUsers = new JsonObject();
         JsonArray userArray = new JsonArray();
         userService.getUsers().forEach(user -> userArray.add(JsonParser.parseString(user.toJsonString())));
         allUsers.add("users", userArray);
         return allUsers.toString();
     }
-
-    
-/*
-    @GetMapping(value = "/private")
-    public String getUsersPrivate(@RequestHeader(value = "authorization", defaultValue = "") String auth) throws Exception {
-        logger.info("GET TO: /private ");
-        userService.getJwtUtils().verify(auth);
-        JsonObject allUsers = new JsonObject();
-        JsonArray userArray = new JsonArray();
-        userService.getUsers().forEach(user -> userArray.add(JsonParser.parseString(user.toJsonString())));
-        allUsers.add("users", userArray);
-        return allUsers.toString();
-    }
-
-
- */
-
 
 }
