@@ -1,6 +1,10 @@
 spring:
   main:
     banner-mode: 'off'
+  data:
+    mongodb:
+      database: organize-matches
+      auto-index-creation: true
 
 server:
   port: 8081

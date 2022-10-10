@@ -7,7 +7,6 @@ import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
-import matches.organizer.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +25,7 @@ public class MatchService {
     private final MatchRepository matchRepository;
     private final UserRepository userRepository;
 
-    @Autowired
-    public JwtUtils jwtUtils;
     Logger logger = LoggerFactory.getLogger(MatchService.class);
-
     @Autowired
     public MatchService(MatchRepository matchRepository, UserRepository userRepository) {
         this.matchRepository = matchRepository;
@@ -50,7 +46,7 @@ public class MatchService {
 
     public Match createMatch(Match newMatch){
 
-        if (userRepository.get(newMatch.getUserId()) == null) {
+        if (userRepository.findById(newMatch.getUserId()).isEmpty()) {
 
             logger.error("USER NOT FOUND: NEED TO CREATE AND USER BEFORE");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -64,7 +60,7 @@ public class MatchService {
                 .build();
 
         matchRepository.add(match);
-        logger.info("NEW MATCH CREATED WITH ID: " + match.getId());
+        logger.info("NEW MATCH CREATED WITH ID: {}", match.getId());
         return match;
     }
 
@@ -91,7 +87,7 @@ public class MatchService {
         return new MatchBuilder().
                 setName("Match").
                 setLocation("Location").
-                setUserId(UUID.randomUUID()).
+                setUserId(UUID.randomUUID().toString()).
                 setDateAndTime(LocalDateTime.now(ZoneOffset.UTC).plusDays(1))
                 .build();
     }
@@ -101,26 +97,16 @@ public class MatchService {
         matchRepository.add(match);
     }
 
-    public List<Player> registerNewPlayer(UUID id, User user) {
+    public void registerNewPlayer(UUID id, User user) {
         var match = matchRepository.get(id);
 
         if(match != null) {
             addPlayerToMatch(match, user);
             matchRepository.update(match);
-            logger.info("PLAYER WITH ID: " + user.getId().toString() + " ADDED CORRECTLY TO MATCH " + match.getId().toString());
+            logger.info("PLAYER WITH ID: {} ADDED CORRECTLY TO MATCH: {}", user.getId(), match.getId());
 
-
-            // TODO capaz estaría bueno loggear algo de esto
-
-            /*
-            System.out.println("Se agrega un player al match" + id
-            + "\ncon el alias: " + user.getAlias()
-            + "\ncon el telefono: " + phone
-            + "\ncon el email " + email);
-            */
-            return match.getPlayers();
         } else {
-            logger.error("MATCH NOT FOUND WITH ID: " + id.toString());
+            logger.error("MATCH NOT FOUND WITH ID: {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found.");
         }
     }
@@ -134,7 +120,7 @@ public class MatchService {
     public CounterDTO getMatchAndPlayerCounterFrom(LocalDateTime from) {
         List<Match> matches = matchRepository.getAllCreatedFrom(from);
         List<Player> players = matchRepository.getAllPlayersConfirmedFrom(from);
-        logger.info(matches.size() + " MATCHES AND " + players.size() + "PLAYERS CONFIRMED IN THE LAST TWO HOURS ");
+        logger.info("{} MATCHES AND {} PLAYERS CONFIRMED IN THE LAST TWO HOURS ", matches.size(), players.size());
 
         return new CounterDTO(matches.size(), players.size());
     }
@@ -152,12 +138,10 @@ public class MatchService {
     }
 
     private void updateUser(User user) {
-        if (userRepository.get(user.getId()) != null) {
+        if (userRepository.findById(user.getId()).isEmpty()) {
             logger.error("USER DOES NOT EXISTS.");
-            userRepository.update(user);
-        } else {
-            userRepository.add(user);
         }
+        userRepository.save(user);
     }
-    
+
 }
