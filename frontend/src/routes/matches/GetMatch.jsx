@@ -1,19 +1,14 @@
 import * as React from 'react';
-import { BasicMatchForm, FormSpace} from './BasicMatchForm';
-import { Form } from "react-router-dom";
-import { useLoaderData } from "react-router-dom";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import { Typography, Container, CssBaseline, Box, createTheme, ThemeProvider , Avatar} from '@mui/material';
+import { BasicMatchForm, FormSpace } from './BasicMatchForm';
+import { Form, useNavigate, useLoaderData } from "react-router-dom";
+import { Card, CardContent, Button, Grid, Typography, Container, CssBaseline, Box, createTheme, ThemeProvider , Avatar} from '@mui/material';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 import SportsSoccerOutlinedIcon from '@mui/icons-material/SportsSoccerOutlined';
 import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
-import {useNavigate} from 'react-router-dom';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useSnackbar } from "notistack";
+import { getMatch, registerPlayer, unregisterPlayer } from '../../services/matches';
 
 const theme = createTheme();
 
@@ -177,84 +172,3 @@ export function AddPlayerButton(props){
   </Grid>
   )
 }
-
-
-/******************                   Functions                       ******************/
-async function registerPlayer(matchId, userId, navigate, enqueueSnackbar) {
-  try {
-    const response = await fetch("/api/matches/" + matchId + "/players", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(userId),
-      });
-
-      if (!response.ok){
-        enqueueSnackbar("Error " + response.status + ": Ha ocurrido un error.", { variant: "error" });
-        //alert("Ha ocurrido un error");
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message)
-      }
-
-      response.json().then(data => {
-        enqueueSnackbar("¡Te has anotado al partido!", { variant: "success" });
-        //alert("¡Te has anotado al partido!");
-        navigate("/matches/"+ matchId)
-      })
-  }
-  catch(e){
-    console.log(e)
-  }
-}
-
-async function unregisterPlayer(matchId, userId, navigate, enqueueSnackbar) {
-  try {
-    const response = await fetch("/api/matches/" + matchId + "/players/" + userId, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: null,
-      });
-
-      if (!response.ok){
-        enqueueSnackbar("Error " + response.status + ": Ha ocurrido un error.", { variant: "error" });
-        //alert("Ah ocurrido un error");
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message)
-      }
-
-      response.json().then(data => {
-        enqueueSnackbar("Te has dado de baja del partido", { variant: "success" });
-        //alert("Te has dado de baja del partido");
-        navigate("/matches/"+ matchId)
-      })
-  }
-  catch(e){
-    console.log(e)
-  }
-}
-
-
-export const getMatch = async (id) =>
-  await fetch("/api/matches/" + id, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then(function(response) {
-    return response.json();
-  }).then(function(data) {
-    return data;
-  }).catch(error => {
-    throw new Response("", {
-      status: response.status,
-      statusText: response.statusText,
-    });
-  })
-  .finally((data) => data);
-
