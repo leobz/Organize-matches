@@ -111,7 +111,7 @@ public class Match {
         return matchesArray;
     }
 
-    public void removePlayer(UUID playerId) {
+    public void removePlayer(String playerId) {
         if(!players.stream().anyMatch((p) -> p.getUserId().compareTo(playerId) == 0))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot remove player. The user is not in the team.");
         players.remove(players.stream().filter((p) -> p.getUserId().compareTo(playerId) == 0).findFirst().get());

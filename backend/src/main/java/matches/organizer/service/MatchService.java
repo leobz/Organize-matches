@@ -93,7 +93,7 @@ public class MatchService {
         }
     }
 
-    public List<Player> unregisterPlayer(UUID matchId, UUID playerId) {
+    public List<Player> unregisterPlayer(UUID matchId, String playerId) {
         var match = matchRepository.get(matchId);
 
         if(match != null) {
