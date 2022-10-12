@@ -88,7 +88,7 @@ public class MatchController {
         logger.info("POST TO: /matches/{}/players ", matchId);
         jwtUtils.verify(auth);
 
-        UUID userId = UUID.fromString(jwtUtils.getUserFromToken(auth));
+        String userId = jwtUtils.getUserFromToken(auth);
 
         var user = userService.getUser(userId);
         if (user == null) {
@@ -99,6 +99,36 @@ public class MatchController {
         matchService.registerNewPlayer(matchId, user);
         var match = matchService.getMatch(matchId);
         Map<String, List<Player>> response = new HashMap<>();
+        response.put("startingPlayers", match.getStartingPlayers());
+        response.put("substitutePlayers", match.getSubstitutePlayers());
+
+        return response;
+    }
+
+    @DeleteMapping(value = "/matches/{matchId}/players/{playerId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, List<Player>> unregisterPlayer(@PathVariable UUID matchId, @PathVariable String playerId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+
+        logger.info("DELETE TO: /matches/{"+ matchId+"}/players/{"+playerId+"}");
+        jwtUtils.verify(auth);
+
+        String userId = jwtUtils.getUserFromToken(auth);
+        logger.info("player id: "+playerId);
+        logger.info("user id: "+userId);
+
+        if(userId.compareTo(playerId) != 0) {
+            logger.error("CANNOT UNSUBSCRIBE ANOTHER USER");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot unsubscribe another user");
+        }
+
+        var user = userService.getUser(userId);
+        if (user == null) {
+            logger.error("USER NOT FOUND: NEED TO CREATE AND USER BEFORE");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        matchService.unregisterPlayer(matchId, playerId);
+        var match = matchService.getMatch(matchId);
+        Map<String, List<Player>> response = new HashMap<String, List<Player>>();
         response.put("startingPlayers", match.getStartingPlayers());
         response.put("substitutePlayers", match.getSubstitutePlayers());
 
