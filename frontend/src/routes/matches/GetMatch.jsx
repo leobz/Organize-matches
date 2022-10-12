@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { useState } from 'react';
 import BasicMatchForm, {FormSpace} from './BasicMatchForm';
-import { useParams, useNavigate, useLoaderData, redirect, Form } from "react-router-dom";
+import { useParams, useNavigate, useLoaderData } from "react-router-dom";
 import { Grid, Button, Typography, Container, CssBaseline, Box, Card, CardContent, Avatar} from '@mui/material';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import SportsSoccerOutlinedIcon from '@mui/icons-material/SportsSoccerOutlined';
 import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
-import { patchMatch, validateDateTime } from '../../services/matches';
+import { patchMatch, validateDateTime, getMatch, registerPlayer, unregisterPlayer } from '../../services/matches';
 import dayjs from 'dayjs';
 import { useSnackbar } from "notistack";
 
@@ -91,8 +92,8 @@ export default function GetMatch() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <Groups2OutlinedIcon />
-            </Avatar>
+            <Groups2OutlinedIcon />
+          </Avatar>
 
         </Box>
           <Typography component="h1" variant="h5">
@@ -137,16 +138,20 @@ export function BasicCard(props) {
 }
 
 export function DinamicAddPlayerButton(props){
+  const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
+
   if (props.inscriptedUserIds.includes(props.userId)){
     return(
     <AddPlayerButton
       userId={props.userId}
       matchId={props.matchId}
-      disabled = {true}
-      color= {"success"}
-      text={"Inscripto"}
-      icon={<CheckCircleOutlineOutlinedIcon/>}
-      />)
+      disabled = {false}
+      color= {"error"}
+      text={"Darme de baja"}
+      icon={<HighlightOffIcon/>}
+      onClick={() => unregisterPlayer(props.matchId, props.userId, navigate, enqueueSnackbar)}
+    />)
   }
   else if (props.inscriptedUserIds.length >= 13){
     return(
@@ -168,13 +173,12 @@ export function DinamicAddPlayerButton(props){
         color= {"primary"}
         text={"¡Anotarme!"}
         icon={<AddIcon/>}
-        />)
+        onClick={() => registerPlayer(props.matchId, props.userId, navigate, enqueueSnackbar)}
+      />)
     }
 }
 
 export function AddPlayerButton(props){
-  const navigate = useNavigate()
-
   return(
     <Grid container justifyContent="center">
     <Button
@@ -183,59 +187,10 @@ export function AddPlayerButton(props){
       startIcon={props.icon}
       variant="contained"
       fullWidth
-      onClick={() => registerPlayer(props.matchId, props.userId, navigate)}
+      onClick={() => props.onClick()}
       >
       {props.text}
     </Button>
   </Grid>
   )
 }
-
-
-/******************                   Functions                       ******************/
-async function registerPlayer(matchId, userId, navigate) {
-  try {
-    const response = await fetch("/api/matches/" + matchId + "/players", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(userId),
-      });
-
-      if (!response.ok){
-        alert("Ah ocurrido un error");
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message)
-      }
-
-      response.json().then(data => {
-        alert("¡Te has anotado al partido!");
-        navigate("/matches/"+ matchId)
-      })
-  }
-  catch(e){
-    console.log(e)
-  }
-}
-
-
-export const getMatch = async (id) =>
-  await fetch("/api/matches/" + id, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then(function(response) {
-    return response.json();
-  }).then(function(data) {
-    return data;
-  }).catch(error => {
-    throw new Response("", {
-      status: response.status,
-      statusText: response.statusText,
-    });
-  })
-  .finally((data) => data);
