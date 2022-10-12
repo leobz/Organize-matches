@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public class MatchBuilder {
 
+    private UUID id = UUID.randomUUID();
     private String name;
     private String userId;
     private LocalDateTime dateAndTime;
@@ -38,13 +39,22 @@ public class MatchBuilder {
         return this;
     }
 
+    public MatchBuilder fromMatch(Match match) {
+        id = match.getId();
+        userId = match.getUserId();
+        name = match.getName();
+        dateAndTime = match.getDateAndTime();
+        location = match.getLocation();
+        return this;
+    }
+
     public Match build() {
         if(name == null){
             logger.error("CANNOT CREATE A MATCH WITHOUT NAME");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: name is missing");
         }
         if(userId == null) {
-            logger.error("CANNOT CREATE A MATCH WITHOUT ID");
+            logger.error("CANNOT CREATE A MATCH WITHOUT USER ID");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: user id is missing");
         }
         if(dateAndTime == null){
@@ -58,11 +68,8 @@ public class MatchBuilder {
         if(!LocalDateTime.now(ZoneOffset.UTC).isBefore(dateAndTime)) {
             logger.error("CANNOT CREATE A MATCH IN THE PAST");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MatchBuilder: date and hour is in the past");
-
         }
-        UUID id = UUID.randomUUID();
         LocalDateTime createdAt = LocalDateTime.now(ZoneOffset.UTC);
-
         return new Match(id, name, userId, dateAndTime, location, createdAt);
     }
 }

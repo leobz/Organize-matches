@@ -1,34 +1,57 @@
 import * as React from 'react';
-import { BasicMatchForm, FormSpace } from './BasicMatchForm';
-import { Form, useNavigate, useLoaderData } from "react-router-dom";
-import { Card, CardContent, Button, Grid, Typography, Container, CssBaseline, Box, createTheme, ThemeProvider , Avatar} from '@mui/material';
+import { useState } from 'react';
+import BasicMatchForm, {FormSpace} from './BasicMatchForm';
+import { useParams, useNavigate, useLoaderData } from "react-router-dom";
+import { Grid, Button, Typography, Container, CssBaseline, Box, Card, CardContent, Avatar} from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import SportsSoccerOutlinedIcon from '@mui/icons-material/SportsSoccerOutlined';
 import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
+import { patchMatch, validateDateTime, getMatch, registerPlayer, unregisterPlayer } from '../../services/matches';
+import dayjs from 'dayjs';
 import { useSnackbar } from "notistack";
-import { getMatch, registerPlayer, unregisterPlayer } from '../../services/matches';
-
-const theme = createTheme();
 
 export async function loader(request) {
   const match = await getMatch(request.params.matchId);
+  match.dateAndTime = match.dateAndTime + "z"
   return { match };
 }
 
 /******************                   Main Component                       ******************/
 export default function GetMatch() {
+  const { enqueueSnackbar } = useSnackbar();
   const { match } = useLoaderData();
+  const [isEditing, setIsEditing] = useState(false);
   const userId = localStorage.userId
+  const { matchId } = useParams();
   const inscriptedUserIds =
     match.startingPlayers.map(p => p.userId).concat(
       match.substitutePlayers.map(p => p.userId)
     )
 
+  const handleSubmit = async (event) => {
+    const formData = event.target.elements;
+    event.preventDefault();
+    const dateTime = dayjs(formData.date.value + " " + formData.time.value)
+  
+    const bodyMatch = {
+      id: matchId,
+      name: formData.name.value,
+      location: formData.location.value,
+      dateAndTime: dateTime
+    };
+  
+    if(validateDateTime(dateTime)){
+      await patchMatch(bodyMatch)
+      enqueueSnackbar("Match changes saved", { variant: "success" });
+      setIsEditing(false);
+    }
+    else
+      enqueueSnackbar("Error: Fecha y hora deben ser posterior al momento actual", { variant: "error" });      
+  }
+
   return(
-    // TODO: Reutilizar componente de tema en todos las pantallas, para tener componentes homogeneos de manera sencilla
-    <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="sm">
         <CssBaseline />
         <Box
@@ -42,24 +65,25 @@ export default function GetMatch() {
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <SportsSoccerOutlinedIcon />
           </Avatar>
-
         </Box>
         <Box>
-          <Form>
           <Typography component="h1" variant="h5">
             <Box sx={{ textAlign: 'center', m: 1}}>
               Datos de partido
             </Box>
           </Typography>
+          <form onSubmit={handleSubmit}>
             <BasicMatchForm
-              readOnly={true}
+              readOnly={match.userId != userId}
               location={match.location}
               name={match.name}
-              date={match.dateAndTime}
-              time={match.dateAndTime}
+              dateTime={match.dateAndTime}
+              onChange={() => setIsEditing(true)}
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
             />
+          </form>
           <FormSpace/>
-
           <Box
           sx={{
             display: 'flex',
@@ -91,10 +115,8 @@ export default function GetMatch() {
             <Box>
               {match.substitutePlayers.map((player) => <BasicCard playerName={player.alias}/>)}
             </Box>
-          </Form>
         </Box>
       </Container>
-    </ThemeProvider>
   )
 }
 

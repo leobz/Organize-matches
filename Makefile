@@ -25,9 +25,9 @@ build: ## Crea imagen docker del todos los componentes (backend y frontend)
 
 .PHONY: clean
 clean: ## Elimina los containers e imagenes (no borra la cache)
-	docker container kill be-organize-matches fe-organize-matches; \
-	docker container rm be-organize-matches fe-organize-matches; \
-	docker image rm --no-prune be-organize-matches fe-organize-matches;
+	docker container kill be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
+	docker container rm be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
+	docker image rm --no-prune be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1;
 
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.

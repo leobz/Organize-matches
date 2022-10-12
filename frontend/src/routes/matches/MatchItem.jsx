@@ -21,7 +21,7 @@ const MatchItem = ({match}) => {
                         variant: 'h5'
                     }}>{match.name}</ListItemText>
                 </Grid>
-                <Grid md={6}>
+                <Grid item md={6}>
                     <MatchDetails match={match} />
                 </Grid>
             </Grid>

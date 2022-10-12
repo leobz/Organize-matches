@@ -67,6 +67,27 @@ public class MatchController {
         return matchService.createMatch(newMatch);
     }
 
+    @PatchMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
+    public Match editMatch(@PathVariable UUID matchId, @RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+        logger.info("PATCH TO: /matches/{" + matchId.toString() + "}");
+        jwtUtils.verify(auth);
+
+        Match match = matchService.getMatch(matchId);
+        String tokenUserId = jwtUtils.getUserFromToken(auth);
+        logger.info("Match id " + matchId);
+        logger.info("New Match id " + newMatch.getId().toString());
+        logger.info("Token user id" + tokenUserId);
+        logger.info("Match user id" + match.getUserId().toString());
+        logger.info("Date time: " + match.getDateAndTime());
+        logger.info("New Date time: " + newMatch.getDateAndTime());
+        if(match.getUserId().compareTo(tokenUserId) != 0) {
+            logger.error("CANNOT EDIT MATCH OWNED BY OTHER USERS");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot edit match owned by other users");
+        }
+
+        return matchService.editMatch(matchId, newMatch);
+    }
+
     @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getMatch(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /matches/{}", matchId);
