@@ -44,6 +44,18 @@ public class MatchService {
         matchRepository.update(match);
     }
 
+    public Match removeMatch(UUID matchId, UUID userId) {
+        Match match = matchRepository.get(matchId);
+        if (match.getUserId().equals(userId.toString())){
+            matchRepository.remove(match);
+            logger.info("MATCH DELETED WITH ID: {}", match.getId());
+            return match;
+        } else {
+            logger.error("NO MATCH DELETED. USER IS NOT THE MATCH OWNER");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot delete match. User is not the match owner.");
+        }
+    }
+
     public Match createMatch(Match newMatch){
 
         if (userRepository.findById(newMatch.getUserId()).isEmpty()) {

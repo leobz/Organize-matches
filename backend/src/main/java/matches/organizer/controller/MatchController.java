@@ -44,7 +44,6 @@ public class MatchController {
 
     Logger logger = LoggerFactory.getLogger(MatchController.class);
 
-
     @GetMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getAllMatches(@CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /matches ");
@@ -72,6 +71,15 @@ public class MatchController {
         logger.info("GET TO: /matches/{}", matchId);
         jwtUtils.verify(auth);
         return matchService.getMatch(matchId).toJsonString();
+    }
+
+    @DeleteMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String deleteMatch(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+        logger.info("DELETE TO: /matches/{}", matchId);
+        jwtUtils.verify(auth);
+
+        UUID userId = UUID.fromString(jwtUtils.getUserFromToken(auth));
+        return matchService.removeMatch(matchId, userId).toJsonString();
     }
 
     @Operation(summary = "Retorna un contador con la cantidad de partidos creados y jugadores anotados en las últimas 2 horas.")
