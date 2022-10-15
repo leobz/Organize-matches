@@ -10,11 +10,7 @@ help: ## Imprime targets y ayuda
 
 .PHONY: dev
 dev: ## Compila y ejecuta localmente el backend
-	cd backend; \
-	mvn clean install; \
-	docker-compose up -d mongo; \
-	java -jar target/matches-organizer-0.0.1-SNAPSHOT.jar \
-	--spring.data.mongodb.uri=mongodb://root:$(shell cat mongo-pass.txt)@localhost:27017/admin?authMechanism=SCRAM-SHA-256
+	docker-compose up -d;
 
 .PHONY: build
 build: ## Crea imagen docker del todos los componentes (backend y frontend)
@@ -31,7 +27,7 @@ clean: ## Elimina los containers e imagenes (no borra la cache)
 
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.
-	docker-compose up -d;
+	docker-compose -f docker-compose.yml -f production.yml up -d;
 
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto

@@ -42,4 +42,6 @@ node_modules/
 
 out/
 
+mongo/**
+
 mongo-pass.txt
