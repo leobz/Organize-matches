@@ -36,6 +36,8 @@ public class Match {
     private LocalDateTime createdAt;
     @Hidden
     private List<Player> players;
+    @Hidden
+    private boolean deleted = false;
 
     public Match(){}
 
@@ -109,6 +111,14 @@ public class Match {
         JsonArray matchesArray = new JsonArray();
         players.forEach(player -> matchesArray.add(JsonParser.parseString(player.toJsonString())));
         return matchesArray;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     static class MatchSerializer implements JsonSerializer<Match> {

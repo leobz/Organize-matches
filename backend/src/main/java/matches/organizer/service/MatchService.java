@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class MatchService {
@@ -33,7 +34,7 @@ public class MatchService {
     }
 
     public List<Match> getMatches() {
-        return matchRepository.getAll();
+        return matchRepository.getAll().stream().filter(x -> !x.isDeleted()).collect(Collectors.toList());
     }
 
     public Match getMatch(UUID id) {

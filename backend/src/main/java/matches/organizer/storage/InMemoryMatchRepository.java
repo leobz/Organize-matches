@@ -2,7 +2,9 @@ package matches.organizer.storage;
 
 import matches.organizer.domain.Match;
 import matches.organizer.domain.Player;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,7 +44,8 @@ public class InMemoryMatchRepository implements MatchRepository {
 
     @Override
     public void remove(Match match) {
-        matches.removeIf(anyMatch -> hasSameId(anyMatch.getId(), match));
+        match.setDeleted(true);
+        update(match);
     }
 
     private static boolean hasSameId(UUID anyMatchId, Match match) {
