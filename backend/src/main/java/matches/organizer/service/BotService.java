@@ -1,13 +1,12 @@
 package matches.organizer.service;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import matches.organizer.domain.Match;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import java.util.List;
 
 @Service
 public class BotService extends TelegramLongPollingBot {
@@ -42,12 +41,8 @@ public class BotService extends TelegramLongPollingBot {
 
         if(msg.isCommand()){
             if (msg.getText().equals("/list")){
-                JsonObject allMatches = new JsonObject();
-                JsonArray matchesArray = new JsonArray();
-                matchService.getMatches().forEach(match -> matchesArray.add(JsonParser.parseString(match.toJsonString())));
-                allMatches.add("matches", matchesArray);
-                var response = allMatches.toString();
-                sendText(user.getId(), response);
+                List<Match> matches = matchService.getMatches();
+                sendText(user.getId(), matches.toString());
             }
         }
     }

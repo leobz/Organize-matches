@@ -132,4 +132,9 @@ public class Match {
             return matchJson;
         }
     }
+
+    @Override
+    public String toString() {
+        return "\nMatch: " + name + "\nLocation: " + location + "\nDate and time: " + dateAndTime + "\n\n";
+    }
 }
