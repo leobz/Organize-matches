@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class MatchBuilder {
 
-    private UUID id = UUID.randomUUID();
+    private String id = UUID.randomUUID().toString();
     private String name;
     private String userId;
     private LocalDateTime dateAndTime;

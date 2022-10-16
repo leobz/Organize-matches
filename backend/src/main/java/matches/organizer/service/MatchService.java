@@ -22,8 +22,8 @@ import java.util.UUID;
 @Service
 public class MatchService {
 
-    private final MatchRepository matchRepository;
-    private final UserRepository userRepository;
+    MatchRepository matchRepository;
+    UserRepository userRepository;
 
     Logger logger = LoggerFactory.getLogger(MatchService.class);
     @Autowired
@@ -33,25 +33,28 @@ public class MatchService {
     }
 
     public List<Match> getMatches() {
-        return matchRepository.getAll();
+        return matchRepository.findAll();
     }
 
-    public Match getMatch(UUID id) {
-        return matchRepository.get(id);
+    public Match getMatch(String id) {
+        return matchRepository.findById(id).orElse(null);
     }
 
     public void updateMatch(Match match) {
-        matchRepository.update(match);
+        matchRepository.save(match);
     }
 
     public Match createMatch(Match newMatch){
+        logger.info("BEGGINING createMatch() function");
 
-        if (userRepository.findById(newMatch.getUserId()).isEmpty()) {
+        if (userRepository.findById(newMatch.getUserId()).orElse(null).equals(null)) {
 
             logger.error("USER NOT FOUND: NEED TO CREATE AND USER BEFORE");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
 
         }
+        logger.info("BEGGINING Builder");
+
         Match match = new MatchBuilder()
                 .setName(newMatch.getName())
                 .setUserId(newMatch.getUserId())
@@ -59,13 +62,14 @@ public class MatchService {
                 .setLocation(newMatch.getLocation())
                 .build();
 
-        matchRepository.add(match);
+        logger.info("TRYING INSEERT A MATCH  WITH ID: {}", match.getId());
+        matchRepository.save(match);
         logger.info("NEW MATCH CREATED WITH ID: {}", match.getId());
         return match;
     }
 
-    public Match editMatch(UUID matchId, Match newMatch){
-        Match oldMatch = matchRepository.get(matchId);
+    public Match editMatch(String matchId, Match newMatch){
+        Match oldMatch = matchRepository.findById(matchId).orElse(null);
         if (oldMatch == null) {
             logger.error("MATCH NOT FOUND: CANNOT EDIT MATCH");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not foundL cannot edit match");
@@ -77,7 +81,7 @@ public class MatchService {
             .setLocation(newMatch.getLocation())
             .build();
 
-        matchRepository.update(editedMatch);
+        matchRepository.save(editedMatch);
         logger.info("UPDATED MATCH WITH ID: " + editedMatch.getId());
         return editedMatch;
     }
@@ -94,15 +98,15 @@ public class MatchService {
 
     public void createAndSaveRandomMatch() {
         Match match = createRandomMatch();
-        matchRepository.add(match);
+        matchRepository.save(match);
     }
 
-    public void registerNewPlayer(UUID id, User user) {
-        var match = matchRepository.get(id);
+    public void registerNewPlayer(String id, User user) {
+        Match match = matchRepository.findById(id).orElse(null);
 
         if(match != null) {
             addPlayerToMatch(match, user);
-            matchRepository.update(match);
+            matchRepository.save(match);
             logger.info("PLAYER WITH ID: {} ADDED CORRECTLY TO MATCH: {}", user.getId(), match.getId());
 
         } else {
@@ -111,13 +115,13 @@ public class MatchService {
         }
     }
 
-    public List<Player> unregisterPlayer(UUID matchId, String playerId) {
-        var match = matchRepository.get(matchId);
+    public List<Player> unregisterPlayer(String matchId, String playerId) {
+        Match match = matchRepository.findById(matchId).orElse(null);
 
         if(match != null) {
             match.removePlayer(playerId);
-            matchRepository.update(match);
-            logger.info("PLAYER WITH ID: " + playerId.toString() + " REMOVED CORRECTLY FROM MATCH " + match.getId().toString());
+            matchRepository.save(match);
+            logger.info("PLAYER WITH ID: " + playerId + " REMOVED CORRECTLY FROM MATCH " + match.getId());
             return match.getPlayers();
         } else {
             logger.error("MATCH NOT FOUND WITH ID: " + matchId.toString());
@@ -132,11 +136,13 @@ public class MatchService {
      * @see CounterDTO
      */
     public CounterDTO getMatchAndPlayerCounterFrom(LocalDateTime from) {
-        List<Match> matches = matchRepository.getAllCreatedFrom(from);
-        List<Player> players = matchRepository.getAllPlayersConfirmedFrom(from);
-        logger.info("{} MATCHES AND {} PLAYERS CONFIRMED IN THE LAST TWO HOURS ", matches.size(), players.size());
+        //List<Match> matches = matchRepository.getAllCreatedFrom(from);
+        //List<Player> players = matchRepository.getAllPlayersConfirmedFrom(from);
+        //logger.info("{} MATCHES AND {} PLAYERS CONFIRMED IN THE LAST TWO HOURS ", matches.size(), players.size());
 
-        return new CounterDTO(matches.size(), players.size());
+
+        return new CounterDTO(2, 2);
+        //return new CounterDTO(matches.size(), players.size());
     }
 
     public void addPlayerToMatch(Match match, User user) {
@@ -158,4 +164,9 @@ public class MatchService {
         userRepository.save(user);
     }
 
+
+//BORRAR TODO
+    public void testSave(){
+        matchRepository.save(MatchService.createRandomMatch());
+    }
 }

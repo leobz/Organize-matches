@@ -60,15 +60,19 @@ public class MatchController {
     @ResponseStatus(HttpStatus.CREATED)
     public Match createMatch(@RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("POST TO: /matches ");
-        jwtUtils.verify(auth);
+        //jwtUtils.verify(auth);
 
-        UUID userId = UUID.fromString(jwtUtils.getUserFromToken(auth));
-        newMatch.setUserId(userId.toString());
+        String userId = jwtUtils.getUserFromToken(auth);
+        newMatch.setUserId(userId);
+        newMatch.getId();
+        logger.info("CALLING TO CREATE MATCH FUNCTION ");
+
+
         return matchService.createMatch(newMatch);
     }
 
     @PatchMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
-    public Match editMatch(@PathVariable UUID matchId, @RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+    public Match editMatch(@PathVariable String matchId, @RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("PATCH TO: /matches/{" + matchId.toString() + "}");
         jwtUtils.verify(auth);
 
@@ -89,7 +93,7 @@ public class MatchController {
     }
 
     @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getMatch(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+    public String getMatch(@PathVariable String matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /matches/{}", matchId);
         jwtUtils.verify(auth);
         return matchService.getMatch(matchId).toJsonString();
@@ -104,7 +108,7 @@ public class MatchController {
     }
 
     @PostMapping(value = "/matches/{matchId}/players", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, List<Player>> registerPlayer(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+    public Map<String, List<Player>> registerPlayer(@PathVariable String matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
 
         logger.info("POST TO: /matches/{}/players ", matchId);
         jwtUtils.verify(auth);
@@ -127,7 +131,7 @@ public class MatchController {
     }
 
     @DeleteMapping(value = "/matches/{matchId}/players/{playerId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, List<Player>> unregisterPlayer(@PathVariable UUID matchId, @PathVariable String playerId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+    public Map<String, List<Player>> unregisterPlayer(@PathVariable String matchId, @PathVariable String playerId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
 
         logger.info("DELETE TO: /matches/{"+ matchId+"}/players/{"+playerId+"}");
         jwtUtils.verify(auth);

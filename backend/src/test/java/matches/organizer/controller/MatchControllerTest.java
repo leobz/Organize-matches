@@ -7,7 +7,6 @@ import matches.organizer.domain.Match;
 import matches.organizer.domain.User;
 import matches.organizer.service.MatchService;
 import matches.organizer.service.UserService;
-import matches.organizer.storage.InMemoryMatchRepository;
 import matches.organizer.storage.MatchRepository;
 import matches.organizer.storage.UserRepository;
 import matches.organizer.util.JwtUtils;
@@ -36,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest(classes = {JwtUtils.class, MatchService.class, UserService.class, MatchController.class, InMemoryMatchRepository.class})
+@SpringBootTest(classes = {JwtUtils.class, MatchService.class, UserService.class, MatchController.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 
@@ -62,8 +61,8 @@ class MatchControllerTest {
             match2.addPlayer(user);
         }
 
-        matchRepository.add(match);
-        matchRepository.add(match2);
+        matchRepository.save(match);
+        matchRepository.save(match2);
 
         ArrayList<Match> matches = new ArrayList<>();
 
@@ -90,7 +89,7 @@ class MatchControllerTest {
         User user = createUser();
 
         Match match = MatchService.createRandomMatch();
-        matchRepository.add(match);
+        matchRepository.save(match);
 
         this.mvc.perform(get("/matches/" + match.getId())
                         .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
@@ -130,8 +129,8 @@ class MatchControllerTest {
         m1.getPlayers().get(0).setConfirmedAt(oderDT);
 
         // Test
-        matchRepository.add(m1);
-        matchRepository.add(m2);
+        matchRepository.save(m1);
+        matchRepository.save(m2);
 
         this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -147,9 +146,9 @@ class MatchControllerTest {
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         Match match = MatchService.createRandomMatch();
-        matchRepository.add(match);
-
-        assertTrue(matchRepository.get(match.getId()).getPlayers().isEmpty());
+        matchRepository.save(match);
+        //Este test debe validar que la lista de usuario este vacia
+        assertTrue(matchRepository.findById(match.getId()).orElse(new Match()).getPlayers().isEmpty());
 
 
         ResultActions request = this.mvc.perform(
@@ -160,11 +159,11 @@ class MatchControllerTest {
 
         request.andExpect(status().isOk());
 
-        assertFalse(matchRepository.get(match.getId()).getPlayers().isEmpty());
+        assertFalse(matchRepository.findById(match.getId()).orElse(new Match()).getPlayers().isEmpty());
     }
 
     void sanitize() {
-        matchRepository.getAll().clear();
+        matchRepository.findAll().clear();
     }
 
     User createUser() {

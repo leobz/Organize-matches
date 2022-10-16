@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -15,40 +16,40 @@ import java.util.UUID;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @TestInstance(PER_CLASS)
-class InMemoryMatchRepositoryTest {
+public class MatchRepositoryTest {
 
+    @Autowired
     private MatchRepository matchRepository;
     private Match anyMatch;
     private Match anotherMatch;
 
     @BeforeEach
     void setUp() {
-        matchRepository = new InMemoryMatchRepository();
         anyMatch = buildAMatch();
         anotherMatch = buildAnotherMatch();
     }
 
     @Test
     void addAndGetMatch() {
-        matchRepository.add(anyMatch);
-        matchRepository.add(anotherMatch);
-        Assertions.assertEquals(anyMatch.getId(),matchRepository.get(anyMatch.getId()).getId());
-        Assertions.assertEquals(anotherMatch.getId(),matchRepository.get(anotherMatch.getId()).getId());
+        matchRepository.save(anyMatch);
+        matchRepository.save(anotherMatch);
+        Assertions.assertEquals(anyMatch.getId(),matchRepository.findById(anyMatch.getId()).orElse(new Match()).getId());
+        Assertions.assertEquals(anotherMatch.getId(),matchRepository.findById(anotherMatch.getId()).orElse(new Match()).getId());
     }
 
     @Test
     void addAndRemoveMatch() {
-        matchRepository.add(anyMatch);
-        matchRepository.add(anotherMatch);
-        matchRepository.remove(anyMatch);
-        Assertions.assertNull(matchRepository.get(anyMatch.getId()));
-        Assertions.assertEquals(anotherMatch.getId(),matchRepository.get(anotherMatch.getId()).getId());
+        matchRepository.save(anyMatch);
+        matchRepository.save(anotherMatch);
+        matchRepository.delete(anyMatch);
+        Assertions.assertNull(matchRepository.findById(anyMatch.getId()).orElse(null));
+        Assertions.assertEquals(anotherMatch.getId(),matchRepository.findById(anotherMatch.getId()).orElse(new Match()).getId());
     }
 
     @Test
     void addAndUpdateMatch() {
-        matchRepository.add(anyMatch);
-        Assertions.assertEquals("Any Match",matchRepository.get(anyMatch.getId()).getName());
+        matchRepository.save(anyMatch);
+        Assertions.assertEquals("Any Match",matchRepository.findById(anyMatch.getId()).orElse(new Match()).getName());
         Match modifiedMatch = new Match(
                 anyMatch.getId(),
                 "Modified Match",
@@ -56,18 +57,18 @@ class InMemoryMatchRepositoryTest {
                 LocalDateTime.now(ZoneOffset.UTC).plusDays(1),
                 "Defensores del Chaco",
                 LocalDateTime.now(ZoneOffset.UTC));
-        matchRepository.update(modifiedMatch);
-        Assertions.assertNotEquals("Any Match",matchRepository.get(modifiedMatch.getId()).getName());
-        Assertions.assertEquals("Modified Match",matchRepository.get(modifiedMatch.getId()).getName());
+        matchRepository.save(modifiedMatch);
+        Assertions.assertNotEquals("Any Match",matchRepository.findById(modifiedMatch.getId()).orElse(new Match()).getName());
+        Assertions.assertEquals("Modified Match",matchRepository.findById(modifiedMatch.getId()).orElse(new Match()).getName());
     }
 
     @Test
     void updateUnknownMatch() {
         Match anyMatch = buildAMatch();
-        matchRepository.add(anyMatch);
-        matchRepository.update(buildAnotherMatch());
-        Assertions.assertNull(matchRepository.get(anotherMatch.getId()));
-        Assertions.assertEquals(anyMatch.getId(),matchRepository.get(anyMatch.getId()).getId());
+        matchRepository.save(anyMatch);
+        matchRepository.save(buildAnotherMatch());
+        Assertions.assertNull(matchRepository.findById(anotherMatch.getId()).orElse(null));
+        Assertions.assertEquals(anyMatch.getId(),matchRepository.findById(anyMatch.getId()).orElse(new Match()).getId());
     }
 
     private Match buildAMatch() {
