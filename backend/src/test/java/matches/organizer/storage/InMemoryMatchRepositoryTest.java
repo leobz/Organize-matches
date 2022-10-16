@@ -41,7 +41,7 @@ class InMemoryMatchRepositoryTest {
         matchRepository.add(anyMatch);
         matchRepository.add(anotherMatch);
         matchRepository.remove(anyMatch);
-        Assertions.assertNull(matchRepository.get(anyMatch.getId()));
+        Assertions.assertTrue(matchRepository.get(anyMatch.getId()).isDeleted());
         Assertions.assertEquals(anotherMatch.getId(),matchRepository.get(anotherMatch.getId()).getId());
     }
 
