@@ -12,10 +12,10 @@ import java.time.ZoneOffset;
 @Document
 public class Player {
 
-    @Id
     private final String userId;
     private final String alias;
-    @Indexed(expireAfterSeconds = 60 )
+
+    @Indexed(name="confirmedAtIndex", expireAfter="60s")
     private LocalDateTime confirmedAt;
 
     public Player(String userId, String alias) {

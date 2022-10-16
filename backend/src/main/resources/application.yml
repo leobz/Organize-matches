@@ -17,6 +17,7 @@ spring:
   data:
     mongodb:
       database: organize-matches-dev
+      auto-index-creation: true
 
 ---
 spring:

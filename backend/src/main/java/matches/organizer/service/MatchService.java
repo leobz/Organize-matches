@@ -36,11 +36,10 @@ public class MatchService {
     Logger logger = LoggerFactory.getLogger(MatchService.class);
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, UserRepository userRepository) {
+    public MatchService(MatchRepository matchRepository, UserRepository userRepository,PlayerRepository playerRepository) {
         this.matchRepository = matchRepository;
         this.userRepository = userRepository;
         this.playerRepository = playerRepository;
-        this.mongoTemplate = mongoTemplate;
     }
 
     public List<Match> getMatches() {
@@ -114,12 +113,20 @@ public class MatchService {
 
     public void registerNewPlayer(String id, User user) {
         Match match = matchRepository.findById(id).orElse(null);
+        logger.error("LEST TRY WITH: {} , {}", user.getId(), match.getId());
 
         if (match != null) {
             addPlayerToMatch(match, user);
+            logger.info("TRYING TO SAVE A MATCH IN REGISTER NEW PLAYER");
+
             matchRepository.save(match);
+            logger.info("SAVE SUCCESSFULLY A MATCH IN REGISTER NEW PLAYER");
+
             //mongoTemplate.indexOps(Player.class).ensureIndex(new Index().on("confirmedAt", Sort.Direction.ASC).expire(60));
-            playerRepository.save(new Player(user.getId(), user.getAlias()));
+            Player newPlayer = new Player(user.getId(), user.getAlias());
+            logger.info("TRYING TO SAVE A NEW PLAYER");
+
+            playerRepository.save(newPlayer);
             logger.info("PLAYER WITH ID: {} ADDED CORRECTLY TO MATCH: {}", user.getId(), match.getId());
 
         } else {
