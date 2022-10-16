@@ -46,7 +46,6 @@ public class Match {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdAt;
     @Hidden
-    @DBRef(lazy = true)
     private List<Player> players;
 
     public Match(){}

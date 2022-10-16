@@ -60,7 +60,7 @@ public class MatchController {
     @ResponseStatus(HttpStatus.CREATED)
     public Match createMatch(@RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("POST TO: /matches ");
-        //jwtUtils.verify(auth);
+        jwtUtils.verify(auth);
 
         String userId = jwtUtils.getUserFromToken(auth);
         newMatch.setUserId(userId);

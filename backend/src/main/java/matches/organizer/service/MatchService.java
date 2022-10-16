@@ -6,10 +6,14 @@ import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.storage.MatchRepository;
+import matches.organizer.storage.PlayerRepository;
 import matches.organizer.storage.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,11 +29,18 @@ public class MatchService {
     MatchRepository matchRepository;
     UserRepository userRepository;
 
+    PlayerRepository playerRepository;
+
+    MongoTemplate mongoTemplate;
+
     Logger logger = LoggerFactory.getLogger(MatchService.class);
+
     @Autowired
     public MatchService(MatchRepository matchRepository, UserRepository userRepository) {
         this.matchRepository = matchRepository;
         this.userRepository = userRepository;
+        this.playerRepository = playerRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public List<Match> getMatches() {
@@ -44,7 +55,7 @@ public class MatchService {
         matchRepository.save(match);
     }
 
-    public Match createMatch(Match newMatch){
+    public Match createMatch(Match newMatch) {
         logger.info("BEGGINING createMatch() function");
 
         if (userRepository.findById(newMatch.getUserId()).orElse(null).equals(null)) {
@@ -68,7 +79,7 @@ public class MatchService {
         return match;
     }
 
-    public Match editMatch(String matchId, Match newMatch){
+    public Match editMatch(String matchId, Match newMatch) {
         Match oldMatch = matchRepository.findById(matchId).orElse(null);
         if (oldMatch == null) {
             logger.error("MATCH NOT FOUND: CANNOT EDIT MATCH");
@@ -76,10 +87,10 @@ public class MatchService {
         }
 
         Match editedMatch = new MatchBuilder().fromMatch(oldMatch)
-            .setName(newMatch.getName())
-            .setDateAndTime(newMatch.getDateAndTime())
-            .setLocation(newMatch.getLocation())
-            .build();
+                .setName(newMatch.getName())
+                .setDateAndTime(newMatch.getDateAndTime())
+                .setLocation(newMatch.getLocation())
+                .build();
 
         matchRepository.save(editedMatch);
         logger.info("UPDATED MATCH WITH ID: " + editedMatch.getId());
@@ -104,9 +115,11 @@ public class MatchService {
     public void registerNewPlayer(String id, User user) {
         Match match = matchRepository.findById(id).orElse(null);
 
-        if(match != null) {
+        if (match != null) {
             addPlayerToMatch(match, user);
             matchRepository.save(match);
+            //mongoTemplate.indexOps(Player.class).ensureIndex(new Index().on("confirmedAt", Sort.Direction.ASC).expire(60));
+            playerRepository.save(new Player(user.getId(), user.getAlias()));
             logger.info("PLAYER WITH ID: {} ADDED CORRECTLY TO MATCH: {}", user.getId(), match.getId());
 
         } else {
@@ -118,7 +131,7 @@ public class MatchService {
     public List<Player> unregisterPlayer(String matchId, String playerId) {
         Match match = matchRepository.findById(matchId).orElse(null);
 
-        if(match != null) {
+        if (match != null) {
             match.removePlayer(playerId);
             matchRepository.save(match);
             logger.info("PLAYER WITH ID: " + playerId + " REMOVED CORRECTLY FROM MATCH " + match.getId());
@@ -136,23 +149,23 @@ public class MatchService {
      * @see CounterDTO
      */
     public CounterDTO getMatchAndPlayerCounterFrom(LocalDateTime from) {
-        //List<Match> matches = matchRepository.getAllCreatedFrom(from);
-        //List<Player> players = matchRepository.getAllPlayersConfirmedFrom(from);
-        //logger.info("{} MATCHES AND {} PLAYERS CONFIRMED IN THE LAST TWO HOURS ", matches.size(), players.size());
+        List<Match> matches = matchRepository.findByCreatedAtAfter(from);
+        List<Player> players = playerRepository.findAll();
+        logger.info("{} MATCHES AND {} PLAYERS CONFIRMED IN THE LAST TWO HOURS ", matches.size(), players.size());
 
 
-        return new CounterDTO(2, 2);
-        //return new CounterDTO(matches.size(), players.size());
+        return new CounterDTO(matches.size(), players.size());
     }
 
     public void addPlayerToMatch(Match match, User user) {
-        if(user.getPhone() == null) {
+        if (user.getPhone() == null) {
             logger.error("CANNOT ADD PLAYER IF PHONE NUMBER IS NULL.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Phone cannot be null.");
         }
-        if(user.getEmail() == null){
+        if (user.getEmail() == null) {
             logger.error("CANNOT ADD PLAYER IF EMAIL IS NULL.");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Email cannot be null.");}
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Email cannot be null.");
+        }
         match.addPlayer(user);
         updateUser(user);
     }
@@ -164,9 +177,4 @@ public class MatchService {
         userRepository.save(user);
     }
 
-
-//BORRAR TODO
-    public void testSave(){
-        matchRepository.save(MatchService.createRandomMatch());
-    }
 }
