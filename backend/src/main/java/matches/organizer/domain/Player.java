@@ -1,7 +1,6 @@
 package matches.organizer.domain;
 
 import com.google.gson.*;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,8 +14,10 @@ public class Player {
     private final String userId;
     private final String alias;
 
-    @Indexed(name="confirmedAtIndex", expireAfter="60s")
+    @Indexed(name = "indexConfirmedAt", expireAfterSeconds = 60*60*2, partialFilter = "{ clearable : {$exists : true } }" )
     private LocalDateTime confirmedAt;
+
+    private boolean clearable;
 
     public Player(String userId, String alias) {
         this.userId = userId;
@@ -39,6 +40,12 @@ public class Player {
     public void setConfirmedAt(LocalDateTime confirmedAt) {
         this.confirmedAt = confirmedAt;
     }
+
+    public void setClearable(boolean clearable) { this.clearable = clearable; }
+
+    //public String getClearable() {        return clearable;    }
+
+
 
     public String toJsonString() {
         Gson gson = new GsonBuilder()

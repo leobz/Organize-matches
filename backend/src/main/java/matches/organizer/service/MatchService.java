@@ -11,9 +11,7 @@ import matches.organizer.storage.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -36,10 +34,11 @@ public class MatchService {
     Logger logger = LoggerFactory.getLogger(MatchService.class);
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, UserRepository userRepository,PlayerRepository playerRepository) {
+    public MatchService(MatchRepository matchRepository, UserRepository userRepository,PlayerRepository playerRepository,MongoTemplate mongoTemplate ) {
         this.matchRepository = matchRepository;
         this.userRepository = userRepository;
         this.playerRepository = playerRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public List<Match> getMatches() {
@@ -117,13 +116,11 @@ public class MatchService {
 
         if (match != null) {
             addPlayerToMatch(match, user);
-            logger.info("TRYING TO SAVE A MATCH IN REGISTER NEW PLAYER");
-
             matchRepository.save(match);
-            logger.info("SAVE SUCCESSFULLY A MATCH IN REGISTER NEW PLAYER");
 
-            //mongoTemplate.indexOps(Player.class).ensureIndex(new Index().on("confirmedAt", Sort.Direction.ASC).expire(60));
+            //Se crea nuevo player con atributo crearable distinto de nulo para que se cree indice de eliminacion automatica.
             Player newPlayer = new Player(user.getId(), user.getAlias());
+            newPlayer.setClearable(true);
             logger.info("TRYING TO SAVE A NEW PLAYER");
 
             playerRepository.save(newPlayer);
@@ -159,8 +156,6 @@ public class MatchService {
         List<Match> matches = matchRepository.findByCreatedAtAfter(from);
         List<Player> players = playerRepository.findAll();
         logger.info("{} MATCHES AND {} PLAYERS CONFIRMED IN THE LAST TWO HOURS ", matches.size(), players.size());
-
-
         return new CounterDTO(matches.size(), players.size());
     }
 

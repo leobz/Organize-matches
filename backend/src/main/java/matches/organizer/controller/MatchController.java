@@ -120,10 +120,7 @@ public class MatchController {
             logger.error("USER NOT FOUND: NEED TO CREATE AND USER BEFORE");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
-        logger.error("BEFORE ADD A PLAYER IN CONTROLLER");
         matchService.registerNewPlayer(matchId, user);
-        logger.error("AFTER ADD A PLAYER IN CONTROLLER");
-
         Match match = matchService.getMatch(matchId);
         Map<String, List<Player>> response = new HashMap<>();
         response.put("startingPlayers", match.getStartingPlayers());
