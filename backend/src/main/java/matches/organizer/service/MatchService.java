@@ -11,11 +11,9 @@ import matches.organizer.storage.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -29,16 +27,13 @@ public class MatchService {
 
     PlayerRepository playerRepository;
 
-    MongoTemplate mongoTemplate;
-
     Logger logger = LoggerFactory.getLogger(MatchService.class);
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, UserRepository userRepository,PlayerRepository playerRepository,MongoTemplate mongoTemplate ) {
+    public MatchService(MatchRepository matchRepository, UserRepository userRepository,PlayerRepository playerRepository ) {
         this.matchRepository = matchRepository;
         this.userRepository = userRepository;
         this.playerRepository = playerRepository;
-        this.mongoTemplate = mongoTemplate;
     }
 
     public List<Match> getMatches() {
@@ -54,7 +49,6 @@ public class MatchService {
     }
 
     public Match createMatch(Match newMatch) {
-        logger.info("BEGGINING createMatch() function");
 
         if (userRepository.findById(newMatch.getUserId()).orElse(null).equals(null)) {
 
@@ -62,8 +56,6 @@ public class MatchService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
 
         }
-        logger.info("BEGGINING Builder");
-
         Match match = new MatchBuilder()
                 .setName(newMatch.getName())
                 .setUserId(newMatch.getUserId())
@@ -71,7 +63,6 @@ public class MatchService {
                 .setLocation(newMatch.getLocation())
                 .build();
 
-        logger.info("TRYING INSEERT A MATCH  WITH ID: {}", match.getId());
         matchRepository.save(match);
         logger.info("NEW MATCH CREATED WITH ID: {}", match.getId());
         return match;
@@ -121,8 +112,6 @@ public class MatchService {
             //Se crea nuevo player con atributo crearable distinto de nulo para que se cree indice de eliminacion automatica.
             Player newPlayer = new Player(user.getId(), user.getAlias());
             newPlayer.setClearable(true);
-            logger.info("TRYING TO SAVE A NEW PLAYER");
-
             playerRepository.save(newPlayer);
             logger.info("PLAYER WITH ID: {} ADDED CORRECTLY TO MATCH: {}", user.getId(), match.getId());
 

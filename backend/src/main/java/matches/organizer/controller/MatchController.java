@@ -18,13 +18,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @CrossOrigin(origins = "http://localhost:3001", allowedHeaders = "http://localhost:3001", allowCredentials = "true")
 @RestController
@@ -62,18 +60,13 @@ public class MatchController {
         logger.info("POST TO: /matches ");
         jwtUtils.verify(auth);
 
-        String userId = jwtUtils.getUserFromToken(auth);
-        newMatch.setUserId(userId);
-        newMatch.getId();
-        logger.info("CALLING TO CREATE MATCH FUNCTION ");
-
-
+        newMatch.setUserId(jwtUtils.getUserFromToken(auth));
         return matchService.createMatch(newMatch);
     }
 
     @PatchMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
     public Match editMatch(@PathVariable String matchId, @RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
-        logger.info("PATCH TO: /matches/{" + matchId.toString() + "}");
+        logger.info("PATCH TO: /matches/{" + matchId + "}");
         jwtUtils.verify(auth);
 
         Match match = matchService.getMatch(matchId);

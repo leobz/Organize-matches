@@ -4,27 +4,20 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.*;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Document
 public class Match {
 
-    //@Id
     @Indexed
     @Id
     @Hidden
@@ -60,7 +53,6 @@ public class Match {
        this.players = new ArrayList<>();
     }
 
-    //Logger logger = LoggerFactory.getLogger(Match.class);
 
     public String getId() {
         return id;
@@ -103,7 +95,6 @@ public class Match {
 
     public void addPlayer(User user) {
         if(getPlayers().size() >= 13) {
-            //logger.error("NO MORE PLAYERS THAN 13 CAN BE SUBSCRIBED TO A MATCH");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. The team is complete.");
         }
         players.add(new Player(user.getId(), user.getAlias()));
