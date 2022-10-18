@@ -4,17 +4,21 @@ VEGETA_DURATION = 5s
 VEGETA_RATE = 0
 VEGETA_MAX_WORKERS = 1000
 
+
+## Retrocompatibilidad con versiones de docker compose.
+## More info: https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command
+define DOCKER_COMPOSE
+	@if which docker-compose  >/dev/null ; then docker-compose  $1; fi;
+    @if which docker compose  >/dev/null ; then docker compose $1; fi;
+endef
+
 PHONY: help
 help: ## Imprime targets y ayuda 
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: dev
 dev: ## Compila y ejecuta localmente el backend
-	cd backend; \
-	mvn clean install; \
-	docker-compose up -d mongo; \
-	java -jar target/matches-organizer-0.0.1-SNAPSHOT.jar \
-	--spring.data.mongodb.uri=mongodb://root:$(shell cat mongo-pass.txt)@localhost:27017/admin?authMechanism=SCRAM-SHA-256
+	$(call DOCKER_COMPOSE, up -d)
 
 .PHONY: build
 build: ## Crea imagen docker del todos los componentes (backend y frontend)
@@ -25,17 +29,18 @@ build: ## Crea imagen docker del todos los componentes (backend y frontend)
 
 .PHONY: clean
 clean: ## Elimina los containers e imagenes (no borra la cache)
-	docker container kill be-organize-matches fe-organize-matches; \
-	docker container rm be-organize-matches fe-organize-matches; \
-	docker image rm --no-prune be-organize-matches fe-organize-matches;
+	docker container kill be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
+	docker container rm be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
+	docker image rm --no-prune be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1;
 
 .PHONY: prod
 prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.
-	docker-compose up -d;
+	$(call DOCKER_COMPOSE, -f docker-compose.yml -f production.yml up -d)
+
 
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto
-	docker-compose down
+	$(call DOCKER_COMPOSE, down)
 
 .PHONY: lt-counter
 lt-counter: ## Test de Carga HTTP del endpoint GET '/matches/counter'
