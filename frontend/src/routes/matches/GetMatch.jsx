@@ -1,38 +1,57 @@
 import * as React from 'react';
-import { BasicMatchForm, FormSpace} from './BasicMatchForm';
-import { Form } from "react-router-dom";
-import { useLoaderData } from "react-router-dom";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import { Typography, Container, CssBaseline, Box, createTheme, ThemeProvider , Avatar} from '@mui/material';
+import { useState } from 'react';
+import BasicMatchForm, {FormSpace} from './BasicMatchForm';
+import { useParams, useNavigate, useLoaderData } from "react-router-dom";
+import { Grid, Button, Typography, Container, CssBaseline, Box, Card, CardContent, Avatar} from '@mui/material';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 import SportsSoccerOutlinedIcon from '@mui/icons-material/SportsSoccerOutlined';
 import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
-import {useNavigate} from 'react-router-dom';
-
-
-const theme = createTheme();
+import { patchMatch, validateDateTime, getMatch, registerPlayer, unregisterPlayer } from '../../services/matches';
+import dayjs from 'dayjs';
+import { useSnackbar } from "notistack";
 
 export async function loader(request) {
   const match = await getMatch(request.params.matchId);
+  match.dateAndTime = match.dateAndTime + "z"
   return { match };
 }
 
 /******************                   Main Component                       ******************/
 export default function GetMatch() {
+  const { enqueueSnackbar } = useSnackbar();
   const { match } = useLoaderData();
+  const [isEditing, setIsEditing] = useState(false);
   const userId = localStorage.userId
+  const { matchId } = useParams();
   const inscriptedUserIds =
     match.startingPlayers.map(p => p.userId).concat(
       match.substitutePlayers.map(p => p.userId)
     )
 
+  const handleSubmit = async (event) => {
+    const formData = event.target.elements;
+    event.preventDefault();
+    const dateTime = dayjs(formData.date.value + " " + formData.time.value)
+  
+    const bodyMatch = {
+      id: matchId,
+      name: formData.name.value,
+      location: formData.location.value,
+      dateAndTime: dateTime
+    };
+  
+    if(validateDateTime(dateTime)){
+      await patchMatch(bodyMatch)
+      enqueueSnackbar("Match changes saved", { variant: "success" });
+      setIsEditing(false);
+    }
+    else
+      enqueueSnackbar("Error: Fecha y hora deben ser posterior al momento actual", { variant: "error" });      
+  }
+
   return(
-    // TODO: Reutilizar componente de tema en todos las pantallas, para tener componentes homogeneos de manera sencilla
-    <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="sm">
         <CssBaseline />
         <Box
@@ -44,26 +63,27 @@ export default function GetMatch() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <SportsSoccerOutlinedIcon />
-            </Avatar>
-
+            <SportsSoccerOutlinedIcon />
+          </Avatar>
         </Box>
         <Box>
-          <Form>
           <Typography component="h1" variant="h5">
             <Box sx={{ textAlign: 'center', m: 1}}>
               Datos de partido
             </Box>
           </Typography>
+          <form onSubmit={handleSubmit}>
             <BasicMatchForm
-              readOnly={true}
+              readOnly={match.userId != userId}
               location={match.location}
               name={match.name}
-              date={match.dateAndTime}
-              time={match.dateAndTime}
-              />
+              dateTime={match.dateAndTime}
+              onChange={() => setIsEditing(true)}
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
+            />
+          </form>
           <FormSpace/>
-
           <Box
           sx={{
             display: 'flex',
@@ -72,8 +92,8 @@ export default function GetMatch() {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <Groups2OutlinedIcon />
-            </Avatar>
+            <Groups2OutlinedIcon />
+          </Avatar>
 
         </Box>
           <Typography component="h1" variant="h5">
@@ -95,10 +115,8 @@ export default function GetMatch() {
             <Box>
               {match.substitutePlayers.map((player) => <BasicCard playerName={player.alias}/>)}
             </Box>
-          </Form>
         </Box>
       </Container>
-    </ThemeProvider>
   )
 }
 
@@ -120,16 +138,20 @@ export function BasicCard(props) {
 }
 
 export function DinamicAddPlayerButton(props){
+  const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
+
   if (props.inscriptedUserIds.includes(props.userId)){
     return(
     <AddPlayerButton
       userId={props.userId}
       matchId={props.matchId}
-      disabled = {true}
-      color= {"success"}
-      text={"Inscripto"}
-      icon={<CheckCircleOutlineOutlinedIcon/>}
-      />)
+      disabled = {false}
+      color= {"error"}
+      text={"Darme de baja"}
+      icon={<HighlightOffIcon/>}
+      onClick={() => unregisterPlayer(props.matchId, props.userId, navigate, enqueueSnackbar)}
+    />)
   }
   else if (props.inscriptedUserIds.length >= 13){
     return(
@@ -151,13 +173,12 @@ export function DinamicAddPlayerButton(props){
         color= {"primary"}
         text={"¡Anotarme!"}
         icon={<AddIcon/>}
-        />)
+        onClick={() => registerPlayer(props.matchId, props.userId, navigate, enqueueSnackbar)}
+      />)
     }
 }
 
 export function AddPlayerButton(props){
-  const navigate = useNavigate()
-
   return(
     <Grid container justifyContent="center">
     <Button
@@ -166,60 +187,10 @@ export function AddPlayerButton(props){
       startIcon={props.icon}
       variant="contained"
       fullWidth
-      onClick={() => registerPlayer(props.matchId, props.userId, navigate)}
+      onClick={() => props.onClick()}
       >
       {props.text}
     </Button>
   </Grid>
   )
 }
-
-
-/******************                   Functions                       ******************/
-async function registerPlayer(matchId, userId, navigate) {
-  try {
-    const response = await fetch("/api/matches/" + matchId + "/players", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(userId),
-      });
-
-      if (!response.ok){
-        alert("Ah ocurrido un error");
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message)
-      }
-
-      response.json().then(data => {
-        alert("¡Te has anotado al partido!");
-        navigate("/matches/"+ matchId)
-      })
-  }
-  catch(e){
-    console.log(e)
-  }
-}
-
-
-export const getMatch = async (id) =>
-  await fetch("/api/matches/" + id, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  }).then(function(response) {
-    return response.json();
-  }).then(function(data) {
-    return data;
-  }).catch(error => {
-    throw new Response("", {
-      status: response.status,
-      statusText: response.statusText,
-    });
-  })
-  .finally((data) => data);
-
