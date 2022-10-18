@@ -8,8 +8,8 @@ VEGETA_MAX_WORKERS = 1000
 ## Retrocompatibilidad con versiones de docker compose.
 ## More info: https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command
 define DOCKER_COMPOSE
-	@if which docker-compose  >/dev/null ; then docker-compose  $1; fi;
-    @if which docker compose  >/dev/null ; then docker compose $1; fi;
+	@if which docker-compose  >/dev/null ; then docker-compose  $1; \
+	else docker compose $1; fi;
 endef
 
 PHONY: help
