@@ -13,12 +13,13 @@ import {Alert} from "@mui/material";
 import {useNavigate} from 'react-router-dom';
 import { loginUser, buildUser } from "../../services/login";
 import { useEffect, useState } from "react";
+import { useSnackbar } from "notistack";
 
 export default function SignIn() {
 
     const [userId, setUserId] = useOutletContext();
     const navigate = useNavigate();
-    const [wrongUserOrPasswordAlert, setWrongUserOrPasswordAlert] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -27,7 +28,7 @@ export default function SignIn() {
         loginUser(buildUser(data.get('email'), data.get('password')))
         .then((response) => {
             if (response.status >= 400){
-                setWrongUserOrPasswordAlert(true);
+                enqueueSnackbar("Usuario o contraseña incorrecta", { variant: "error" });
             } else {
                 response.json().then(data => {
                     setUserId(data.userId);
@@ -82,13 +83,6 @@ export default function SignIn() {
                         id="password"
                         autoComplete="current-password"
                     />
-                    {wrongUserOrPasswordAlert &&
-                        <Alert
-                            severity="error"
-                            id="unknownUser">
-                            Usuario o contraseña incorrecta.
-                        </Alert>
-                    }
                     <Button
                         type="submit"
                         fullWidth

@@ -120,6 +120,12 @@ public class Match {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+    
+    public void removePlayer(String playerId) {
+        if(!players.stream().anyMatch((p) -> p.getUserId().compareTo(playerId) == 0))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot remove player. The user is not in the team.");
+        players.remove(players.stream().filter((p) -> p.getUserId().compareTo(playerId) == 0).findFirst().get());
+    }
 
     static class MatchSerializer implements JsonSerializer<Match> {
         @Override

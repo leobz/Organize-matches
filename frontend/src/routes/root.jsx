@@ -18,12 +18,12 @@ export default function Root() {
 
     const onClickLogout = (e) => {
         e.preventDefault()
+        localStorage.clear()
+        setUserId(undefined)
         logout().then((response) => {
             if (response.status >= 400){
                 console.log("Error on logout")
             } else {
-                localStorage.clear()
-                setUserId(undefined)
                 navigate('/login');
             }
         })

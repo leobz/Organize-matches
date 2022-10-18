@@ -25,8 +25,8 @@ public class UserService {
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public User getUser(UUID userId) {
-        return  userRepository.findById(userId.toString()).orElse(null);
+    public User getUser(String userId) {
+        return  userRepository.findById(userId).orElse(null);
 
     }
 

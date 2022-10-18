@@ -44,17 +44,15 @@ const MatchList = () => {
             </Avatar>
         </Box>
         <Typography component="h1" variant="h5">
-            <Box sx={{ textAlign: 'center', m: 1}}>
-              Partidos disponibles
-            </Box>
-          </Typography>
+          <Box sx={{ textAlign: 'center', m: 1}}>
+            Partidos disponibles
+          </Box>
+        </Typography>
         <List
             sx={{ width: '100%', bgcolor: 'background.paper' }}
-            component="Grid"
-            container
             aria-labelledby="nested-list-subheader"
         >
-            {matches.length? matches.map(doparti => <MatchItem container match={doparti} />) : noMatches}
+            {matches.length? matches.map(doparti => <MatchItem key={doparti.id} match={doparti} />) : noMatches}
         </List>
         </Container>
     </ThemeProvider>

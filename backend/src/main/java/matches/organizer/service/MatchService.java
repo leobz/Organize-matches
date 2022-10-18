@@ -75,7 +75,25 @@ public class MatchService {
         matchRepository.add(match);
         logger.info("NEW MATCH CREATED WITH ID: {}", match.getId());
         return match;
-  }
+    }
+
+    public Match editMatch(UUID matchId, Match newMatch){
+        Match oldMatch = matchRepository.get(matchId);
+        if (oldMatch == null) {
+            logger.error("MATCH NOT FOUND: CANNOT EDIT MATCH");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not foundL cannot edit match");
+        }
+
+        Match editedMatch = new MatchBuilder().fromMatch(oldMatch)
+            .setName(newMatch.getName())
+            .setDateAndTime(newMatch.getDateAndTime())
+            .setLocation(newMatch.getLocation())
+            .build();
+
+        matchRepository.update(editedMatch);
+        logger.info("UPDATED MATCH WITH ID: " + editedMatch.getId());
+        return editedMatch;
+    }
 
 
     public static Match createRandomMatch() {
@@ -102,6 +120,20 @@ public class MatchService {
 
         } else {
             logger.error("MATCH NOT FOUND WITH ID: {}", id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found.");
+        }
+    }
+
+    public List<Player> unregisterPlayer(UUID matchId, String playerId) {
+        var match = matchRepository.get(matchId);
+
+        if(match != null) {
+            match.removePlayer(playerId);
+            matchRepository.update(match);
+            logger.info("PLAYER WITH ID: " + playerId.toString() + " REMOVED CORRECTLY FROM MATCH " + match.getId().toString());
+            return match.getPlayers();
+        } else {
+            logger.error("MATCH NOT FOUND WITH ID: " + matchId.toString());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found.");
         }
     }
