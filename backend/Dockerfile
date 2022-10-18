@@ -32,4 +32,4 @@ WORKDIR /opt
 # - https://www.javadevjournal.com/java/jvm-parameters/
 CMD ["-Xmx1000m", "-Xms512m", "-XX:+HeapDUmpOnOutOfMemoryError", "-XX:HeapDumpPath=/opt/logs"]
 
-ENTRYPOINT java -jar ./app.jar --spring.data.mongodb.uri=mongodb://root:$(cat /run/secrets/mongo-pass)@mongo:27017/admin?authMechanism=SCRAM-SHA-256
+ENTRYPOINT java -jar ./app.jar --spring.profiles.active=$ENV --spring.data.mongodb.uri=mongodb://root:$(cat /run/secrets/mongo-pass)@mongo:27017/admin?authMechanism=SCRAM-SHA-256
