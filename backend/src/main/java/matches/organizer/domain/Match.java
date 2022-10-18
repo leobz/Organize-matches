@@ -4,23 +4,27 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.gson.*;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Document
 public class Match {
 
+    @Indexed
+    @Id
     @Hidden
-    private UUID id;
+    private String id;
+
     private String name;
+
     private String userId;
     @Schema(description = "Format yyyy-MM-ddTHH:mm:ss.SSSZ",
             format  = "yyyy-MM-ddTHH:mm:ss.sssZ",
@@ -41,7 +45,7 @@ public class Match {
 
     public Match(){}
 
-    public Match(UUID id, String name, String userId, LocalDateTime dateAndTime, String location, LocalDateTime createdAt){
+    public Match(String id, String name, String userId, LocalDateTime dateAndTime, String location, LocalDateTime createdAt){
        this.id = id;
        this.name = name;
        this.userId = userId;
@@ -51,9 +55,8 @@ public class Match {
        this.players = new ArrayList<>();
     }
 
-    Logger logger = LoggerFactory.getLogger(Match.class);
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
@@ -94,7 +97,6 @@ public class Match {
 
     public void addPlayer(User user) {
         if(getPlayers().size() >= 13) {
-            logger.error("NO MORE PLAYERS THAN 13 CAN BE SUBSCRIBED TO A MATCH");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. The team is complete.");
         }
         players.add(new Player(user.getId(), user.getAlias()));
@@ -131,7 +133,7 @@ public class Match {
         @Override
         public JsonElement serialize(Match match, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject matchJson = new JsonObject();
-            matchJson.addProperty("id", match.getId().toString());
+            matchJson.addProperty("id", match.getId());
             matchJson.addProperty("name", match.getName());
             matchJson.addProperty("userId", match.getUserId());
             matchJson.addProperty("dateAndTime", match.getDateAndTime().toString());
