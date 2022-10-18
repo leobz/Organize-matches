@@ -61,6 +61,7 @@ export default function SignUpForm ()
 							id="fullName"
 							label="Full Name"
 							autoFocus
+							inputProps={{ minLength: 5 }}
 						/>
 					</Grid>
 					<Grid item xs={12} sm={12}>
@@ -72,23 +73,27 @@ export default function SignUpForm ()
 							id="alias"
 							label="Alias"
 							autoFocus
+							inputProps={{ minLength: 5 }}
 						/>
 					</Grid>
 					<Grid item xs={12} sm={12}>
 						<TextField
 							autoComplete="given-name"
 							name="phone"
+							type="tel"
 							required
 							fullWidth
 							id="phone"
 							label="Phone"
 							autoFocus
+							inputProps={{ minLength: 8, inputMode: 'numeric', pattern: '[0-9]*' }}
 						/>
 					</Grid>
 					<Grid item xs={12} sm={12}>
 						<TextField
 							autoComplete="given-name"
 							name="email"
+							type="email"
 							required
 							fullWidth
 							id="email"
@@ -106,6 +111,7 @@ export default function SignUpForm ()
 							id="password"
 							label="Password"
 							autoFocus
+							inputProps={{ minLength: 6 }}
 						/>
 					</Grid>
 					<Grid item xs={12} sm={6}>
@@ -118,6 +124,7 @@ export default function SignUpForm ()
 							id="repeatPassword"
 							label="Repeat Password"
 							autoFocus
+							inputProps={{ minLength: 6 }}
 						/>
 					</Grid>
 					<Grid item xs={12}>
