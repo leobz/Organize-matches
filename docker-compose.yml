@@ -5,8 +5,10 @@ services:
     image: be-organize-matches:latest
     container_name: be-organize-matches
     restart: on-failure
+    environment:
+      ENV: dev
     depends_on:
-      - "mongo"
+      - mongo
     ports:
       - "8081:8081"
     secrets:
@@ -42,7 +44,7 @@ services:
     ports:
       - "8082:8081"
     depends_on:
-      - "mongo"
+      - mongo
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/mongo-pass
