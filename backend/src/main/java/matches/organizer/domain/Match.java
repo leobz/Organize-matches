@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.constraints.NotBlank;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class Match {
     @Id
     @Hidden
     private String id;
-
+    @NotBlank
     private String name;
 
     private String userId;
@@ -31,6 +33,7 @@ public class Match {
             example= "2030-12-30T00:00:00.001Z")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", shape = JsonFormat.Shape.STRING)
     private LocalDateTime dateAndTime;
+    @NotBlank
     private String location;
 
     @Schema(description = "Format yyyy-MM-ddTHH:mm:ss.SSSZ",

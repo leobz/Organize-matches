@@ -26,26 +26,23 @@ export function validateDateTime(dateTime) {
 }
 
 export async function postCreateMatch(body) {
-  try {
-    const response = await fetch("/api/matches", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(body),
-      });
+  const response = await fetch("/api/matches", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(body),
+  });
 
-    if (!response.ok){
-      alert("Ah ocurrido un error");
-      const message = `An error has occured: ${response.status}`;
-      throw new Error(message)
-    }
-
+  if (response.status >= 300){
+    const message = `An error has occured: ${response.status}`;
+    throw new Response("", {
+      status: response.status,
+      statusText: message,
+    });
+  } else {
     return (await response.json()).id;
-  }
-  catch(e){
-    console.log(e)
   }
 }
 
