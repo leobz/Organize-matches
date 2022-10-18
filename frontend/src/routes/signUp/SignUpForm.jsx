@@ -41,8 +41,10 @@ export default function SignUpForm ()
 		catch (error) {
 			if(error.status === 409)
 				showError(error.status, "Email address is taken. Try another one.");
+			else if(error.status === 400)
+				showError(error.status, "You have entered invalid data. Please check your information and try again.");
 			else
-				throw error;
+				showError(error.status, "Internal error.");
 		}
 	}
 

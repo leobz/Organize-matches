@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 @Document
@@ -20,14 +22,19 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String id;
     @Expose
+    @NotBlank(message = "Alias is missing")
     private String alias;
     @Expose
+    @NotBlank(message = "Full Name is missing")
     private String fullName;
     @Expose
+    @NotBlank(message = "Phone is missing")
     private String phone;
     @Indexed
     @Expose
+    @Email(message = "Invalid email.")
     private String email;
+    @NotBlank(message = "Password is missing")
     private String password;
 
 
