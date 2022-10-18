@@ -1,4 +1,4 @@
-import {Outlet, NavLink, useNavigation} from 'react-router-dom';
+import {Outlet, NavLink, useNavigation, useLocation} from 'react-router-dom';
 import {SnackbarProvider} from 'notistack';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useEffect, useState} from "react";
@@ -9,25 +9,29 @@ const theme = createTheme();
 
 
 export default function Root() {
-    const [userId, setUserId] = useState(localStorage.getItem('userId') || undefined);
-    useEffect(() => {
-        setUserId(localStorage.getItem('userId'));
-    }, []);
+    const [userId, setUserId] = useState(localStorage.getItem('userId') || null);
     const navigation = useNavigation();
     const navigate = useNavigate();
 
-    const onClickLogout = (e) => {
-        e.preventDefault()
+    const location = useLocation();
+
+    const disconnect = () => {
         logout().then((response) => {
             if (response.status >= 400){
                 console.log("Error on logout")
             } else {
-                localStorage.clear()
-                setUserId(undefined)
+                setUserId(null);
+                localStorage.clear();
                 navigate('/login');
             }
         })
-    }
+    };
+
+    useEffect(() => {
+        if(new Date(localStorage.getItem("tokenExpirationDate")) <= new Date()) {
+            disconnect();
+        }
+    }, [location.key])
 
     return (
         <>
@@ -48,7 +52,7 @@ export default function Root() {
                                         <NavLink to='home'> Home </NavLink>
                                         <NavLink to="matches"> Matches </NavLink>
                                         <NavLink to="create-match"> Create Match </NavLink>
-                                        <NavLink to="logout" onClick={(e) => {onClickLogout(e)}}> Log Out </NavLink>
+                                        <NavLink to="logout" onClick={(e) => { e.preventDefault(); disconnect(e); }}> Log Out </NavLink>
                                     </li>
                                 }
                             </ul>

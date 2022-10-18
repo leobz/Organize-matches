@@ -31,6 +31,7 @@ export default function SignIn() {
             } else {
                 response.json().then(data => {
                     setUserId(data.userId);
+                    localStorage.setItem("tokenExpirationDate", data.tokenExpirationDate);
                 });
                 navigate('/home');
             }

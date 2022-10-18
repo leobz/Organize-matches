@@ -54,6 +54,7 @@ public class AuthenticationController {
         JsonObject loginResponse = new JsonObject();
         User user = authenticationService.getUserByEmail(userTryingLogin.getEmail());
         loginResponse.addProperty("userId",user.getId());
+        loginResponse.addProperty("tokenExpirationDate", jwtUtils.getTokenExpirationDate(token).toString());
         return loginResponse.toString();
     }
 
