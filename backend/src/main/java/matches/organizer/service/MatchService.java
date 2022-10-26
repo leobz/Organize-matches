@@ -14,9 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -63,9 +68,20 @@ public class MatchService {
                 .setLocation(newMatch.getLocation())
                 .build();
 
-        matchRepository.save(match);
-        logger.info("NEW MATCH CREATED WITH ID: {}", match.getId());
-        return match;
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        Set<ConstraintViolation<Match>> violations = validator.validate(match);
+
+        if (violations.isEmpty()) {
+            matchRepository.save(match);
+            logger.info("NEW MATCH CREATED WITH ID: {}", match.getId());
+            return match;
+        } else {
+            for (ConstraintViolation<Match> violation : violations) {
+                logger.info(violation.getMessage());
+            }
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Campos inválidos");
+        }
     }
 
     public Match editMatch(String matchId, Match newMatch) {

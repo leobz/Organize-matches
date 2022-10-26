@@ -8,8 +8,8 @@ VEGETA_MAX_WORKERS = 1000
 ## Retrocompatibilidad con versiones de docker compose.
 ## More info: https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command
 define DOCKER_COMPOSE
-	@if which docker-compose  >/dev/null ; then docker-compose  $1; fi;
-    @if which docker compose  >/dev/null ; then docker compose $1; fi;
+	@if which docker-compose  >/dev/null ; then docker-compose  $1; \
+	else docker compose $1; fi;
 endef
 
 PHONY: help
@@ -17,8 +17,12 @@ help: ## Imprime targets y ayuda
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: dev
-dev: ## Compila y ejecuta localmente el backend
+dev: ## Levanta todos los contenedores localmente. Necesita realizar un 'make build' previamente para tomar los ultimos cambios
 	$(call DOCKER_COMPOSE, up -d)
+
+.PHONY: prod
+prod: ## Levanta componentes del proyecto con un volumen dedicado al container de Mongo. Necesita realizar un 'make build' previamente para tomar los ultimos cambios
+	$(call DOCKER_COMPOSE, -f docker-compose.yml -f production.yml up -d)
 
 .PHONY: build
 build: ## Crea imagen docker del todos los componentes (backend y frontend)
@@ -32,11 +36,6 @@ clean: ## Elimina los containers e imagenes (no borra la cache)
 	docker container kill be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
 	docker container rm be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
 	docker image rm --no-prune be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1;
-
-.PHONY: prod
-prod: ## Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente.
-	$(call DOCKER_COMPOSE, -f docker-compose.yml -f production.yml up -d)
-
 
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto
