@@ -32,17 +32,12 @@ export default function SignIn() {
             } else {
                 response.json().then(data => {
                     setUserId(data.userId);
+                    localStorage.setItem('userId', data.userId);
                 });
                 navigate('/home');
             }
         });
-
-
     };
-
-    useEffect(() => {
-        localStorage.setItem('userId', userId);
-    }, [userId]);
 
     return (
     // TODO: Reutilizar componente de tema en todos las pantallas, para tener componentes homogeneos de manera sencilla

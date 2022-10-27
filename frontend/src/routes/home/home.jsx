@@ -46,11 +46,12 @@ export default function Metrics() {
       </Box>
 
       <Box
+        display="flex" justifyContent="center" alignItems="center"
         sx={{
           bgcolor: 'background.general',
           boxShadow: 1,
           borderRadius: 5,
-          p: 2,
+          p: 1,
           minWidth: 300,
           flexGrow: 1, 
           '&:hover': {
@@ -73,7 +74,7 @@ export default function Metrics() {
             </Item>
           </Grid>
           
-          <Grid xs={12}>
+          <Grid xs={12} display="flex" justifyContent="center" alignItems="center">
             <Box sx = {{
               color: 'text.special', 
               textAlign: "center",

@@ -1,67 +1,64 @@
-import {Outlet, NavLink, useNavigation} from 'react-router-dom';
+import {Outlet, useNavigation} from 'react-router-dom';
 import {SnackbarProvider} from 'notistack';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useEffect, useState} from "react";
-import {useNavigate} from 'react-router-dom';
-import { logout } from "../services/login";
-
-const theme = createTheme();
-
+import Sidebar from './sidebar';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import MenuIcon from '@mui/icons-material/Menu';
+import IconButton from '@mui/material/IconButton';
 
 export default function Root() {
     const [userId, setUserId] = useState(localStorage.getItem('userId') || undefined);
+    const [hideSidebar, setHideSidebar] = useState(true);
+    const navigation = useNavigation();
+    const theme = useTheme();
+    const responsive = useMediaQuery(theme.breakpoints.down('md'));
+    
+    const onClickMenu = () => {
+        setHideSidebar(!hideSidebar);
+    }
+
+    const closeMenu = () => {
+        setHideSidebar(true);
+    }
+
     useEffect(() => {
         setUserId(localStorage.getItem('userId'));
     }, []);
-    const navigation = useNavigation();
-    const navigate = useNavigate();
-
-    const onClickLogout = (e) => {
-        e.preventDefault()
-        localStorage.clear()
-        setUserId(undefined)
-        logout().then((response) => {
-            if (response.status >= 400){
-                console.log("Error on logout")
-            } else {
-                navigate('/login');
-            }
-        })
-    }
 
     return (
         <>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={createTheme()}>
                 <SnackbarProvider maxSnack={1}>
-                    <div id="sidebar">
-                        <h1>Organize Matches</h1>
-                        <nav>
-                            <ul>
-                                {!userId &&
-                                    <li key='login'>
-                                        <NavLink to='login'> Sign In </NavLink>
-                                        <NavLink to='register'> Sign Up </NavLink>
-                                    </li>
-                                }
-                                {userId &&
-                                    <li key="sections">
-                                        <NavLink to='home'> Home </NavLink>
-                                        <NavLink to="matches"> Matches </NavLink>
-                                        <NavLink to="create-match"> Create Match </NavLink>
-                                        <NavLink to="logout" onClick={(e) => {onClickLogout(e)}}> Log Out </NavLink>
-                                    </li>
-                                }
-                            </ul>
-                        </nav>
-                    </div>
-                    <div
-                        id="detail"
-                        className={
-                            navigation.state === "loading" ? "loading" : ""
+                    <>
+                        { (responsive && hideSidebar) &&
+                            <div>
+                                <IconButton 
+                                    color="primary" aria-label="menu" component="label" onClick={onClickMenu}
+                                    style={{ 
+                                        'padding-left': '2.5rem',
+                                        'padding-top': '1.5rem'
+                                    }}    
+                                >
+                                    <MenuIcon/>
+                                </IconButton>
+                            </div>
                         }
-                    >
-                        <Outlet context={[userId, setUserId]}/>
-                    </div>
+                        { (!responsive || !hideSidebar) && 
+                            <Sidebar userId={userId} setUserId={setUserId} responsive={responsive} closeMenu={closeMenu}/>
+                        }
+                        { (!responsive || hideSidebar) && 
+                        <div
+                            id="detail"
+                            className={
+                                navigation.state === "loading" ? "loading" : ""
+                            }
+                        >
+                            <Outlet context={[userId, setUserId]}/>
+                        </div>
+                        }
+                    </>
                 </SnackbarProvider>
             </ThemeProvider>
         </>
