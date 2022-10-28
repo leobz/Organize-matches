@@ -7,13 +7,32 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
+import { Box } from '@mui/system';
+import { styled } from '@mui/material/styles';
+
+
+const Detail = styled('div')(({ theme }) => ({
+    id: 'detail',
+    [theme.breakpoints.down('sm')]: {
+        padding: '1rem 1rem',
+    },
+    [theme.breakpoints.up('sm')]: {
+        padding: '2rem 3rem',
+    },
+    [theme.breakpoints.up('md')]: {
+        padding: '2rem 12rem',
+    },
+    [theme.breakpoints.up('lg')]: {
+        padding: '2rem 20rem',
+    },
+  }));
 
 export default function Root() {
     const [userId, setUserId] = useState(localStorage.getItem('userId') || undefined);
     const [hideSidebar, setHideSidebar] = useState(true);
     const navigation = useNavigation();
     const theme = useTheme();
-    const responsive = useMediaQuery(theme.breakpoints.down('md'));
+    const responsive = useMediaQuery(theme.breakpoints.down('sm'));
     
     const onClickMenu = () => {
         setHideSidebar(!hideSidebar);
@@ -32,31 +51,28 @@ export default function Root() {
             <ThemeProvider theme={createTheme()}>
                 <SnackbarProvider maxSnack={1}>
                     <>
-                        { (responsive && hideSidebar) &&
-                            <div>
-                                <IconButton 
-                                    color="primary" aria-label="menu" component="label" onClick={onClickMenu}
-                                    style={{ 
-                                        'padding-left': '2.5rem',
-                                        'padding-top': '1.5rem'
-                                    }}    
-                                >
-                                    <MenuIcon/>
-                                </IconButton>
-                            </div>
-                        }
                         { (!responsive || !hideSidebar) && 
                             <Sidebar userId={userId} setUserId={setUserId} responsive={responsive} closeMenu={closeMenu}/>
                         }
                         { (!responsive || hideSidebar) && 
-                        <div
-                            id="detail"
+                        <Detail
                             className={
                                 navigation.state === "loading" ? "loading" : ""
                             }
                         >
+                            { (responsive && hideSidebar) &&
+                                <IconButton 
+                                    color="primary" aria-label="menu" component="label" onClick={onClickMenu}
+                                    style={{ 
+                                        'padding-left': '1rem',
+                                        'padding-top': '0rem'
+                                    }}    
+                                >
+                                    <MenuIcon/>
+                                </IconButton>
+                            }
                             <Outlet context={[userId, setUserId]}/>
-                        </div>
+                        </Detail>
                         }
                     </>
                 </SnackbarProvider>

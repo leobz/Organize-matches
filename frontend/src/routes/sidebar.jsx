@@ -27,6 +27,10 @@ export default function Sidebar(props) {
           { (props.responsive) &&
             <IconButton 
               color="primary" aria-label="menu" component="label" onClick={props.closeMenu}
+              style={{ 
+                'padding-left': '0rem',
+                'padding-top': '0rem'
+              }}   
             >
                 <MenuIcon/>
             </IconButton>
