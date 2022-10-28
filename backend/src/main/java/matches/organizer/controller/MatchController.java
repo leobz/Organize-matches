@@ -72,9 +72,9 @@ public class MatchController {
         Match match = matchService.getMatch(matchId);
         String tokenUserId = jwtUtils.getUserFromToken(auth);
         logger.info("Match id " + matchId);
-        logger.info("New Match id " + newMatch.getId().toString());
+        logger.info("New Match id " + newMatch.getId());
         logger.info("Token user id" + tokenUserId);
-        logger.info("Match user id" + match.getUserId().toString());
+        logger.info("Match user id" + match.getUserId());
         logger.info("Date time: " + match.getDateAndTime());
         logger.info("New Date time: " + newMatch.getDateAndTime());
         if(match.getUserId().compareTo(tokenUserId) != 0) {
