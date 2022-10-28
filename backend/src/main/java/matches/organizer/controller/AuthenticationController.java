@@ -61,10 +61,24 @@ public class AuthenticationController {
 
     @PostMapping(value = "/logout", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public String logout(@CookieValue(value = "token", defaultValue = "") String auth) throws Exception {
+    public String logout(@CookieValue(value = "token", defaultValue = "") String auth, HttpServletResponse response) throws Exception {
         logger.info("POST TO: /logout with token: {}", auth);
-        jwtUtils.verify(auth);
-        jwtUtils.addTokenToBlacklist(auth);
+        if(!auth.isEmpty()) {
+            jwtUtils.verify(auth);
+            jwtUtils.addTokenToBlacklist(auth);
+        }
+
+        // crea una cookie
+        Cookie cookie = new Cookie("token", auth);
+        // expira en 1 hora
+        cookie.setMaxAge(0);
+        // para seguridad
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        response.addCookie(cookie);
+
         JsonObject loginResponse = new JsonObject();
         loginResponse.addProperty("response","You have successfully logged out.");
         return  loginResponse.toString();

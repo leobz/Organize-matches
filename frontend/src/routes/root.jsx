@@ -28,7 +28,7 @@ export default function Root() {
     };
 
     useEffect(() => {
-        if(new Date(localStorage.getItem("tokenExpirationDate")) <= new Date()) {
+        if(localStorage.getItem("tokenExpirationDate") && new Date(localStorage.getItem("tokenExpirationDate")) <= new Date()) {
             disconnect();
         }
     }, [location.key])
