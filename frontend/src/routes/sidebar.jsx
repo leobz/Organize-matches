@@ -3,6 +3,23 @@ import {useNavigate} from 'react-router-dom';
 import { logout } from "../services/login";
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
+
+const MyDiv = styled('div')(({ theme }) => ({
+  [theme.breakpoints.down('sm')]: {
+      width: "100%",
+  },
+  [theme.breakpoints.up('sm')]: {
+      width: "100%",
+  },
+  [theme.breakpoints.up('md')]: {
+      width: "22rem",
+  },
+  [theme.breakpoints.up('lg')]: {
+      width: "22rem",
+  },
+}));
+
 
 export default function Sidebar(props) {
   const navigate = useNavigate();
@@ -21,7 +38,7 @@ export default function Sidebar(props) {
   }
 
   return (
-      <div id="sidebar">
+      <MyDiv id='sidebar'>
         <h1>Organize Matches</h1>
         <nav>
           { (props.responsive) &&
@@ -52,6 +69,6 @@ export default function Sidebar(props) {
             }
           </ul>
         </nav>
-      </div>
+      </MyDiv>
   );
 }
