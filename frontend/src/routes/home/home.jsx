@@ -42,7 +42,7 @@ export default function Metrics() {
 
     <ThemeProvider theme={theme}>
       <Box sx = {{textAlign: "center",}}>
-          <img src="/img/OrganizeMatches.gif" alt={"logo"}/>
+          <img src="/img/OrganizeMatches.gif" alt={"logo"} width="100%"/>
       </Box>
 
       <Box
@@ -52,7 +52,7 @@ export default function Metrics() {
           boxShadow: 1,
           borderRadius: 5,
           p: 1,
-          minWidth: 300,
+          width: "100%",
           flexGrow: 1, 
           '&:hover': {
             bgcolor: 'action.active',
