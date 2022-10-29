@@ -112,11 +112,6 @@ public class MatchService {
                 .build();
     }
 
-    public void createAndSaveRandomMatch() {
-        Match match = createRandomMatch();
-        matchRepository.save(match);
-    }
-
     public void registerNewPlayer(String id, User user) {
         Match match = matchRepository.findById(id).orElse(null);
         logger.error("LEST TRY WITH: {} , {}", user.getId(), match.getId());
@@ -146,7 +141,7 @@ public class MatchService {
             logger.info("PLAYER WITH ID: " + playerId + " REMOVED CORRECTLY FROM MATCH " + match.getId());
             return match.getPlayers();
         } else {
-            logger.error("MATCH NOT FOUND WITH ID: " + matchId.toString());
+            logger.error("MATCH NOT FOUND WITH ID: " + matchId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found.");
         }
     }
