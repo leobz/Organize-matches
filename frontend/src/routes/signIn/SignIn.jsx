@@ -9,10 +9,8 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import {Alert} from "@mui/material";
 import {useNavigate} from 'react-router-dom';
 import { loginUser, buildUser } from "../../services/login";
-import { useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 
 export default function SignIn() {

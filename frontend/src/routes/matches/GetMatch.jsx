@@ -11,7 +11,6 @@ import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
 import { patchMatch, validateDateTime, getMatch, registerPlayer, unregisterPlayer } from '../../services/matches';
 import dayjs from 'dayjs';
 import { useSnackbar } from "notistack";
-import { useEffect } from 'react';
 
 export async function loader(request) {
   const match = await getMatch(request.params.matchId);
