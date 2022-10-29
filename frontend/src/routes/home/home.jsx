@@ -61,13 +61,13 @@ export default function Metrics() {
       >
         <Grid container spacing={2}>
 
-          <Grid xs={6}>
+          <Grid xs={12} sm={6}>
             <Item>
               <Box sx={{ color: 'text.special'}}> Last Matches </Box>
               <Box sx={{ color: 'text.regular', fontSize: 34, fontWeight: 'medium' }}> { JSON.parse(metrics)["matches"]} </Box>
             </Item>
           </Grid>
-          <Grid xs={6}>
+          <Grid xs={12} sm={6}>
             <Item>
               <Box sx={{ color: 'text.special' }}> Last Players </Box>
               <Box sx={{ color: 'text.regular', fontSize: 34, fontWeight: 'medium' }}> { JSON.parse(metrics)["players"]} </Box>

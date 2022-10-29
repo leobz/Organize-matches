@@ -10,13 +10,13 @@ const MyDiv = styled('div')(({ theme }) => ({
       width: "100%",
   },
   [theme.breakpoints.up('sm')]: {
-      width: "100%",
+      width: "30%",
   },
   [theme.breakpoints.up('md')]: {
-      width: "22rem",
+      width: "30%",
   },
   [theme.breakpoints.up('lg')]: {
-      width: "22rem",
+      width: "30%",
   },
 }));
 

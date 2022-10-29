@@ -11,6 +11,7 @@ import Groups2OutlinedIcon from '@mui/icons-material/Groups2Outlined';
 import { patchMatch, validateDateTime, getMatch, registerPlayer, unregisterPlayer } from '../../services/matches';
 import dayjs from 'dayjs';
 import { useSnackbar } from "notistack";
+import { useEffect } from 'react';
 
 export async function loader(request) {
   const match = await getMatch(request.params.matchId);
@@ -49,7 +50,7 @@ export default function GetMatch() {
     }
     else
       enqueueSnackbar("Error: Fecha y hora deben ser posterior al momento actual", { variant: "error" });      
-  }
+  } 
 
   return(
       <Container component="main" maxWidth="sm">
@@ -97,7 +98,7 @@ export default function GetMatch() {
 
         </Box>
           <Typography component="h1" variant="h5">
-            <Box sx={{ textAlign: 'center', m: 1}}>
+            <Box sx={{ textAlign: 'center', m: 1 }}>
               Jugadores
             </Box>
           </Typography>
@@ -140,7 +141,7 @@ export function BasicCard(props) {
 export function DinamicAddPlayerButton(props){
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
-
+ 
   if (props.inscriptedUserIds.includes(props.userId)){
     return(
     <AddPlayerButton
@@ -150,7 +151,7 @@ export function DinamicAddPlayerButton(props){
       color= {"error"}
       text={"Darme de baja"}
       icon={<HighlightOffIcon/>}
-      onClick={() => unregisterPlayer(props.matchId, props.userId, navigate, enqueueSnackbar)}
+      onClick={() => {unregisterPlayer(props.matchId, props.userId, navigate, enqueueSnackbar); }}
     />)
   }
   else if (props.inscriptedUserIds.length >= 13){
@@ -173,14 +174,14 @@ export function DinamicAddPlayerButton(props){
         color= {"primary"}
         text={"¡Anotarme!"}
         icon={<AddIcon/>}
-        onClick={() => registerPlayer(props.matchId, props.userId, navigate, enqueueSnackbar)}
+        onClick={() => {registerPlayer(props.matchId, props.userId, navigate, enqueueSnackbar);}}
       />)
     }
 }
 
 export function AddPlayerButton(props){
   return(
-    <Grid container justifyContent="center">
+    <Grid container justifyContent="center" width="100%">
     <Button
       disabled = {props.disabled}
       color= {props.color}
@@ -189,7 +190,9 @@ export function AddPlayerButton(props){
       fullWidth
       onClick={() => props.onClick()}
       >
-      {props.text}
+        <Typography variant="button" display="block">
+          {props.text}
+        </Typography>
     </Button>
   </Grid>
   )

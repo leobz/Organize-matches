@@ -17,10 +17,10 @@ const Detail = styled('div')(({ theme }) => ({
         padding: '1rem 1rem',
     },
     [theme.breakpoints.up('sm')]: {
-        padding: '2rem 3rem',
+        padding: '2rem 2rem',
     },
     [theme.breakpoints.up('md')]: {
-        padding: '2rem 12rem',
+        padding: '2rem 7rem',
     },
     [theme.breakpoints.up('lg')]: {
         padding: '2rem 20rem',
