@@ -51,7 +51,7 @@ class MatchControllerTest {
     @Autowired
     private JwtUtils jwtUtils;
     @Test
-    void matchesRetrieved() throws Exception {
+    void matchesRetrieved() throws Exception, Match.AddPlayerException {
         User user = createUser();
         Match match = MatchService.createRandomMatch();
         Match match2 = MatchService.createRandomMatch();
@@ -96,7 +96,7 @@ class MatchControllerTest {
      * Verifica: Obtencion de contador con la cantidad de partidos creados y jugadores anotados en las últimas 2 horas.
      */
     @Test
-    void matchesCounterRetrieved() throws Exception {
+    void matchesCounterRetrieved() throws Exception, Match.AddPlayerException {
         ///////							Test Empty Counter					///////
         ///////////////////////////////////////////////////////////////////////////
         this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
@@ -121,7 +121,7 @@ class MatchControllerTest {
     }
 
     @Test
-    void registerNewPlayer() throws Exception {
+    void registerNewPlayer() throws Exception, Match.AddPlayerException {
 
         User user = createUser();
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
