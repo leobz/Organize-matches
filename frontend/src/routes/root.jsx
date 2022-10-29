@@ -13,8 +13,11 @@ import { styled } from '@mui/material/styles';
 
 const Detail = styled('div')(({ theme }) => ({
     id: 'detail',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('500')]: {
         padding: '1rem 1rem',
+    },
+    [theme.breakpoints.up('500')]: {
+        padding: '1rem 5rem',
     },
     [theme.breakpoints.up('sm')]: {
         padding: '2rem 2rem',
@@ -54,26 +57,28 @@ export default function Root() {
                         { (!responsive || !hideSidebar) && 
                             <Sidebar userId={userId} setUserId={setUserId} responsive={responsive} closeMenu={closeMenu}/>
                         }
+                        <div>
+                        { (responsive && hideSidebar) &&
+                            <IconButton 
+                                color="primary" aria-label="menu" component="label" onClick={onClickMenu}
+                                style={{ 
+                                    'padding-left': '2rem',
+                                    'padding-top': '1rem'
+                                }}    
+                            >
+                                <MenuIcon/>
+                            </IconButton>
+                        }
                         { (!responsive || hideSidebar) && 
                         <Detail
                             className={
                                 navigation.state === "loading" ? "loading" : ""
                             }
                         >
-                            { (responsive && hideSidebar) &&
-                                <IconButton 
-                                    color="primary" aria-label="menu" component="label" onClick={onClickMenu}
-                                    style={{ 
-                                        'padding-left': '1rem',
-                                        'padding-top': '0rem'
-                                    }}    
-                                >
-                                    <MenuIcon/>
-                                </IconButton>
-                            }
                             <Outlet context={[userId, setUserId]}/>
                         </Detail>
                         }
+                        </div>
                     </>
                 </SnackbarProvider>
             </ThemeProvider>
