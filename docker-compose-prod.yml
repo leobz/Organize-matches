@@ -1,0 +1,73 @@
+version: "3.9"
+# TODO: Externalizar DockerRegistry a variables
+services:
+
+  webserver:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+
+  backend:
+    image: leobz/be-organize-matches:latest
+    container_name: be-organize-matches
+    restart: on-failure
+    environment:
+      ENV: prod
+    depends_on:
+      - mongo
+    ports:
+      - "8081:8081"
+    secrets:
+      - mongo-pass
+
+  frontend:
+    image: leobz/fe-organize-matches:latest
+    container_name: fe-organize-matches
+    restart: on-failure
+    ports:
+      - "3001:3000"
+    environment:
+      REACT_APP_API_HOST: localhost:8081
+
+  mongo:
+    image: mongo:4.2.23
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo-pass
+      MONGO_INITDB_DATABASE: organize-matches
+    secrets:
+      - mongo-pass
+
+  mongo-express:
+    image: mongo-express:0.54.0
+    restart: always
+    ports:
+      - "8082:8081"
+    depends_on:
+      - mongo
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/mongo-pass
+    secrets:
+      - mongo-pass
+
+secrets:
+  mongo-pass:
+    file: ./mongo-pass.txt
