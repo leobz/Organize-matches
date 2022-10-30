@@ -55,7 +55,7 @@ public class MatchService {
 
     public Match createMatch(Match newMatch) {
 
-        if (userRepository.findById(newMatch.getUserId()).orElse(null).equals(null)) {
+        if (userRepository.findById(newMatch.getUserId()).orElse(null) == null) {
 
             logger.error("USER NOT FOUND: NEED TO CREATE AND USER BEFORE");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -114,9 +114,9 @@ public class MatchService {
 
     public void registerNewPlayer(String id, User user) {
         Match match = matchRepository.findById(id).orElse(null);
-        logger.error("LEST TRY WITH: {} , {}", user.getId(), match.getId());
 
         if (match != null) {
+            logger.info("LEST TRY WITH: {} , {}", user.getId(), match.getId());
             addPlayerToMatch(match, user);
             matchRepository.save(match);
 
@@ -136,7 +136,11 @@ public class MatchService {
         Match match = matchRepository.findById(matchId).orElse(null);
 
         if (match != null) {
-            match.removePlayer(playerId);
+            try {
+                match.removePlayer(playerId);
+            } catch (Match.RemovePlayerException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot remove player. The user is not in the team.");
+            }
             matchRepository.save(match);
             logger.info("PLAYER WITH ID: " + playerId + " REMOVED CORRECTLY FROM MATCH " + match.getId());
             return match.getPlayers();
@@ -168,7 +172,13 @@ public class MatchService {
             logger.error("CANNOT ADD PLAYER IF EMAIL IS NULL.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Email cannot be null.");
         }
-        match.addPlayer(user);
+
+        try {
+            match.addPlayer(user);
+        } catch(Match.AddPlayerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. The team is complete.");
+        }
+
         updateUser(user);
     }
 
