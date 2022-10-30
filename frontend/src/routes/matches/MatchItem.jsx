@@ -13,8 +13,8 @@ const MatchItem = ({match}) => {
     const navigate = useNavigate();
 
     return (
-        <ListItemButton onClick={() => navigate(`/matches/${match.id}`)}>
-            <Grid container>
+        <ListItemButton width="100%" onClick={() => navigate(`/matches/${match.id}`)}>
+            <Grid container width="100%">
                 <Grid item component={ListItem} md={6}>
                     <ListItemIcon><SportsSoccerIcon fontSize="medium" /></ListItemIcon>
                     <ListItemText primaryTypographyProps={{

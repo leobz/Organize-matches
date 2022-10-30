@@ -4,6 +4,8 @@ import EventIcon from '@mui/icons-material/Event';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import GroupsIcon from '@mui/icons-material/Groups';
 import SubItem from "./SubItem.jsx";
+import { useTheme } from "@mui/material/styles";
+import { useMediaQuery } from "@mui/material";
 
 const MatchDetails = ({match}) => {
     const {location, startingPlayers, substitutePlayers, dateAndTime} = match;
@@ -11,7 +13,9 @@ const MatchDetails = ({match}) => {
     let date = objTime.toLocaleString([], {
         year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"
     }).replace(",", "");
-    let playersText = `${startingPlayers.length + substitutePlayers.length} jugadores`;
+    const theme = useTheme();
+    const responsive = useMediaQuery(theme.breakpoints.down('280'));
+    let playersQuantity = `${startingPlayers.length + substitutePlayers.length} `;
 
     return (
         <List>
@@ -25,7 +29,7 @@ const MatchDetails = ({match}) => {
             />
             <SubItem
                 icon={<GroupsIcon />}
-                text={playersText}
+                text={responsive ? (playersQuantity + "jug.") : (playersQuantity + "jugadores")}
             />
         </List>
     );
