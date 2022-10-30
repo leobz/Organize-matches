@@ -42,6 +42,10 @@ node_modules/
 
 out/
 
+certbot/**
+
 mongo/**
 
 mongo-pass.txt
+
+.env
