@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useEffect } from 'react'; 
+import * as React from 'react'; 
 import AbcIcon from '@mui/icons-material/Abc';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Box } from '@mui/system';
@@ -8,11 +7,18 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import InputAdornment from '@mui/material/InputAdornment';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import TextField from '@mui/material/TextField';
+import { TextField, Grid } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Button } from '@mui/material'
+import { deleteMatch } from '../../services/matches';
+
+import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from "notistack";
+
+
 
 /******************                   Main Component                       ******************/
 function BasicMatchForm(props) {
@@ -22,6 +28,10 @@ function BasicMatchForm(props) {
   const [location, setLocation] = React.useState(props.location);
   const today = dayjs();
   const readOnly =  props.readOnly || false
+
+  const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
+
 
   return(
     <div>
@@ -35,37 +45,44 @@ function BasicMatchForm(props) {
         value={location}
         readOnly={props.readOnly} adornment={<LocationOnIcon/>} id={"location"}/>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker
-          label="Fecha"
-          value={dateTime||props.dateTime}
-          defaultValue={props.dateTime||nowPlus30Min()}
-          disabled={readOnly}
-          onChange={(newValue) => {
-            setDateTime(newValue);
-            var isAfterToday = dayjs(newValue).isAfter(dayjs(), 'day');
-            if (isAfterToday) {setMinTime(dayjs().minute(0).hour(0).second(0));}
-            else{setMinTime(nowPlus30Min());}
-            props.onChange();
-          }
-        }
-          renderInput={(params) => <TextField {...params} name={"date"} id={"date"} sx={{ width: 0.5}} />}
-          inputFormat="YYYY-MM-DD"
-          minDate={today}
-        />
-
-        <TimePicker
-          label="Hora"
-          value={dateTime||props.dateTime}
-          defaultValue={dateTime||nowPlus30Min()}
-          onChange={(newValue) => {
-            setDateTime(newValue);
-            props.onChange();
-          }}
-          disabled={readOnly}
-          inputFormat="HH:mm:00"
-          renderInput={(params) => <TextField {...params} name={"time"} id={"time"} sx={{ width: 0.5}} />}
-          minTime={minTime}
-        />
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <DatePicker
+              label="Fecha"
+              value={dateTime||props.dateTime}
+              defaultValue={props.dateTime||nowPlus30Min()}
+              disabled={readOnly}
+              onChange={(newValue) => {
+                setDateTime(newValue);
+                var isAfterToday = dayjs(newValue).isAfter(dayjs(), 'day');
+                if (isAfterToday) {setMinTime(dayjs().minute(0).hour(0).second(0));}
+                else{setMinTime(nowPlus30Min());}
+                props.onChange();
+              }
+            }
+              renderInput={(params) => <TextField {...params} name={"date"} id={"date"} sx={{ width: 1}} />}
+              inputFormat="YYYY-MM-DD"
+              minDate={today}
+              width="100%"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TimePicker
+              label="Hora"
+              value={dateTime||props.dateTime}
+              defaultValue={dateTime||nowPlus30Min()}
+              onChange={(newValue) => {
+                setDateTime(newValue);
+                props.onChange();
+              }}
+              disabled={readOnly}
+              inputFormat="HH:mm:00"
+              renderInput={(params) => <TextField {...params} name={"time"} id={"time"} sx={{ width: 1}} />}
+              minTime={minTime}
+              width="100%"
+            />
+          </Grid>
+        </Grid>
       </LocalizationProvider>
       <FormSpace/>
       { props.isEditing &&
@@ -81,6 +98,11 @@ function BasicMatchForm(props) {
                 setDateTime(props.dateTime);
               }}>
               Cancelar
+            </Button>
+            <Button variant="danger" startIcon={<DeleteIcon/>} onClick={() => {
+                deleteMatch(props.matchId, navigate, enqueueSnackbar);
+              }}>
+              Eliminar
             </Button>
           </>
           }

@@ -35,10 +35,10 @@ build: ## Crea imagen docker del todos los componentes (backend y frontend)
 
 .PHONY: clean
 clean: ## Elimina los containers e imagenes (no borra la cache)
-	docker container kill be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
-	docker container rm be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
-	docker image rm --no-prune be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1;
-
+	docker container kill be-organize-matches fe-organize-matches organize-matches_mongo_1 organize-matches_mongo-express_1; \
+	docker container rm be-organize-matches fe-organize-matches organize-matches_mongo_1 organize-matches_mongo-express_1; \
+	docker image rm --no-prune be-organize-matches fe-organize-matches mongo mongo-express;
+	
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto
 	$(call DOCKER_COMPOSE, down)
