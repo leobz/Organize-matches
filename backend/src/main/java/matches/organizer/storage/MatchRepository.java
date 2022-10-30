@@ -11,4 +11,5 @@ import java.util.List;
 public interface MatchRepository extends MongoRepository<Match, String> {
 
     List<Match> findByCreatedAtAfter(LocalDateTime from);
+    List<Match> findByDeletedFalse();
 }

@@ -76,6 +76,7 @@ export default function GetMatch() {
             <BasicMatchForm
               readOnly={match.userId != userId}
               location={match.location}
+              matchId={match.id}
               name={match.name}
               dateTime={match.dateAndTime}
               onChange={() => setIsEditing(true)}

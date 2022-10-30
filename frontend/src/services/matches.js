@@ -118,3 +118,31 @@ export async function unregisterPlayer(matchId, userId, navigate, enqueueSnackba
     console.log(e)
   }
 }
+
+export async function deleteMatch(matchId, navigate, enqueueSnackbar) {
+
+  try {
+    const response = await fetch("/api/matches/" + matchId, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: null,
+      });
+
+      if (!response.ok){
+        enqueueSnackbar("Error " + response.status + ": Ha ocurrido un error.", { variant: "error" });
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message)
+      }
+
+      response.json().then(data => {
+        enqueueSnackbar("El partido ha sido eliminado ", { variant: "success" });
+        navigate("/matches/")
+      })
+  }
+  catch(e){
+    console.log(e)
+  }
+}

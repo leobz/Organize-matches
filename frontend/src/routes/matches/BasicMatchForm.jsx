@@ -11,7 +11,14 @@ import { TextField, Grid } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Button } from '@mui/material'
+import { deleteMatch } from '../../services/matches';
+
+import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from "notistack";
+
+
 
 /******************                   Main Component                       ******************/
 function BasicMatchForm(props) {
@@ -21,6 +28,10 @@ function BasicMatchForm(props) {
   const [location, setLocation] = React.useState(props.location);
   const today = dayjs();
   const readOnly =  props.readOnly || false
+
+  const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
+
 
   return(
     <div>
@@ -87,6 +98,11 @@ function BasicMatchForm(props) {
                 setDateTime(props.dateTime);
               }}>
               Cancelar
+            </Button>
+            <Button variant="danger" startIcon={<DeleteIcon/>} onClick={() => {
+                deleteMatch(props.matchId, navigate, enqueueSnackbar);
+              }}>
+              Eliminar
             </Button>
           </>
           }
