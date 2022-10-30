@@ -63,7 +63,7 @@ class MatchControllerTest {
 
         var matches = List.of(match,match2);
 
-        when(matchRepository.findAll()).thenReturn(matches);
+        when(matchRepository.findByDeletedFalse()).thenReturn(matches);
 
         this.mvc.perform(get("/matches")
                         .cookie(new Cookie("token",jwtUtils.generateJwt(user)))

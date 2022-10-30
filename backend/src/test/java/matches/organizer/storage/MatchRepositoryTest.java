@@ -50,8 +50,9 @@ class MatchRepositoryTest {
     void addAndRemoveMatch() {
         matchRepository.save(anyMatch);
         matchRepository.save(anotherMatch);
-        matchRepository.delete(anyMatch);
-        Assertions.assertNull(matchRepository.findById(anyMatch.getId()).orElse(null));
+        anyMatch.setDeleted(true);
+        matchRepository.save(anyMatch);
+        Assertions.assertTrue(matchRepository.findById(anyMatch.getId()).get().isDeleted());
         Assertions.assertEquals(anotherMatch.getId(),matchRepository.findById(anotherMatch.getId()).orElse(new Match()).getId());
     }
 

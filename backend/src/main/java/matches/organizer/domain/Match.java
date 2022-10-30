@@ -41,6 +41,8 @@ public class Match {
     private LocalDateTime createdAt;
     @Hidden
     private List<Player> players;
+    @Hidden
+    private boolean deleted = false;
 
     public Match(){}
 
@@ -114,6 +116,14 @@ public class Match {
         return matchesArray;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+    
     public void removePlayer(String playerId) throws RemovePlayerException{
         if(players.stream().noneMatch((p) -> p.getUserId().compareTo(playerId) == 0))
             throw new RemovePlayerException("Match: Cannot remove player. The user is not in the team.");
@@ -135,7 +145,7 @@ public class Match {
             return matchJson;
         }
     }
-
+    
     public static class AddPlayerException extends Throwable {
         public AddPlayerException(String s) {
         }
