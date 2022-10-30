@@ -32,7 +32,7 @@ class MatchRepositoryTest {
     private Match anotherMatch;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Match.AddPlayerException {
         anyMatch = buildAMatch();
         anotherMatch = buildAnotherMatch();
         matchRepository.deleteAll();
@@ -73,7 +73,7 @@ class MatchRepositoryTest {
     }
 
     @Test
-    void updateUnknownMatch() {
+    void updateUnknownMatch() throws Match.AddPlayerException {
         Match anyMatch = buildAMatch();
         matchRepository.save(anyMatch);
         matchRepository.save(buildAnotherMatch());
@@ -96,7 +96,7 @@ class MatchRepositoryTest {
     }
 
     @Test
-    void addPlayerToMatch(){
+    void addPlayerToMatch() throws Match.AddPlayerException {
         Match match = MatchService.createRandomMatch();
         matchRepository.save(match);
         //Este test debe validar que la lista de usuario este vacia
@@ -106,7 +106,7 @@ class MatchRepositoryTest {
         assertFalse(matchRepository.findById(match.getId()).orElse(new Match()).getPlayers().isEmpty());
     }
 
-    private Match buildAMatch() {
+    private Match buildAMatch() throws Match.AddPlayerException {
         User user =  new User("User", "User","0303456", "pp@g.com", "Password");
 
         Match anyMatch = new MatchBuilder()
@@ -121,7 +121,7 @@ class MatchRepositoryTest {
         return anyMatch;
     }
 
-    private Match buildAnotherMatch() {
+    private Match buildAnotherMatch() throws Match.AddPlayerException {
         User user =  new User("User", "User","0303456", "pp@g.com", "Password");
 
         Match anotherMatch = new MatchBuilder()

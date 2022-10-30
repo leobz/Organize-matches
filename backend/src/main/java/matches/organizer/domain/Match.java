@@ -7,8 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.constraints.NotBlank;
 import java.lang.reflect.Type;
@@ -98,9 +96,9 @@ public class Match {
         return players.stream().skip(10).limit(3).collect(Collectors.toList());
     }
 
-    public void addPlayer(User user) {
+    public void addPlayer(User user) throws AddPlayerException {
         if(getPlayers().size() >= 13) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. The team is complete.");
+            throw new AddPlayerException("Match: Cannot add player. The team is complete.");
         }
         players.add(new Player(user.getId(), user.getAlias()));
     }
@@ -126,9 +124,9 @@ public class Match {
         this.deleted = deleted;
     }
     
-    public void removePlayer(String playerId) {
-        if(!players.stream().anyMatch((p) -> p.getUserId().compareTo(playerId) == 0))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot remove player. The user is not in the team.");
+    public void removePlayer(String playerId) throws RemovePlayerException{
+        if(players.stream().noneMatch((p) -> p.getUserId().compareTo(playerId) == 0))
+            throw new RemovePlayerException("Match: Cannot remove player. The user is not in the team.");
         players.remove(players.stream().filter((p) -> p.getUserId().compareTo(playerId) == 0).findFirst().get());
     }
 
@@ -145,6 +143,16 @@ public class Match {
             matchJson.add("substitutePlayers", getPlayersJsonArray(match.getSubstitutePlayers()));
             matchJson.addProperty("createdAt", match.getCreatedAt().toString());
             return matchJson;
+        }
+    }
+    
+    public static class AddPlayerException extends Throwable {
+        public AddPlayerException(String s) {
+        }
+    }
+
+    public static class RemovePlayerException extends Throwable {
+        public RemovePlayerException(String s) {
         }
     }
 }
