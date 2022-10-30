@@ -43,7 +43,7 @@ public class MatchService {
     }
 
     public List<Match> getMatches() {
-        return matchRepository.findAll().stream().filter(x -> !x.isDeleted()).collect(Collectors.toList());
+        return matchRepository.findByDeletedFalse();
     }
 
     public Match getMatch(String id) {
