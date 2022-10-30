@@ -1,5 +1,6 @@
-# TODO: Apuntar a DOCKER_REGISTRY compartido
-DOCKER_REGISTRY=leobz
+include .env
+export
+
 BE_DOCKER_TAG = be-organize-matches:latest
 FE_DOCKER_TAG = fe-organize-matches:latest
 VEGETA_DURATION = 5s

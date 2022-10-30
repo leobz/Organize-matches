@@ -47,3 +47,5 @@ certbot/**
 mongo/**
 
 mongo-pass.txt
+
+.env

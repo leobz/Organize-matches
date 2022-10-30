@@ -20,7 +20,7 @@ services:
       - ./certbot/conf/:/etc/letsencrypt/:rw
 
   backend:
-    image: leobz/be-organize-matches:latest
+    image: ${DOCKER_REGISTRY}/be-organize-matches:latest
     container_name: be-organize-matches
     restart: on-failure
     environment:
@@ -33,7 +33,7 @@ services:
       - mongo-pass
 
   frontend:
-    image: leobz/fe-organize-matches:latest
+    image: ${DOCKER_REGISTRY}/fe-organize-matches:latest
     container_name: fe-organize-matches
     restart: on-failure
     ports:
