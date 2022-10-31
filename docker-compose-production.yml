@@ -1,5 +1,4 @@
 version: "3.9"
-# TODO: Externalizar DockerRegistry a variables
 services:
 
   webserver:
@@ -25,6 +24,7 @@ services:
     restart: on-failure
     environment:
       ENV: prod
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
     depends_on:
       - mongo
     ports:

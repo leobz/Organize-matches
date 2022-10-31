@@ -2,11 +2,12 @@ version: "3.9"
 services: 
   backend:
     build: ./backend
-    image: be-organize-matches:latest
+    image: ${DOCKER_REGISTRY}/be-organize-matches:latest
     container_name: be-organize-matches
     restart: on-failure
     environment:
       ENV: dev
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
     depends_on:
       - mongo
     ports:
@@ -16,7 +17,7 @@ services:
 
   frontend:
     build: ./frontend
-    image: fe-organize-matches:latest
+    image: ${DOCKER_REGISTRY}/fe-organize-matches:latest
     container_name: fe-organize-matches
     restart: on-failure
     ports:
