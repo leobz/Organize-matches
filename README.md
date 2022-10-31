@@ -2,27 +2,50 @@
 
 ## Visión General
 
-La aplicación está escrita en **Java**, con el framework **Springboot** que trae varias facilidades para trabajar en aplicaciones Web.
+La aplicación está escrita en **Java**, con el framework **Springboot** que trae varias facilidades para trabajar en aplicaciones Web. Para la persistencia se optó por implementar el pattern Repository, utilizando **MongoDB**
 
-Para la persistencia se optó por implementar el pattern Repository, utilizando **MongoDB**
+## Contenido 
+- [Setup](#setup)  
+- [Comandos básicos: Desarrollo](#commandsdev)  
+  - [URLs](#urlsdev)  
+- [Comandos básicos: Producción](#commandsprod)  
+- [Comandos básicos: Tests de Carga](#loadtesting)  
+- [Documentación](#doc)  
+  - [Diagrama de arquitectura](#doc-arq)  
+  - [MongoDB](#doc-mongo)  
 
-### URL Front End
-
-http://localhost:3001
-
-### URL Documentación de la API
-
-http://localhost:8081/swagger-ui/index.html
-
-### URL UI Mongo-Express
-http://localhost:8082/
 
 ---
-## Comandos básicos
+
+<a name="setup"/>
+
+## Setup
+
+1. Instalar Docker + Docker Compose:  https://www.docker.com/
+
+2. En la raiz del proyecto `/organize-matches`, crear archivo `.env` con el siguiente contenido:
+
+```
+DOCKER_REGISTRY=tacs2022
+```
+
+3. Opcional: Loggearse al docker registry (necesario para push de imágenes docker)
+
+```
+$ docker login -u tacs2022 -p <registry-password>
+```
+4. Para que funcione la creación de la base de datos, se deberá crear en la raiz del proyecto `/organize-matches`,
+un archivo llamado `mongo-pass.txt` con la password del usuario `root` de la base de datos (Ej: Pass1234!@).
+
+---
+
+<a name="commandsdev"/>
+
+## Comandos básicos: Desarrollo
 
 Build docker image - MacOS/Linux:
 ```
-make build # Crea imagen docker de todos los componentes (backend+frontend)
+$ make build # Crea imagen docker de todos los componentes (backend+frontend)
 ```
 
 Run app locally - MacOS/Linux:
@@ -37,15 +60,44 @@ Stop app locally - MacOS/Linux:
 make stop # Finaliza la ejecución todos los contenedores
 ```
 
-## MongoDB
+<a name="urlsdev"/>
 
-Se decidió usar la base de datos noSQL MongoDB porque nos parece que la funcionalidad puede variar a futuro, y
-esta DDBB es más flexible para agregar nuevas funcionalidades que un Cassandra por ejemplo.
+### URLs Desarrollo
 
-**Para que funcione la creación de la base de datos, se deberá crear en la raiz del proyecto `/organize-matches`,
-un archivo llamado `mongo-pass.txt` con la password del usuario `root` de la base de datos.**
+- Front End http://localhost:3001
+- Documentación Back End API http://localhost:8081/swagger-ui/index.html
+- UI Mongo-Express http://localhost:8082/
 
-## Testing
+---
+
+<a name="commandsprod"/>
+
+## Comandos básicos: Producción
+
+Dentro de instancia EC2:
+
+1. Descargar ultima imagen taggeada del docker registry
+```
+make pull-images
+```
+
+2. Run docker project with volume - MacOS/Linux:
+```
+# Detener/Limpiar contenedores antiguos
+make stop
+```
+
+2. Run docker project with volume - MacOS/Linux:
+```
+# Levantar contenedores con un volumen dedicado al container de Mongo.
+make prod
+```
+
+---
+
+<a name="loadtesting"/>
+
+## Tests de carga
 
 Para ver los test de carga HTTP disponibles, ejecutar el siguiente comando:
 
@@ -61,11 +113,21 @@ VEGETA_RATE = 0 # Maxima cantidad de request por segundo. (0 es infinito)
 VEGETA_MAX_WORKERS = 1000 # Maxima cantidad de usuarios (Nota: 1 usuario puede hacer N request)
 ```
 
-## Otros comandos
 
-Run docker project with volume - MacOS/Linux:
-```
-# Levanta contenedores con un volumen dedicado al container de Mongo.
-# Necesita realizar un 'make build' previamente para tomar los ultimos cambios
-make prod
-```
+<a name="doc"/>
+
+## Documentación
+
+<a name="doc-arq"/>
+
+### Diagrama de arquitectura
+
+
+![Architecture-Diagram](doc/Architecture-Diagram.png)
+
+<a name="doc-mongo"/>
+
+### MongoDB
+
+Se decidió usar la base de datos noSQL MongoDB porque nos parece que la funcionalidad puede variar a futuro, y
+esta DDBB es más flexible para agregar nuevas funcionalidades que un Cassandra por ejemplo.

@@ -64,7 +64,6 @@ public class AuthenticationController {
     public String logout(@CookieValue(value = "token", defaultValue = "") String auth, HttpServletResponse response) throws Exception {
         logger.info("POST TO: /logout with token: {}", auth);
         if(!auth.isEmpty()) {
-            jwtUtils.verify(auth);
             jwtUtils.addTokenToBlacklist(auth);
         }
 

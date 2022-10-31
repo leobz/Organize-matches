@@ -30,19 +30,20 @@ const MatchList = () => {
     return (
     // TODO: Reutilizar componente de tema en todos las pantallas, para tener componentes homogeneos de manera sencilla
     <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth="100%">
+        <Container component="main">
         <Box
           sx={{
             marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
+            justifyContent: 'center',
             alignItems: 'center',
+            width: '100%'
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <SportsSoccerOutlinedIcon />
             </Avatar>
-        </Box>
         <Typography component="h1" variant="h5">
           <Box sx={{ textAlign: 'center', m: 1}}>
             Partidos disponibles
@@ -54,6 +55,7 @@ const MatchList = () => {
         >
             {matches.length? matches.map(doparti => <MatchItem key={doparti.id} match={doparti} />) : noMatches}
         </List>
+        </Box>
         </Container>
     </ThemeProvider>
     );

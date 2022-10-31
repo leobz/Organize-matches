@@ -1,9 +1,11 @@
+include .env
+export
+
 BE_DOCKER_TAG = be-organize-matches:latest
 FE_DOCKER_TAG = fe-organize-matches:latest
 VEGETA_DURATION = 5s
 VEGETA_RATE = 0
 VEGETA_MAX_WORKERS = 1000
-
 
 ## Retrocompatibilidad con versiones de docker compose.
 ## More info: https://docs.docker.com/compose/#compose-v2-and-the-new-docker-compose-command
@@ -22,24 +24,34 @@ dev: ## Levanta todos los contenedores localmente. Necesita realizar un 'make bu
 
 .PHONY: prod
 prod: ## Levanta componentes del proyecto con un volumen dedicado al container de Mongo. Necesita realizar un 'make build' previamente para tomar los ultimos cambios
-	$(call DOCKER_COMPOSE, -f docker-compose.yml -f production.yml up -d)
+	$(call DOCKER_COMPOSE, -f docker-compose-production.yml up -d)
 
 .PHONY: build
 build: ## Crea imagen docker del todos los componentes (backend y frontend)
 	cd backend; \
-	docker build -t $(BE_DOCKER_TAG) .
+	docker build -t $(DOCKER_REGISTRY)/$(BE_DOCKER_TAG) .
 	cd frontend; \
-	docker build -t $(FE_DOCKER_TAG) .
+	docker build -t $(DOCKER_REGISTRY)/$(FE_DOCKER_TAG) .
 
 .PHONY: clean
 clean: ## Elimina los containers e imagenes (no borra la cache)
-	docker container kill be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
-	docker container rm be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1; \
-	docker image rm --no-prune be-organize-matches fe-organize-matches organize-matches_mongo_1 organiza-matches_mongo-express_1;
-
+	docker container kill be-organize-matches fe-organize-matches organize-matches_mongo_1 organize-matches_mongo-express_1; \
+	docker container rm be-organize-matches fe-organize-matches organize-matches_mongo_1 organize-matches_mongo-express_1; \
+	docker image rm --no-prune be-organize-matches fe-organize-matches mongo mongo-express;
+	
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto
 	$(call DOCKER_COMPOSE, down)
+
+.PHONY: push-images
+push-images: ## Sube las imagenes docker (backend y frontend) al registry seteado
+	docker push $(DOCKER_REGISTRY)/$(BE_DOCKER_TAG)
+	docker push $(DOCKER_REGISTRY)/$(FE_DOCKER_TAG)
+
+.PHONY: pull-images
+pull-images: ## Descarga las imagenes docker (backend y frontend) del registry seteado
+	docker pull $(DOCKER_REGISTRY)/$(BE_DOCKER_TAG)
+	docker pull $(DOCKER_REGISTRY)/$(FE_DOCKER_TAG)
 
 .PHONY: lt-counter
 lt-counter: ## Test de Carga HTTP del endpoint GET '/matches/counter'
