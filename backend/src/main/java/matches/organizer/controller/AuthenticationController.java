@@ -39,14 +39,7 @@ public class AuthenticationController {
         logger.info("POST TO: /login");
         String token = authenticationService.loginUser(userTryingLogin);//<-- si el usuario no existe, tirás el 401 desde acá
 
-        // crea una cookie
-        Cookie cookie = new Cookie("token",token);
-        // expira en 1 hora
-        cookie.setMaxAge(60 * 60);
-        // para seguridad
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        Cookie cookie = authenticationService.createSecureCookie("token", token,60 * 60);
 
         // agrego cookie al response
         response.addCookie(cookie);
@@ -67,14 +60,8 @@ public class AuthenticationController {
             jwtUtils.addTokenToBlacklist(auth);
         }
 
-        // crea una cookie
-        Cookie cookie = new Cookie("token", auth);
-        // expira en 1 hora
-        cookie.setMaxAge(0);
-        // para seguridad
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
+        // crea la cookie token con maxAge 0, para forzar el borrado
+        Cookie cookie = authenticationService.createSecureCookie("token", auth,0);
 
         response.addCookie(cookie);
 

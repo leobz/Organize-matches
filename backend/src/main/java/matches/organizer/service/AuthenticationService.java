@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.Cookie;
+
 @Service
 public class AuthenticationService{
 
@@ -52,7 +54,19 @@ public class AuthenticationService{
     }
 
 
+    public Cookie createSecureCookie(String name, String value, int maxAge) {
+        // crea una cookie
+        Cookie cookie = new Cookie(name, value);
 
+        cookie.setMaxAge(maxAge);
+
+        // para seguridad
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        return cookie;
+    }
 
 
 }
