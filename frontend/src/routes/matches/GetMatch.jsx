@@ -45,6 +45,9 @@ export default function GetMatch() {
     if(validateDateTime(dateTime)){
       await patchMatch(bodyMatch)
       enqueueSnackbar("Match changes saved", { variant: "success" });
+      match.location = bodyMatch.location;
+      match.name = bodyMatch.name;
+      match.dateAndTime = bodyMatch.dateAndTime;
       setIsEditing(false);
     }
     else
@@ -82,6 +85,7 @@ export default function GetMatch() {
               onChange={() => setIsEditing(true)}
               isEditing={isEditing}
               setIsEditing={setIsEditing}
+              isEditable={true}
             />
           </form>
           <FormSpace/>

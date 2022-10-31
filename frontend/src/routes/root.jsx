@@ -25,7 +25,7 @@ const Detail = styled('div')(({ theme }) => ({
         padding: '2rem 7rem',
     },
     [theme.breakpoints.up('lg')]: {
-        padding: '2rem 20rem',
+        padding: '2rem 16rem',
     },
   }));
 
@@ -61,8 +61,8 @@ export default function Root() {
                             <IconButton 
                                 color="primary" aria-label="menu" component="label" onClick={onClickMenu}
                                 style={{ 
-                                    'padding-left': '2rem',
-                                    'padding-top': '1rem'
+                                    'paddingLeft': '2rem',
+                                    'paddingTop': '1rem'
                                 }}    
                             >
                                 <MenuIcon/>

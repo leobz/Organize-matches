@@ -65,7 +65,7 @@ export default function CreateMatch() {
               Crear Partido
             </Box>
           </Typography>
-          <BasicMatchForm/>
+          <BasicMatchForm isEditable={false}/>
           <Grid container justifyContent="flex-end">
             <Button type="submit" variant="contained" startIcon={<AddIcon/>}>
               Crear Partido
