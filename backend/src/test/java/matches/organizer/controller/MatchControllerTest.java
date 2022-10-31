@@ -8,7 +8,7 @@ import matches.organizer.domain.User;
 import matches.organizer.service.MatchService;
 import matches.organizer.service.UserService;
 import matches.organizer.storage.MatchRepository;
-import matches.organizer.storage.PlayerRepository;
+import matches.organizer.storage.StatisticRepository;
 import matches.organizer.storage.UserRepository;
 import matches.organizer.util.JwtUtils;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class MatchControllerTest {
     private MatchRepository matchRepository;
 
     @MockBean
-    private PlayerRepository playerRepository;
+    private StatisticRepository statisticRepository;
 
     @MockBean
     private UserRepository userRepository;
@@ -113,7 +113,7 @@ class MatchControllerTest {
 
         // Test
         when(matchRepository.findByCreatedAtAfter(any())).thenReturn(List.of(m1));
-        when(playerRepository.findAll()).thenReturn(m1.getPlayers());
+        when(statisticRepository.countStatisticByStatisticType(1)).thenReturn((long) m1.getPlayers().size());
 
         this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())

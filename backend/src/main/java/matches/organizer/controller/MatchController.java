@@ -30,7 +30,6 @@ import java.util.Map;
 public class MatchController {
     private final MatchService matchService;
     private final UserService userService;
-
     private final JwtUtils jwtUtils;
 
     @Autowired
