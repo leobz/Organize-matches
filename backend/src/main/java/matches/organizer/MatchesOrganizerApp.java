@@ -9,6 +9,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
@@ -24,7 +26,16 @@ public class MatchesOrganizerApp {
 
 	@PostConstruct
 	public void initializeBot() throws TelegramApiException {
-		TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-		botsApi.registerBot(bot);
+		Logger logger = LoggerFactory.getLogger(MatchesOrganizerApp.class);
+		logger.info("Initializing Telegram Bot");
+
+		try {
+			TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+			botsApi.registerBot(bot);
+			logger.info("Telegram Bot Initialized");
+		} catch (TelegramApiException e) {
+			logger.error("Can't Initializing Telegram Bot: " + e.getMessage());
+		}
+
 	}
 }

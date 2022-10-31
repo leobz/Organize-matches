@@ -1,5 +1,7 @@
 package matches.organizer.service;
 import matches.organizer.domain.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -7,11 +9,14 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BotService extends TelegramLongPollingBot {
 
     private final MatchService matchService;
+    Logger logger = LoggerFactory.getLogger(BotService.class);
+
 
     @Autowired
     public BotService(MatchService matchService) {
@@ -28,8 +33,8 @@ public class BotService extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        // TODO: Externalizar a variable de entorno
-        return "TODO";
+        String token = System.getenv("TELEGRAM_BOT_TOKEN");
+        return token != null ? token : "ERROR";
     }
 
     @Override
@@ -37,7 +42,7 @@ public class BotService extends TelegramLongPollingBot {
         var msg = update.getMessage();
         var user = msg.getFrom();
 
-        System.out.println("TELEGRAM BOT: UserID: " + user.getId() + " Name:" + user.getFirstName() + " Wrote: " + msg.getText());
+        logger.info("TELEGRAM BOT: UserID: " + user.getId() + " Name:" + user.getFirstName() + " Wrote: " + msg.getText());
 
         if(msg.isCommand()){
             if (msg.getText().equals("/list")){
