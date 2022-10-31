@@ -30,9 +30,13 @@ export default function CreateMatch() {
     };
   
     if(validateDateTime(dateTime)){
-      const matchId = await postCreateMatch(bodyMatch)
-      enqueueSnackbar("Match created", { variant: "success" });
-      navigate("/matches/" + matchId )
+      try {
+        const matchId = await postCreateMatch(bodyMatch)
+        enqueueSnackbar("Match created", { variant: "success" });
+        navigate("/matches/" + matchId );
+      } catch(exception) {
+        enqueueSnackbar("Error " + exception.status + ": You have entered invalid data. Please check your information and try again.", { variant: "error" });
+      }
     }
     else
       enqueueSnackbar("Error: Fecha y hora deben ser posterior al momento actual", { variant: "error" });      

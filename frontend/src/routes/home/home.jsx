@@ -42,16 +42,17 @@ export default function Metrics() {
 
     <ThemeProvider theme={theme}>
       <Box sx = {{textAlign: "center",}}>
-          <img src="/img/OrganizeMatches.gif" alt={"logo"}/>
+          <img src="/img/OrganizeMatches.gif" alt={"logo"} width="100%"/>
       </Box>
 
       <Box
+        display="flex" justifyContent="center" alignItems="center"
         sx={{
           bgcolor: 'background.general',
           boxShadow: 1,
           borderRadius: 5,
-          p: 2,
-          minWidth: 300,
+          p: 1,
+          width: "100%",
           flexGrow: 1, 
           '&:hover': {
             bgcolor: 'action.active',
@@ -60,20 +61,20 @@ export default function Metrics() {
       >
         <Grid container spacing={2}>
 
-          <Grid xs={6}>
+          <Grid xs={12} sm={6}>
             <Item>
               <Box sx={{ color: 'text.special'}}> Last Matches </Box>
               <Box sx={{ color: 'text.regular', fontSize: 34, fontWeight: 'medium' }}> { JSON.parse(metrics)["matches"]} </Box>
             </Item>
           </Grid>
-          <Grid xs={6}>
+          <Grid xs={12} sm={6}>
             <Item>
               <Box sx={{ color: 'text.special' }}> Last Players </Box>
               <Box sx={{ color: 'text.regular', fontSize: 34, fontWeight: 'medium' }}> { JSON.parse(metrics)["players"]} </Box>
             </Item>
           </Grid>
           
-          <Grid xs={12}>
+          <Grid xs={12} display="flex" justifyContent="center" alignItems="center">
             <Box sx = {{
               color: 'text.special', 
               textAlign: "center",

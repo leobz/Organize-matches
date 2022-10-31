@@ -18,15 +18,13 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-@CrossOrigin(origins = "http://localhost:3001", allowedHeaders = "http://localhost:3001", allowCredentials = "true")
+@CrossOrigin(origins = {"https://partidos.com.ar", "http://localhost:3001"}, allowedHeaders = {"https://partidos.com.ar", "http://localhost:3001"}, allowCredentials = "true")
 @RestController
 @EnableWebMvc
 public class MatchController {
@@ -43,7 +41,6 @@ public class MatchController {
     }
 
     Logger logger = LoggerFactory.getLogger(MatchController.class);
-
 
     @GetMapping(value = "/matches", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getAllMatches(@CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
@@ -62,14 +59,13 @@ public class MatchController {
         logger.info("POST TO: /matches ");
         jwtUtils.verify(auth);
 
-        UUID userId = UUID.fromString(jwtUtils.getUserFromToken(auth));
-        newMatch.setUserId(userId.toString());
+        newMatch.setUserId(jwtUtils.getUserFromToken(auth));
         return matchService.createMatch(newMatch);
     }
 
     @PatchMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE )
-    public Match editMatch(@PathVariable UUID matchId, @RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
-        logger.info("PATCH TO: /matches/{" + matchId.toString() + "}");
+    public Match editMatch(@PathVariable String matchId, @RequestBody Match newMatch, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+        logger.info("PATCH TO: /matches/{" + matchId + "}");
         jwtUtils.verify(auth);
 
         Match match = matchService.getMatch(matchId);
@@ -89,10 +85,19 @@ public class MatchController {
     }
 
     @GetMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getMatch(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+    public String getMatch(@PathVariable String matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
         logger.info("GET TO: /matches/{}", matchId);
         jwtUtils.verify(auth);
         return matchService.getMatch(matchId).toJsonString();
+    }
+
+    @DeleteMapping(value = "/matches/{matchId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String deleteMatch(@PathVariable String matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+        logger.info("DELETE TO: /matches/{}", matchId);
+        jwtUtils.verify(auth);
+
+        String userId = jwtUtils.getUserFromToken(auth);
+        return matchService.removeMatch(matchId, userId).toJsonString();
     }
 
     @Operation(summary = "Retorna un contador con la cantidad de partidos creados y jugadores anotados en las últimas 2 horas.")
@@ -104,7 +109,7 @@ public class MatchController {
     }
 
     @PostMapping(value = "/matches/{matchId}/players", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, List<Player>> registerPlayer(@PathVariable UUID matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+    public Map<String, List<Player>> registerPlayer(@PathVariable String matchId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
 
         logger.info("POST TO: /matches/{}/players ", matchId);
         jwtUtils.verify(auth);
@@ -116,9 +121,8 @@ public class MatchController {
             logger.error("USER NOT FOUND: NEED TO CREATE AND USER BEFORE");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
-
         matchService.registerNewPlayer(matchId, user);
-        var match = matchService.getMatch(matchId);
+        Match match = matchService.getMatch(matchId);
         Map<String, List<Player>> response = new HashMap<>();
         response.put("startingPlayers", match.getStartingPlayers());
         response.put("substitutePlayers", match.getSubstitutePlayers());
@@ -127,7 +131,7 @@ public class MatchController {
     }
 
     @DeleteMapping(value = "/matches/{matchId}/players/{playerId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, List<Player>> unregisterPlayer(@PathVariable UUID matchId, @PathVariable String playerId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
+    public Map<String, List<Player>> unregisterPlayer(@PathVariable String matchId, @PathVariable String playerId, @CookieValue(value = "token", defaultValue = "") String auth) throws Exception{
 
         logger.info("DELETE TO: /matches/{"+ matchId+"}/players/{"+playerId+"}");
         jwtUtils.verify(auth);
@@ -155,5 +159,4 @@ public class MatchController {
 
         return response;
     }
-
 }

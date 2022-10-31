@@ -6,6 +6,7 @@ import matches.organizer.domain.Player;
 import matches.organizer.domain.User;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.storage.MatchRepository;
+import matches.organizer.storage.PlayerRepository;
 import matches.organizer.storage.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,39 +15,61 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class MatchService {
 
-    private final MatchRepository matchRepository;
-    private final UserRepository userRepository;
+    MatchRepository matchRepository;
+    UserRepository userRepository;
+
+    PlayerRepository playerRepository;
 
     Logger logger = LoggerFactory.getLogger(MatchService.class);
+
     @Autowired
-    public MatchService(MatchRepository matchRepository, UserRepository userRepository) {
+    public MatchService(MatchRepository matchRepository, UserRepository userRepository,PlayerRepository playerRepository ) {
         this.matchRepository = matchRepository;
         this.userRepository = userRepository;
+        this.playerRepository = playerRepository;
     }
 
     public List<Match> getMatches() {
-        return matchRepository.getAll();
+        return matchRepository.findByDeletedFalse();
     }
 
-    public Match getMatch(UUID id) {
-        return matchRepository.get(id);
+    public Match getMatch(String id) {
+        return matchRepository.findById(id).orElse(null);
     }
 
     public void updateMatch(Match match) {
-        matchRepository.update(match);
+        matchRepository.save(match);
+    }
+
+    public Match removeMatch(String matchId, String userId) {
+        Match match = matchRepository.findById(matchId).get();
+        if (match.getUserId().equals(userId)){
+            match.setDeleted(true);
+            matchRepository.save(match);
+            logger.info("MATCH DELETED WITH ID: {}", match.getId());
+            return match;
+        } else {
+            logger.error("NO MATCH DELETED. USER IS NOT THE MATCH OWNER");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot delete match. User is not the match owner.");
+        }
     }
 
     public Match createMatch(Match newMatch){
 
-        if (userRepository.findById(newMatch.getUserId()).isEmpty()) {
+        if (userRepository.findById(newMatch.getUserId()).orElse(null) == null) {
 
             logger.error("USER NOT FOUND: NEED TO CREATE AND USER BEFORE");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -59,25 +82,36 @@ public class MatchService {
                 .setLocation(newMatch.getLocation())
                 .build();
 
-        matchRepository.add(match);
-        logger.info("NEW MATCH CREATED WITH ID: {}", match.getId());
-        return match;
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        Set<ConstraintViolation<Match>> violations = validator.validate(match);
+
+        if (violations.isEmpty()) {
+            matchRepository.save(match);
+            logger.info("NEW MATCH CREATED WITH ID: {}", match.getId());
+            return match;
+        } else {
+            for (ConstraintViolation<Match> violation : violations) {
+                logger.info(violation.getMessage());
+            }
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Campos inválidos");
+        }
     }
 
-    public Match editMatch(UUID matchId, Match newMatch){
-        Match oldMatch = matchRepository.get(matchId);
+    public Match editMatch(String matchId, Match newMatch) {
+        Match oldMatch = matchRepository.findById(matchId).orElse(null);
         if (oldMatch == null) {
             logger.error("MATCH NOT FOUND: CANNOT EDIT MATCH");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not foundL cannot edit match");
         }
 
         Match editedMatch = new MatchBuilder().fromMatch(oldMatch)
-            .setName(newMatch.getName())
-            .setDateAndTime(newMatch.getDateAndTime())
-            .setLocation(newMatch.getLocation())
-            .build();
+                .setName(newMatch.getName())
+                .setDateAndTime(newMatch.getDateAndTime())
+                .setLocation(newMatch.getLocation())
+                .build();
 
-        matchRepository.update(editedMatch);
+        matchRepository.save(editedMatch);
         logger.info("UPDATED MATCH WITH ID: " + editedMatch.getId());
         return editedMatch;
     }
@@ -94,15 +128,21 @@ public class MatchService {
 
     public void createAndSaveRandomMatch() {
         Match match = createRandomMatch();
-        matchRepository.add(match);
+        matchRepository.save(match);
     }
 
-    public void registerNewPlayer(UUID id, User user) {
-        var match = matchRepository.get(id);
+    public void registerNewPlayer(String id, User user) {
+        Match match = matchRepository.findById(id).orElse(null);
 
-        if(match != null) {
+        if (match != null) {
+            logger.info("LEST TRY WITH: {} , {}", user.getId(), match.getId());
             addPlayerToMatch(match, user);
-            matchRepository.update(match);
+            matchRepository.save(match);
+
+            //Se crea nuevo player con atributo crearable distinto de nulo para que se cree indice de eliminacion automatica.
+            Player newPlayer = new Player(user.getId(), user.getAlias());
+            newPlayer.setClearable(true);
+            playerRepository.save(newPlayer);
             logger.info("PLAYER WITH ID: {} ADDED CORRECTLY TO MATCH: {}", user.getId(), match.getId());
 
         } else {
@@ -111,16 +151,20 @@ public class MatchService {
         }
     }
 
-    public List<Player> unregisterPlayer(UUID matchId, String playerId) {
-        var match = matchRepository.get(matchId);
+    public List<Player> unregisterPlayer(String matchId, String playerId) {
+        Match match = matchRepository.findById(matchId).orElse(null);
 
-        if(match != null) {
-            match.removePlayer(playerId);
-            matchRepository.update(match);
-            logger.info("PLAYER WITH ID: " + playerId.toString() + " REMOVED CORRECTLY FROM MATCH " + match.getId().toString());
+        if (match != null) {
+            try {
+                match.removePlayer(playerId);
+            } catch (Match.RemovePlayerException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot remove player. The user is not in the team.");
+            }
+            matchRepository.save(match);
+            logger.info("PLAYER WITH ID: " + playerId + " REMOVED CORRECTLY FROM MATCH " + match.getId());
             return match.getPlayers();
         } else {
-            logger.error("MATCH NOT FOUND WITH ID: " + matchId.toString());
+            logger.error("MATCH NOT FOUND WITH ID: " + matchId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found.");
         }
     }
@@ -132,24 +176,29 @@ public class MatchService {
      * @see CounterDTO
      */
     public CounterDTO getMatchAndPlayerCounterFrom(LocalDateTime from) {
-        List<Match> matches = matchRepository.getAllCreatedFrom(from);
-        List<Player> players = matchRepository.getAllPlayersConfirmedFrom(from);
+        List<Match> matches = matchRepository.findByCreatedAtAfter(from);
+        List<Player> players = playerRepository.findAll();
         logger.info("{} MATCHES AND {} PLAYERS CONFIRMED IN THE LAST TWO HOURS ", matches.size(), players.size());
-
         return new CounterDTO(matches.size(), players.size());
     }
 
     public void addPlayerToMatch(Match match, User user) {
-        if(user.getPhone() == null) {
+        if (user.getPhone() == null) {
             logger.error("CANNOT ADD PLAYER IF PHONE NUMBER IS NULL.");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Phone cannot be null.");
         }
-        if(user.getEmail() == null){
+        if (user.getEmail() == null) {
             logger.error("CANNOT ADD PLAYER IF EMAIL IS NULL.");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Email cannot be null.");}
-        match.addPlayer(user);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. Email cannot be null.");
+        }
+        try {
+            match.addPlayer(user);
+        } catch(Match.AddPlayerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Match: Cannot add player. The team is complete.");
+        }
         updateUser(user);
     }
+
 
     private void updateUser(User user) {
         if (userRepository.findById(user.getId()).isEmpty()) {
@@ -157,5 +206,4 @@ public class MatchService {
         }
         userRepository.save(user);
     }
-
 }

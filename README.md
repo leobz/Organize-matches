@@ -1,70 +1,103 @@
 # organize-matches
 
+## Visión General
 
-## Comandos básicos
-Run backend locally- MacOS/Linux:
+La aplicación está escrita en **Java**, con el framework **Springboot** que trae varias facilidades para trabajar en aplicaciones Web. Para la persistencia se optó por implementar el pattern Repository, utilizando **MongoDB**
+
+## Contenido 
+- [Setup](#setup)  
+- [Comandos básicos: Desarrollo](#commandsdev)  
+  - [URLs](#urlsdev)  
+- [Comandos básicos: Producción](#commandsprod)  
+- [Comandos básicos: Tests de Carga](#loadtesting)  
+- [Documentación](#doc)  
+  - [Diagrama de arquitectura](#doc-arq)  
+  - [MongoDB](#doc-mongo)  
+
+
+---
+
+<a name="setup"/>
+
+## Setup
+
+1. Instalar Docker + Docker Compose:  https://www.docker.com/
+
+2. En la raiz del proyecto `/organize-matches`, crear archivo `.env` con el siguiente contenido:
+
 ```
-make dev # Compila con maven y ejecuta localmente el backend con java
+DOCKER_REGISTRY=tacs2022
 ```
+
+3. Opcional: Loggearse al docker registry (necesario para push de imágenes docker)
+
+```
+$ docker login -u tacs2022 -p <registry-password>
+```
+4. Para que funcione la creación de la base de datos, se deberá crear en la raiz del proyecto `/organize-matches`,
+un archivo llamado `mongo-pass.txt` con la password del usuario `root` de la base de datos (Ej: Pass1234!@).
+
+---
+
+<a name="commandsdev"/>
+
+## Comandos básicos: Desarrollo
 
 Build docker image - MacOS/Linux:
 ```
-make build # Crea imagen docker de todos los componentes (backend+frontend)
+$ make build # Crea imagen docker de todos los componentes (backend+frontend)
 ```
 
-Run docker project - MacOS/Linux:
+Run app locally - MacOS/Linux:
 ```
-# Levanta componentes del proyecto, buildea en caso de no encontrar la imagen correspondiente. Ver status con ´docker ps´
-make prod
-
-
-# Si no funciona el comando anterior, usar:
-docker compose up -d
+# Levanta todos los contenedores localmente.
+# Necesita realizar un 'make build' previamente para tomar los ultimos cambios
+make dev
 ```
 
-Stop docker project - MacOS/Linux:
+Stop app locally - MacOS/Linux:
 ```
-# Finaliza la ejecución de los componentes del proyecto
+make stop # Finaliza la ejecución todos los contenedores
+```
+
+<a name="urlsdev"/>
+
+### URLs Desarrollo
+
+- Front End http://localhost:3001
+- Documentación Back End API http://localhost:8081/swagger-ui/index.html
+- UI Mongo-Express http://localhost:8082/
+
+---
+
+<a name="commandsprod"/>
+
+## Comandos básicos: Producción
+
+Dentro de instancia EC2:
+
+1. Descargar ultima imagen taggeada del docker registry
+```
+make pull-images
+```
+
+2. Run docker project with volume - MacOS/Linux:
+```
+# Detener/Limpiar contenedores antiguos
 make stop
+```
 
-# Si no funciona el comando anterior, usar:
-docker compose down
+2. Run docker project with volume - MacOS/Linux:
+```
+# Levantar contenedores con un volumen dedicado al container de Mongo.
+make prod
 ```
 
 ---
-## URL del front
 
-http://localhost:3001
+<a name="loadtesting"/>
 
-## Documentación de la API
-
-http://localhost:8081/swagger-ui/index.html
-
-## Visión General
-
-Para probar la aplicación se puede ejecutar un curl por ejemplo a:
-
-```shell
-curl --location --request GET 'http://localhost:8081/matches'
-```
-
-La aplicación es en Java, con el framework Springboot que trae varias facilidades para trabajar en aplicaciones Web.
-
-Para la **persistencia**, se optó por implementar el pattern Repository para tener una aproximación similar 
-al manejo de listas para gestionar los partidos. 
-
-## MongoDB
-
-Se decidió usar la base de datos noSQL MongoDB porque nos parece que la funcionalidad puede variar a futuro, y
-esta DDBB es más flexible para agregar nuevas funcionalidades que un Cassandra por ejemplo.
-
-**Para que funcione la creación de la base de datos, se deberá crear en la raiz del proyecto `/organize-matches`,
-un archivo llamado `mongo-pass.txt` con la password del usuario `root` de la base de datos.**
-
-### Mongo-Express
-http://localhost:8082/
-
-## Testing
+## Tests de carga
 
 Para ver los test de carga HTTP disponibles, ejecutar el siguiente comando:
 
@@ -79,3 +112,22 @@ VEGETA_DURATION = 10s # Cantidad de segundos del test
 VEGETA_RATE = 0 # Maxima cantidad de request por segundo. (0 es infinito)
 VEGETA_MAX_WORKERS = 1000 # Maxima cantidad de usuarios (Nota: 1 usuario puede hacer N request)
 ```
+
+
+<a name="doc"/>
+
+## Documentación
+
+<a name="doc-arq"/>
+
+### Diagrama de arquitectura
+
+
+![Architecture-Diagram](doc/Architecture-Diagram.png)
+
+<a name="doc-mongo"/>
+
+### MongoDB
+
+Se decidió usar la base de datos noSQL MongoDB porque nos parece que la funcionalidad puede variar a futuro, y
+esta DDBB es más flexible para agregar nuevas funcionalidades que un Cassandra por ejemplo.

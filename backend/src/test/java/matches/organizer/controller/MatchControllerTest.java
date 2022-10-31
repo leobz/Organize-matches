@@ -7,8 +7,8 @@ import matches.organizer.domain.Match;
 import matches.organizer.domain.User;
 import matches.organizer.service.MatchService;
 import matches.organizer.service.UserService;
-import matches.organizer.storage.InMemoryMatchRepository;
 import matches.organizer.storage.MatchRepository;
+import matches.organizer.storage.PlayerRepository;
 import matches.organizer.storage.UserRepository;
 import matches.organizer.util.JwtUtils;
 import org.junit.jupiter.api.Test;
@@ -21,13 +21,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.servlet.http.Cookie;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,23 +33,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest(classes = {JwtUtils.class, MatchService.class, UserService.class, MatchController.class, InMemoryMatchRepository.class})
+@SpringBootTest(classes = {JwtUtils.class, MatchService.class, UserService.class, MatchController.class})
 @AutoConfigureMockMvc
 class MatchControllerTest {
 
     @Autowired
     private MockMvc mvc;
-    @Autowired
+    @MockBean
     private MatchRepository matchRepository;
+
+    @MockBean
+    private PlayerRepository playerRepository;
+
     @MockBean
     private UserRepository userRepository;
 
     @Autowired
     private JwtUtils jwtUtils;
     @Test
-    void matchesRetrieved() throws Exception {
-        sanitize();
-
+    void matchesRetrieved() throws Exception, Match.AddPlayerException {
         User user = createUser();
         Match match = MatchService.createRandomMatch();
         Match match2 = MatchService.createRandomMatch();
@@ -62,13 +61,9 @@ class MatchControllerTest {
             match2.addPlayer(user);
         }
 
-        matchRepository.add(match);
-        matchRepository.add(match2);
+        var matches = List.of(match,match2);
 
-        ArrayList<Match> matches = new ArrayList<>();
-
-        matches.add(match);
-        matches.add(match2);
+        when(matchRepository.findByDeletedFalse()).thenReturn(matches);
 
         this.mvc.perform(get("/matches")
                         .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
@@ -76,7 +71,7 @@ class MatchControllerTest {
                 .andExpect(content().json(getMatchesResponse(matches)));
     }
 
-    private String getMatchesResponse(ArrayList<Match> matches) {
+    private String getMatchesResponse(List<Match> matches) {
         JsonObject allMatches = new JsonObject();
         JsonArray matchesArray = new JsonArray();
         matches.forEach(m -> matchesArray.add(JsonParser.parseString(m.toJsonString())));
@@ -86,11 +81,10 @@ class MatchControllerTest {
 
     @Test
     void getMatch() throws Exception {
-        sanitize();
         User user = createUser();
 
         Match match = MatchService.createRandomMatch();
-        matchRepository.add(match);
+        when(matchRepository.findById(any())).thenReturn(Optional.of(match));
 
         this.mvc.perform(get("/matches/" + match.getId())
                         .cookie(new Cookie("token",jwtUtils.generateJwt(user)))
@@ -102,12 +96,9 @@ class MatchControllerTest {
      * Verifica: Obtencion de contador con la cantidad de partidos creados y jugadores anotados en las últimas 2 horas.
      */
     @Test
-    void matchesCounterRetrieved() throws Exception {
+    void matchesCounterRetrieved() throws Exception, Match.AddPlayerException {
         ///////							Test Empty Counter					///////
         ///////////////////////////////////////////////////////////////////////////
-        sanitize();
-        User user = createUser();
-
         this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk()).andExpect(content().json("{\"matches\": 0, \"players\": 0}"));
 
@@ -117,21 +108,12 @@ class MatchControllerTest {
 
         // Valid matches: 1, Valid Players: 2
         Match m1 = MatchService.createRandomMatch();
-        m1.addPlayer(user);
-        m1.addPlayer(user);
-
-        // Invalid matches and players (older than 2 hours)
-        LocalDateTime oderDT = LocalDateTime.now(ZoneOffset.UTC).minusHours(2).minusMinutes(1);
-
-        Match m2 = MatchService.createRandomMatch();
-        m2.setCreatedAt(oderDT);
-
-        m1.addPlayer(user);
-        m1.getPlayers().get(0).setConfirmedAt(oderDT);
+        m1.addPlayer(createUser());
+        m1.addPlayer(createUser());
 
         // Test
-        matchRepository.add(m1);
-        matchRepository.add(m2);
+        when(matchRepository.findByCreatedAtAfter(any())).thenReturn(List.of(m1));
+        when(playerRepository.findAll()).thenReturn(m1.getPlayers());
 
         this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -139,18 +121,14 @@ class MatchControllerTest {
     }
 
     @Test
-    void registerNewPlayer() throws Exception {
-
-        sanitize();
+    void registerNewPlayer() throws Exception, Match.AddPlayerException {
 
         User user = createUser();
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         Match match = MatchService.createRandomMatch();
-        matchRepository.add(match);
-
-        assertTrue(matchRepository.get(match.getId()).getPlayers().isEmpty());
-
+        match.addPlayer(user);
+        when(matchRepository.findById(any())).thenReturn(Optional.of(match));
 
         ResultActions request = this.mvc.perform(
                 post("/matches/" + match.getId() + "/players")
@@ -160,11 +138,7 @@ class MatchControllerTest {
 
         request.andExpect(status().isOk());
 
-        assertFalse(matchRepository.get(match.getId()).getPlayers().isEmpty());
-    }
-
-    void sanitize() {
-        matchRepository.getAll().clear();
+        assertFalse(matchRepository.findById(match.getId()).orElse(new Match()).getPlayers().isEmpty());
     }
 
     User createUser() {

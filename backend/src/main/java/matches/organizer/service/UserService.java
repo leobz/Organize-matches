@@ -1,5 +1,6 @@
 package matches.organizer.service;
 
+import matches.organizer.domain.Match;
 import matches.organizer.domain.User;
 import matches.organizer.storage.UserRepository;
 import org.slf4j.Logger;
@@ -9,8 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -31,10 +36,21 @@ public class UserService {
     }
 
     public User addUser(User newUser) {
-        validateNewUser(newUser);
-        userRepository.save(newUser);
-        logger.info("USER WITH ID: {} CREATED CORRECTLY", newUser.getId());
-        return newUser;
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+
+        if (violations.isEmpty()) {
+            validateNewUser(newUser);
+            userRepository.save(newUser);
+            logger.info("USER WITH ID: {} CREATED CORRECTLY", newUser.getId());
+            return newUser;
+        } else {
+            for (ConstraintViolation<User> violation : violations) {
+                logger.info(violation.getMessage());
+            }
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Campos inválidos");
+        }
     }
 
     private void validateNewUser(User newUser){
