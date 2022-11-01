@@ -62,6 +62,11 @@ Stop app locally - MacOS/Linux:
 make stop # Finaliza la ejecución todos los contenedores
 ```
 
+Para subir a dockerhub una imagen con la versión a deployar:
+```shell
+make push-images
+```
+
 <a name="urlsdev"/>
 
 ### URLs Desarrollo
