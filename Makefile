@@ -41,7 +41,7 @@ clean: ## Elimina los containers e imagenes (no borra la cache)
 	
 .PHONY: stop
 stop: ## Finaliza la ejecución de los componentes del proyecto
-	$(call DOCKER_COMPOSE, down)
+	$(call DOCKER_COMPOSE, down --remove-orphans)
 
 .PHONY: push-images
 push-images: ## Sube las imagenes docker (backend y frontend) al registry seteado
