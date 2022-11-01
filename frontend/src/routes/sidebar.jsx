@@ -1,6 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import {useNavigate} from 'react-router-dom';
-import { logout } from "../services/login";
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
@@ -22,19 +20,9 @@ const MyDiv = styled('div')(({ theme }) => ({
 
 
 export default function Sidebar(props) {
-  const navigate = useNavigate();
-
   const onClickLogout = (e) => {
     e.preventDefault()
-    localStorage.clear()
-    props.setUserId(undefined)
-    logout().then((response) => {
-        if (response.status >= 400){
-            console.log("Error on logout")
-        } else {
-            navigate('/login');
-        }
-    })
+    props.disconnect();
   }
 
   return (

@@ -91,5 +91,13 @@ public class JwtUtils {
         }
     }
 
+    public Date getTokenExpirationDate(String token) {
+        try {
+            return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getExpiration();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access denied.");
+        }
+    }
+
 
 }

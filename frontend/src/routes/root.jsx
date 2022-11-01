@@ -1,4 +1,4 @@
-import {Outlet, useNavigation} from 'react-router-dom';
+import {Outlet, useNavigation, useNavigate, useLocation} from 'react-router-dom';
 import {SnackbarProvider} from 'notistack';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useEffect, useState} from "react";
@@ -8,6 +8,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
 import { styled } from '@mui/material/styles';
+import {logout} from "../services/login.js";
 
 
 const Detail = styled('div')(({ theme }) => ({
@@ -35,7 +36,21 @@ export default function Root() {
     const navigation = useNavigation();
     const theme = useTheme();
     const responsive = useMediaQuery(theme.breakpoints.down('sm'));
-    
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const disconnect = () => {
+        logout().then((response) => {
+            if (response.status >= 400){
+                console.log("Error on logout")
+            } else {
+                setUserId(null);
+                localStorage.clear();
+                navigate('/login');
+            }
+        })
+    };
+
     const onClickMenu = () => {
         setHideSidebar(!hideSidebar);
     }
@@ -45,21 +60,31 @@ export default function Root() {
     }
 
     useEffect(() => {
-        setUserId(localStorage.getItem('userId'));
+        let userId = localStorage.getItem('userId');
+        if(userId) {
+            setUserId(localStorage.getItem('userId'));
+        }
     }, []);
+
+    useEffect(() => {
+        if(localStorage.getItem("tokenExpirationDate") && new Date(localStorage.getItem("tokenExpirationDate")) <= new Date()) {
+            disconnect();
+        }
+    }, [location.key])
 
     return (
         <>
             <ThemeProvider theme={createTheme()}>
                 <SnackbarProvider maxSnack={1}>
                     <>
-                        { (!responsive || !hideSidebar) && 
-                            <Sidebar userId={userId} setUserId={setUserId} responsive={responsive} closeMenu={closeMenu}/>
+                        { (!responsive || !hideSidebar) &&
+                            <Sidebar disconnect={disconnect} userId={userId} setUserId={setUserId} responsive={responsive} closeMenu={closeMenu}/>
                         }
                         <div>
                         { (responsive && hideSidebar) &&
-                            <IconButton 
+                            <IconButton
                                 color="primary" aria-label="menu" component="label" onClick={onClickMenu}
+
                                 style={{ 
                                     'paddingLeft': '2rem',
                                     'paddingTop': '1rem'
@@ -68,7 +93,7 @@ export default function Root() {
                                 <MenuIcon/>
                             </IconButton>
                         }
-                        { (!responsive || hideSidebar) && 
+                        { (!responsive || hideSidebar) &&
                         <Detail
                             className={
                                 navigation.state === "loading" ? "loading" : ""
