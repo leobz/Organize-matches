@@ -7,16 +7,16 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import InputAdornment from '@mui/material/InputAdornment';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { TextField, Grid } from '@mui/material';
+import { TextField, Grid, Container } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import DoneIcon from '@mui/icons-material/Done';
 import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Button } from '@mui/material'
 import { deleteMatch } from '../../services/matches';
-
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from "notistack";
+import EditIcon from '@mui/icons-material/Edit';
 
 
 
@@ -85,27 +85,44 @@ function BasicMatchForm(props) {
         </Grid>
       </LocalizationProvider>
       <FormSpace/>
+      {
+        (!props.isEditing && props.isEditable) && 
+        <>
+        <FormSpace/>
+        <Button fullWidth variant="contained" startIcon={<EditIcon/>} onClick={() => props.onChange()}>
+          Editar
+        </Button>
+        </>
+      }
       { props.isEditing &&
-          <>
-            <FormSpace/>
-            <Button type="submit" variant="contained" startIcon={<DoneIcon/>}>
-              Guardar
-            </Button>
-            <Button variant="outlined" startIcon={<CancelIcon/>} onClick={() => {
-                props.setIsEditing(false);
-                setLocation(props.location);
-                setName(props.name);
-                setDateTime(props.dateTime);
-              }}>
-              Cancelar
-            </Button>
-            <Button variant="danger" startIcon={<DeleteIcon/>} onClick={() => {
-                deleteMatch(props.matchId, navigate, enqueueSnackbar);
-              }}>
-              Eliminar
-            </Button>
-          </>
-          }
+        <>
+          <FormSpace/>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sm={4}>
+              <Button fullWidth type="submit" variant="contained" startIcon={<DoneIcon/>}>
+                Guardar
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Button fullWidth variant="outlined" startIcon={<CancelIcon/>} onClick={() => {
+                  props.setIsEditing(false);
+                  setLocation(props.location);
+                  setName(props.name);
+                  setDateTime(props.dateTime);
+                }}>
+                Cancelar
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Button fullWidth variant="outlined" color="error" startIcon={<DeleteIcon/>} onClick={() => {
+                  deleteMatch(props.matchId, navigate, enqueueSnackbar);
+                }}>
+                Eliminar
+              </Button>
+            </Grid>
+          </Grid>
+        </>
+      }
     </div>
   )
 }
