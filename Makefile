@@ -16,7 +16,7 @@ endef
 
 PHONY: help
 help: ## Imprime targets y ayuda 
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk -F"Makefile:|:|##" '{printf "\033[36m%-30s\033[0m %s\n", $$2, $$4}'
 
 .PHONY: dev
 dev: ## Levanta todos los contenedores localmente. Necesita realizar un 'make build' previamente para tomar los ultimos cambios
