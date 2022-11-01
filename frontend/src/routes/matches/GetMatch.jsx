@@ -14,7 +14,7 @@ import { useSnackbar } from "notistack";
 
 export async function loader(request) {
   const match = await getMatch(request.params.matchId);
-  match.dateAndTime = match.dateAndTime + "z"
+  match.dateAndTime = match.dateAndTime + "Z"
   return { match };
 }
 
