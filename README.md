@@ -27,6 +27,8 @@ La aplicación está escrita en **Java**, con el framework **Springboot** que tr
 
 ```
 DOCKER_REGISTRY=tacs2022
+# Opcional
+# TELEGRAM_BOT_TOKEN=<TOKEN-para-activar-Telegram-Text-Commands>
 ```
 
 3. Opcional: Loggearse al docker registry (necesario para push de imágenes docker)

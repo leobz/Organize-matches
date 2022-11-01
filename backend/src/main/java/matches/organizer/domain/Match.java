@@ -155,4 +155,9 @@ public class Match {
         public RemovePlayerException(String s) {
         }
     }
+
+    @Override
+    public String toString() {
+        return "\nMatch: " + name + "\nLocation: " + location + "\nDate and time: " + dateAndTime + "\n\n";
+    }
 }
