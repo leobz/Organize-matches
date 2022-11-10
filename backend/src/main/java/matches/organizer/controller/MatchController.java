@@ -24,7 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = {"https://partidos.com.ar", "http://localhost:3001"}, allowedHeaders = {"https://partidos.com.ar", "http://localhost:3001"}, allowCredentials = "true")
+@CrossOrigin(origins = {"https://partidos.com.ar", "https://www.partidos.com.ar", "http://localhost:3001"},
+        allowedHeaders = {"https://partidos.com.ar", "https://www.partidos.com.ar", "http://localhost:3001"},
+        allowCredentials = "true")
 @RestController
 @EnableWebMvc
 public class MatchController {
