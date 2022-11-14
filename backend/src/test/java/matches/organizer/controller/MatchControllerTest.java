@@ -112,8 +112,8 @@ class MatchControllerTest {
         m1.addPlayer(createUser());
 
         // Test
-        when(matchRepository.findByCreatedAtAfter(any())).thenReturn(List.of(m1));
-        when(statisticRepository.countStatisticByStatisticType(1)).thenReturn((long) m1.getPlayers().size());
+        when(statisticRepository.countStatisticByStatisticType(1)).thenReturn(1L);
+        when(statisticRepository.countStatisticByStatisticType(2)).thenReturn((long) m1.getPlayers().size());
 
         this.mvc.perform(get("/matches/counter").accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
