@@ -11,6 +11,7 @@ import matches.organizer.storage.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,10 +24,11 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class MatchService {
+
+    private MongoTemplate mt;
 
     MatchRepository matchRepository;
     UserRepository userRepository;
@@ -36,10 +38,11 @@ public class MatchService {
     Logger logger = LoggerFactory.getLogger(MatchService.class);
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, UserRepository userRepository,PlayerRepository playerRepository ) {
+    public MatchService(MatchRepository matchRepository, UserRepository userRepository,PlayerRepository playerRepository,MongoTemplate mt ) {
         this.matchRepository = matchRepository;
         this.userRepository = userRepository;
         this.playerRepository = playerRepository;
+        this.mt= mt;
     }
 
     public List<Match> getMatches() {

@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotBlank;
 import java.lang.reflect.Type;
@@ -97,7 +96,6 @@ public class Match {
         return players.stream().skip(10).limit(3).collect(Collectors.toList());
     }
 
-    @Transactional
     public void addPlayer(User user) throws AddPlayerException {
         if(getPlayers().size() >= 13) {
             throw new AddPlayerException("Match: Cannot add player. The team is complete.");
