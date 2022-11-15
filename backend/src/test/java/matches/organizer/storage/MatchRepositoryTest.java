@@ -11,14 +11,17 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 
 @DataMongoTest
@@ -28,6 +31,10 @@ class MatchRepositoryTest {
 
     @Autowired
     private MatchRepository matchRepository;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
+
     private Match anyMatch;
     private Match anotherMatch;
 
@@ -77,7 +84,7 @@ class MatchRepositoryTest {
         Match anyMatch = buildAMatch();
         matchRepository.save(anyMatch);
         matchRepository.save(buildAnotherMatch());
-        Assertions.assertNull(matchRepository.findById(anotherMatch.getId()).orElse(null));
+        assertNull(matchRepository.findById(anotherMatch.getId()).orElse(null));
         Assertions.assertEquals(anyMatch.getId(),matchRepository.findById(anyMatch.getId()).orElse(new Match()).getId());
     }
 
@@ -102,8 +109,17 @@ class MatchRepositoryTest {
         //Este test debe validar que la lista de usuario este vacia
         assertTrue(matchRepository.findById(match.getId()).orElse(new Match()).getPlayers().isEmpty());
         match.addPlayer(new User("User", "User","0303456", "pp@g.com", "Password"));
-        matchRepository.save(match);
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(match.getId())
+                .andOperator(Criteria.where("$where").is("this.players.length < 1")));
+        Update update = new Update();
+        update.set("players", match.getPlayers());
+
+        mongoTemplate.findAndModify(query, update, Match.class);
+
         assertFalse(matchRepository.findById(match.getId()).orElse(new Match()).getPlayers().isEmpty());
+        assertNull(mongoTemplate.findAndModify(query, update, Match.class));
     }
 
     private Match buildAMatch() throws Match.AddPlayerException {

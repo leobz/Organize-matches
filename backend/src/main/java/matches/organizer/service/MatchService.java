@@ -8,6 +8,10 @@ import matches.organizer.storage.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,6 +28,8 @@ import java.util.UUID;
 @Service
 public class MatchService {
 
+
+    MongoTemplate mongoTemplate;
     MatchRepository matchRepository;
     UserRepository userRepository;
     StatisticRepository statisticRepository;
@@ -32,10 +38,11 @@ public class MatchService {
     Logger logger = LoggerFactory.getLogger(MatchService.class);
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, UserRepository userRepository,StatisticRepository statisticRepository ) {
+    public MatchService(MatchRepository matchRepository, UserRepository userRepository, StatisticRepository statisticRepository, MongoTemplate mongoTemplate) {
         this.matchRepository = matchRepository;
         this.userRepository = userRepository;
         this.statisticRepository = statisticRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public List<Match> getMatches() {
@@ -137,7 +144,7 @@ public class MatchService {
         if (match != null) {
             logger.info("LEST TRY WITH: {} , {}", user.getId(), match.getId());
             addPlayerToMatch(match, user);
-            matchRepository.save(match);
+            updateMatchPlayers(match);
 
             Statistic statistic = new Statistic(2);
             statisticRepository.save(statistic);
@@ -147,6 +154,18 @@ public class MatchService {
         } else {
             logger.error("MATCH NOT FOUND WITH ID: {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found.");
+        }
+    }
+
+    private void updateMatchPlayers(Match match) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(match.getId())
+                .andOperator(Criteria.where("$where").is("this.players.length < 13")));
+        Update update = new Update();
+        update.set("players", match.getPlayers());
+        if (mongoTemplate.findAndModify(query, update, Match.class)==null) {
+            logger.error("MATCH {} BECOMES FULL!!", match.getId());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Match becomes full!");
         }
     }
 

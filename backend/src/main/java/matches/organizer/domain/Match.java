@@ -125,9 +125,9 @@ public class Match {
     }
     
     public void removePlayer(String playerId) throws RemovePlayerException{
-        if(players.stream().noneMatch((p) -> p.getUserId().compareTo(playerId) == 0))
+        if(players.stream().noneMatch(p -> p.getUserId().compareTo(playerId) == 0))
             throw new RemovePlayerException("Match: Cannot remove player. The user is not in the team.");
-        players.remove(players.stream().filter((p) -> p.getUserId().compareTo(playerId) == 0).findFirst().get());
+        players.remove(players.stream().filter(p -> p.getUserId().compareTo(playerId) == 0).findFirst().get());
     }
 
     static class MatchSerializer implements JsonSerializer<Match> {
