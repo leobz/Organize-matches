@@ -1,19 +1,19 @@
 package matches.organizer.dto;
 
 public class CounterDTO {
-    private final int matches;
-    private final int players;
+    private final Long matches;
+    private final Long players;
 
-    public CounterDTO(int matches, int players) {
+    public CounterDTO(Long matches, Long players) {
         this.matches = matches;
         this.players = players;
     }
 
-    public int getPlayers() {
+    public Long getPlayers() {
         return players;
     }
 
-    public int getMatches() {
+    public Long getMatches() {
         return matches;
     }
 }
