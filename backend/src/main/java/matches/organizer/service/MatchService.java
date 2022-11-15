@@ -1,12 +1,9 @@
 package matches.organizer.service;
 
-import matches.organizer.domain.Match;
-import matches.organizer.domain.MatchBuilder;
-import matches.organizer.domain.Player;
-import matches.organizer.domain.User;
+import matches.organizer.domain.*;
 import matches.organizer.dto.CounterDTO;
 import matches.organizer.storage.MatchRepository;
-import matches.organizer.storage.PlayerRepository;
+import matches.organizer.storage.StatisticRepository;
 import matches.organizer.storage.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,21 +25,21 @@ import java.util.UUID;
 @Service
 public class MatchService {
 
-    private MongoTemplate mt;
 
+    MongoTemplate mongoTemplate;
     MatchRepository matchRepository;
     UserRepository userRepository;
+    StatisticRepository statisticRepository;
 
-    PlayerRepository playerRepository;
 
     Logger logger = LoggerFactory.getLogger(MatchService.class);
 
     @Autowired
-    public MatchService(MatchRepository matchRepository, UserRepository userRepository,PlayerRepository playerRepository,MongoTemplate mt ) {
+    public MatchService(MatchRepository matchRepository, UserRepository userRepository, StatisticRepository statisticRepository, MongoTemplate mongoTemplate) {
         this.matchRepository = matchRepository;
         this.userRepository = userRepository;
-        this.playerRepository = playerRepository;
-        this.mt= mt;
+        this.statisticRepository = statisticRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public List<Match> getMatches() {
@@ -92,6 +89,10 @@ public class MatchService {
         if (violations.isEmpty()) {
             matchRepository.save(match);
             logger.info("NEW MATCH CREATED WITH ID: {}", match.getId());
+            Statistic statistic = new Statistic(1);
+            statisticRepository.save(statistic);
+
+
             return match;
         } else {
             for (ConstraintViolation<Match> violation : violations) {
@@ -142,10 +143,9 @@ public class MatchService {
             addPlayerToMatch(match, user);
             matchRepository.save(match);
 
-            //Se crea nuevo player con atributo crearable distinto de nulo para que se cree indice de eliminacion automatica.
-            Player newPlayer = new Player(user.getId(), user.getAlias());
-            newPlayer.setClearable(true);
-            playerRepository.save(newPlayer);
+            Statistic statistic = new Statistic(2);
+            statisticRepository.save(statistic);
+
             logger.info("PLAYER WITH ID: {} ADDED CORRECTLY TO MATCH: {}", user.getId(), match.getId());
 
         } else {
@@ -179,10 +179,10 @@ public class MatchService {
      * @see CounterDTO
      */
     public CounterDTO getMatchAndPlayerCounterFrom(LocalDateTime from) {
-        List<Match> matches = matchRepository.findByCreatedAtAfter(from);
-        List<Player> players = playerRepository.findAll();
-        logger.info("{} MATCHES AND {} PLAYERS CONFIRMED IN THE LAST TWO HOURS ", matches.size(), players.size());
-        return new CounterDTO(matches.size(), players.size());
+        Long matches = statisticRepository.countStatisticByStatisticType(1);
+        Long player = statisticRepository.countStatisticByStatisticType(2);
+        logger.info("{} MATCHES AND {} PLAYERS CONFIRMED IN THE LAST TWO HOURS ", matches, player);
+        return new CounterDTO(matches, player);
     }
 
     public void addPlayerToMatch(Match match, User user) {
