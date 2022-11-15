@@ -39,11 +39,13 @@ function BasicMatchForm(props) {
       <RequiredTextField
         onChange={(e) => { props.onChange(); setName(e.target.value); }}
         value={name}
-        readOnly={props.readOnly} adornment={<AbcIcon/>} id={"name"}/>
+        readOnly={props.readOnly} adornment={<AbcIcon/>} id={"name"}
+        disabled={!props.isEditing && props.isEditable}/>
       <RequiredTextField
         onChange={(e) => { props.onChange(); setLocation(e.target.value); }}
         value={location}
-        readOnly={props.readOnly} adornment={<LocationOnIcon/>} id={"location"}/>
+        readOnly={props.readOnly} adornment={<LocationOnIcon/>} id={"location"}
+        disabled={!props.isEditing && props.isEditable}/>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
@@ -51,7 +53,7 @@ function BasicMatchForm(props) {
               label="Fecha"
               value={dateTime||props.dateTime}
               defaultValue={props.dateTime||nowPlus30Min()}
-              disabled={readOnly}
+              disabled={readOnly||!props.isEditing && props.isEditable}
               onChange={(newValue) => {
                 setDateTime(newValue);
                 var isAfterToday = dayjs(newValue).isAfter(dayjs(), 'day');
@@ -75,7 +77,7 @@ function BasicMatchForm(props) {
                 setDateTime(newValue);
                 props.onChange();
               }}
-              disabled={readOnly}
+              disabled={readOnly||!props.isEditing && props.isEditable}
               inputFormat="HH:mm:00"
               renderInput={(params) => <TextField {...params} name={"time"} id={"time"} sx={{ width: 1}} />}
               minTime={minTime}
@@ -86,7 +88,7 @@ function BasicMatchForm(props) {
       </LocalizationProvider>
       <FormSpace/>
       {
-        (!props.isEditing && props.isEditable) && 
+        (!props.readOnly && !props.isEditing && props.isEditable) && 
         <>
         <FormSpace/>
         <Button fullWidth variant="contained" startIcon={<EditIcon/>} onClick={() => props.onChange()}>
@@ -94,7 +96,7 @@ function BasicMatchForm(props) {
         </Button>
         </>
       }
-      { props.isEditing &&
+      { !props.readOnly && props.isEditing &&
         <>
           <FormSpace/>
           <Grid container spacing={1}>
@@ -145,6 +147,7 @@ export function RequiredTextField (props){
     <>
       <TextField 
         //variant={props.readOnly? "filled" : "outlined"}
+        disabled={props.disabled}
         id={props.id}
         name={props.id}
         value={props.value}
