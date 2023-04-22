@@ -1,18 +1,19 @@
-# organize-matches
+# Organize Matches
 
-## Visión General
+## Overview
 
-La aplicación está escrita en **Java**, con el framework **Springboot** que trae varias facilidades para trabajar en aplicaciones Web. Para la persistencia se optó por implementar el pattern Repository, utilizando **MongoDB**
+A basic tool to create, edit and apply to football matches https://partidos.com.ar/. We use [vegeta load testing tool](https://github.com/tsenart/vegeta), docker, NoSQL database, React, and Java with Springboot. The API is documented using OpenApi 3.0, the deployment uses AWS EC2 instance + Cloudflare DNS and there is also a [TelegramBot](https://t.me/match_organizer_bot) client.
 
-## Contenido 
-- [Setup](#setup)  
-- [Comandos básicos: Desarrollo](#commandsdev)  
-  - [URLs](#urlsdev)  
-- [Comandos básicos: Producción](#commandsprod)  
-- [Comandos básicos: Tests de Carga](#loadtesting)  
-- [Documentación](#doc)  
-  - [Diagrama de arquitectura](#doc-arq)  
-  - [MongoDB](#doc-mongo)  
+## Contents
+
+- [Setup](#setup)
+- [Basic Commands: Development](#basic-commands-development)
+  - [Development URLs](#development-urls)
+- [Basic Commands: Production](#basic-commands-production)
+- [Load Testing](#load-testing)
+- [Documentation](#documentation)
+  - [Architecture Diagram](#architecture-diagram)
+  - [MongoDB](#mongodb)
 
 
 ---
@@ -21,9 +22,9 @@ La aplicación está escrita en **Java**, con el framework **Springboot** que tr
 
 ## Setup
 
-1. Instalar Docker + Docker Compose:  https://www.docker.com/
+1. Install Docker + Docker Compose: https://www.docker.com/
 
-2. En la raiz del proyecto `/organize-matches`, crear archivo `.env` con el siguiente contenido:
+2. In the root of the project `/organize-matches`, create a `.env` file with the following content:
 
 ```
 DOCKER_REGISTRY=tacs2022
@@ -31,72 +32,72 @@ DOCKER_REGISTRY=tacs2022
 # TELEGRAM_BOT_TOKEN=<TOKEN-para-activar-Telegram-Text-Commands>
 ```
 
-3. Opcional: Loggearse al docker registry (necesario para push de imágenes docker)
+3. Optional: Login to the Docker registry (required for Docker image pushes)
 
 ```
 $ docker login -u tacs2022 -p <registry-password>
 ```
-4. Para que funcione la creación de la base de datos, se deberá crear en la raiz del proyecto `/organize-matches`,
-un archivo llamado `mongo-pass.txt` con la password del usuario `root` de la base de datos (Ej: Pass1234!@).
+4. For the database creation to work, a file named `mongo-pass.txt` with the password of the `root` user of the database (e.g. Pass1234!@) should be created in the root of the project `/organize-matches`.
 
 ---
 
 <a name="commandsdev"/>
 
-## Comandos básicos: Desarrollo
+## Basic Commands: Development
 
 Build docker image - MacOS/Linux:
 ```
-$ make build # Crea imagen docker de todos los componentes (backend+frontend)
+$ make build # Create docker image of all components (backend+frontend)
 ```
 
 Run app locally - MacOS/Linux:
 ```
-# Levanta todos los contenedores localmente.
-# Necesita realizar un 'make build' previamente para tomar los ultimos cambios
+# Starts all containers locally.
+# Needs to run 'make build' beforehand to pick up the latest changes
 make dev
 ```
 
 Stop app locally - MacOS/Linux:
 ```
-make stop # Finaliza la ejecución todos los contenedores
+make stop # Terminates the execution of all containers
 ```
 
-Para subir a dockerhub una imagen con la versión a deployar:
+To push an image with the version to be deployed to Dockerhub:
 ```shell
 make push-images
 ```
 
 <a name="urlsdev"/>
 
-### URLs Desarrollo
+### Development URLs
 
 - Front End http://localhost:3001
-- Documentación Back End API http://localhost:8081/swagger-ui/index.html
+- Back End API Documentation http://localhost:8081/swagger-ui/index.html
 - UI Mongo-Express http://localhost:8082/
 
 ---
 
 <a name="commandsprod"/>
 
-## Comandos básicos: Producción
+## Basic Commands: Production
 
-Dentro de instancia EC2:
+Inside EC2 instance:
 
-1. Descargar ultima imagen taggeada del docker registry
+
+1. Download latest tagged image from Docker registry
 ```
 make pull-images
 ```
 
 2. Run docker project with volume - MacOS/Linux:
 ```
-# Detener/Limpiar contenedores antiguos
+# Stop/Clean up old containers
 make stop
 ```
 
 2. Run docker project with volume - MacOS/Linux:
 ```
-# Levantar contenedores con un volumen dedicado al container de Mongo.
+# Start containers with a dedicated volume for the Mongo container.
 make prod
 ```
 
@@ -104,30 +105,30 @@ make prod
 
 <a name="loadtesting"/>
 
-## Tests de carga
+## Load Testing
 
-Para ver los test de carga HTTP disponibles, ejecutar el siguiente comando:
+To see the available HTTP load tests, execute the following command:
 
 ```shell
 make help | grep lt
 ```
 
-Para modificar parametros de los tests de carga, modificar las siguientes variables en el Makefile:
+To modify load testing parameters, modify the following variables in the Makefile:
 
 ```
-VEGETA_DURATION = 10s # Cantidad de segundos del test
-VEGETA_RATE = 0 # Maxima cantidad de request por segundo. (0 es infinito)
-VEGETA_MAX_WORKERS = 1000 # Maxima cantidad de usuarios (Nota: 1 usuario puede hacer N request)
+VEGETA_DURATION = 10s # Test duration in seconds
+VEGETA_RATE = 0 # Maximum request rate per second. (0 is infinite)
+VEGETA_MAX_WORKERS = 1000 # Maximum number of users (Note: 1 user can make N requests)
 ```
 
 
 <a name="doc"/>
 
-## Documentación
+## Documentation
 
 <a name="doc-arq"/>
 
-### Diagrama de arquitectura
+### Architecture Diagram
 
 
 ![Architecture-Diagram](doc/Architecture-Diagram.png)
@@ -136,5 +137,4 @@ VEGETA_MAX_WORKERS = 1000 # Maxima cantidad de usuarios (Nota: 1 usuario puede h
 
 ### MongoDB
 
-Se decidió usar la base de datos noSQL MongoDB porque nos parece que la funcionalidad puede variar a futuro, y
-esta DDBB es más flexible para agregar nuevas funcionalidades que un Cassandra por ejemplo.
+We decided to use the MongoDB NoSQL database because we believe that the functionality may vary in the future, and this database is more flexible for adding new functionality than, for example, Cassandra.
